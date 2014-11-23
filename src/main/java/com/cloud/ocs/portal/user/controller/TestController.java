@@ -1,4 +1,4 @@
-package com.cloud.ocs.mntportal.user.controller;
+package com.cloud.ocs.portal.user.controller;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -9,9 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cloud.ocs.mntportal.common.CloudStackApiRequest;
-import com.cloud.ocs.mntportal.utils.CloudStackApiRequestSender;
-import com.cloud.ocs.mntportal.utils.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.common.CloudStackApiRequest;
+import com.cloud.ocs.portal.utils.CloudStackApiRequestSender;
+import com.cloud.ocs.portal.utils.CloudStackApiSignatureUtil;
 
 @Controller
 public class TestController {
@@ -19,7 +19,7 @@ public class TestController {
 	@RequestMapping(value="/test")
 	@ResponseBody
 	public String getUser() {
-		System.out.println("hihihihi");
+//		System.out.println("hihihihi");
 		CloudStackApiRequest cloudStackApiRequest = new CloudStackApiRequest("listHosts");
 		Map<String, String> params = cloudStackApiRequest.getRequestParams();
 		params.put("type", "Routing");

@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.cloud.ocs.mntportal.common.CloudStackApiRequest;
-import com.cloud.ocs.mntportal.utils.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.common.CloudStackApiRequest;
+import com.cloud.ocs.portal.utils.CloudStackApiSignatureUtil;
 
 public class TestCloudStackApiRequestSignature {
 

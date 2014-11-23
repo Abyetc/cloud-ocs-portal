@@ -1,4 +1,4 @@
-package com.cloud.ocs.mntportal.utils;
+package com.cloud.ocs.portal.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -12,8 +12,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.cloud.ocs.mntportal.common.CloudStackApiRequest;
-import com.cloud.ocs.mntportal.properties.CloudStackApiProperties;
+import com.cloud.ocs.portal.common.CloudStackApiRequest;
+import com.cloud.ocs.portal.properties.CloudStackApiProperties;
 
 /**
  * 用于生成调用CloudStack API请求签名的工具类

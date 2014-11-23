@@ -1,4 +1,4 @@
-package com.cloud.ocs.mntportal.utils;
+package com.cloud.ocs.portal.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

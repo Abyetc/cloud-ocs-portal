@@ -1,4 +1,4 @@
-package com.cloud.ocs.mntportal.properties;
+package com.cloud.ocs.portal.properties;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

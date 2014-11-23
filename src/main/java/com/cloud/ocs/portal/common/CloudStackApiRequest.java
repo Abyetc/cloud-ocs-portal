@@ -1,10 +1,10 @@
-package com.cloud.ocs.mntportal.common;
+package com.cloud.ocs.portal.common;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import com.cloud.ocs.mntportal.properties.CloudStackApiProperties;
+import com.cloud.ocs.portal.properties.CloudStackApiProperties;
 
 /**
  * 用于封装调用CloudStack API的请求
