@@ -16,23 +16,53 @@
 	<!-- 导入properties文件 -->
 	<context:property-placeholder location="classpath:properties/jdbc.properties" ignore-unresolvable="true"/>
 	
-	<!-- 对包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
-	<context:component-scan base-package="com.cloud.ocs.mntportal" />
+	<!-- 静态资源不经过springmvc拦截 -->
+	<mvc:annotation-driven/>
+	<mvc:resources location="/front/" mapping="/front/**"/>
+	
+	<!-- 配置@ResponseBody注解返回Json数据 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/html; charset=UTF-8</value>
+                            <value>application/json;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/html; charset=UTF-8</value>
+                            <value>application/json;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 对包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
+    <context:annotation-config /> 
+	<context:component-scan base-package="com.cloud.ocs.portal" />
 	
 	<!-- 配置数据源 -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="${com.cloud.ocs.mntportal.jdbc.driverClassName}" />
-		<property name="url" value="${com.cloud.ocs.mntportal.jdbc.url}" />
-		<property name="username" value="${com.cloud.ocs.mntportal.jdbc.username}" />
-		<property name="password" value="${com.cloud.ocs.mntportal.jdbc.password}" />
+		<property name="driverClassName" value="${com.cloud.ocs.portal.jdbc.driverClassName}" />
+		<property name="url" value="${com.cloud.ocs.portal.jdbc.url}" />
+		<property name="username" value="${com.cloud.ocs.portal.jdbc.username}" />
+		<property name="password" value="${com.cloud.ocs.portal.jdbc.password}" />
 	</bean>
 	
 	<!-- 配置entityManagerFactory -->
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="com.cloud.ocs.mntportal" />
+		<property name="packagesToScan" value="com.cloud.ocs.portal" />
 		<property name="loadTimeWeaver">
 			<bean
 				class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
@@ -44,7 +74,7 @@
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
 				<prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.format_sql">true</prop>
+<!-- 				<prop key="hibernate.format_sql">true</prop> -->
 			</props>
 		</property>
 	</bean>

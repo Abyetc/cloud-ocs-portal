@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.common;
+package com.cloud.ocs.portal.common.cs;
 
 import java.util.Map;
 import java.util.Map.Entry;

@@ -1,0 +1,43 @@
+.container {
+	width: 1000px !important;
+}
+
+div.login-container {
+	padding: 100px 25px;
+	margin: 150px auto;
+	border: 2px solid #e9e9e9;
+}
+
+div.login-container div.login-form {
+	border-left: 1px solid #e9e9e9;
+}
+
+div.login-container input.form-control {
+	width: 60%;
+}
+
+.header {
+	padding: 15px 0px;
+}
+
+.content-warpper {
+	padding-top: 35px;
+	padding-bottom: 50px;
+	border-bottom: 2px solid #e9e9e9;
+}
+
+div.col-xs-9.content {
+	border-left: 1px solid #e9e9e9;
+	min-height: 300px;
+}
+
+#sidebar {
+	font-weight: bold;
+}
+
+.table th, .table td, .table caption {
+	text-align: center;
+}
+.footer {
+	padding: 15px 0px;
+}

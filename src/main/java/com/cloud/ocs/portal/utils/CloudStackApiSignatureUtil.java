@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.cloud.ocs.portal.common.CloudStackApiRequest;
+import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.properties.CloudStackApiProperties;
 
 /**
