@@ -26,6 +26,22 @@ div.login-container input.form-control {
 	border-bottom: 2px solid #e9e9e9;
 }
 
+table.table.table-bordered.text-center.pods-list-table {
+	margin-bottom: 60px !important;
+}
+
+table.table.table-bordered.text-center.secondary-storage-list-table {
+	margin-bottom: 60px !important;
+}
+
+table.table.table-bordered.text-center.system-VM-list-table {
+	margin-bottom: 60px !important;
+}
+
+table.table.table-bordered.text-center.primary-storage-list-table {
+	margin-bottom: 60px !important;
+}
+
 div.col-xs-9.content {
 	border-left: 1px solid #e9e9e9;
 	min-height: 300px;
