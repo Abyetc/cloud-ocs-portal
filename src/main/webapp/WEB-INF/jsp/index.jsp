@@ -104,6 +104,8 @@
 		<!-- Highcharts 插件 -->
 		<script src="front/Highcharts/highcharts.js"></script>
 		<script src="front/Highcharts/exporting.js"></script>
+		<!-- JQuery用于loading效果的插件shCircleLoader -->
+		<script src="front/jQuery/shCircleLoader/jquery.shCircleLoader-min.js"></script>
 
 		<!-- Cloud OCS Portal的JS文件 -->
 		<script src="front/js/cloud-resource-infrastructure.js"></script>

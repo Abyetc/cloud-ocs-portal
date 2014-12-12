@@ -1,7 +1,5 @@
 package com.cloud.ocs.portal.core.resource.dto;
 
-import java.util.Date;
-
 /**
  * 用来返回系统虚拟机信息的Dto
  * 

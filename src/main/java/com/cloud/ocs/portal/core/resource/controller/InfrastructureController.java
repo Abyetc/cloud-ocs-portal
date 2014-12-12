@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
+import com.cloud.ocs.portal.core.resource.dto.HostDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
+import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
@@ -53,5 +56,23 @@ public class InfrastructureController {
 	@ResponseBody
 	public List<SystemVmDto> listSystemVms(@RequestParam("zoneId") String zoneId) {
 		return infrastructureService.getSystemVmsList(zoneId);
+	}
+	
+	@RequestMapping(value="/listClusters", method=RequestMethod.GET)
+	@ResponseBody
+	public List<ClusterDto> listClusters(@RequestParam("podId") String podId) {
+		return infrastructureService.getClustersList(podId);
+	}
+	
+	@RequestMapping(value="/listPrimaryStorage", method=RequestMethod.GET)
+	@ResponseBody
+	public List<PrimaryStorageDto> listPrimaryStorage(@RequestParam("clusterId") String clusterId) {
+		return infrastructureService.getPrimaryStorageList(clusterId);
+	}
+	
+	@RequestMapping(value="/listHosts", method=RequestMethod.GET)
+	@ResponseBody
+	public List<HostDto> listHosts(@RequestParam("clusterId") String clusterId) {
+		return infrastructureService.getHostsList(clusterId);
 	}
 }

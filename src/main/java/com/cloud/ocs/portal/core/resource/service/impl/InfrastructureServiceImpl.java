@@ -1,19 +1,19 @@
 package com.cloud.ocs.portal.core.resource.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.resource.constant.ResourceApiName;
+import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
+import com.cloud.ocs.portal.core.resource.dto.HostDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
+import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
@@ -139,15 +139,103 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 					systemVmDto.setSystemVmName(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("name"));
 					systemVmDto.setSystemVmType(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("systemvmtype"));
 					systemVmDto.setHostName(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("hostname"));
-					try {
-						systemVmDto.setCreatedDate(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("created"));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					systemVmDto.setCreatedDate(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("created"));
 					systemVmDto.setState(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("state"));
 					result.add(systemVmDto);
 				}
 			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<ClusterDto> getClustersList(String podId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_LIST_CLUSTERS);
+		request.addRequestParams("podid", podId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		List<ClusterDto> result = new ArrayList<ClusterDto>();
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject clustersListJsonObj = responseJsonObj.getJSONObject("listclustersresponse");
+			JSONArray clustersJsonArrayObj = clustersListJsonObj.getJSONArray("cluster");
+			if (clustersJsonArrayObj != null) {
+				for (int i = 0; i < clustersJsonArrayObj.length(); i++) {
+					ClusterDto clusterDto = new ClusterDto();
+					clusterDto.setClusterId(((JSONObject)clustersJsonArrayObj.get(i)).getString("id"));
+					clusterDto.setClusterName(((JSONObject)clustersJsonArrayObj.get(i)).getString("name"));
+					clusterDto.setHypervisorType(((JSONObject)clustersJsonArrayObj.get(i)).getString("hypervisortype"));
+					clusterDto.setAllocationState(((JSONObject)clustersJsonArrayObj.get(i)).getString("allocationstate"));
+					result.add(clusterDto);
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<PrimaryStorageDto> getPrimaryStorageList(String clusterId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_LIST_PRIMARY_STORAGE);
+//		request.addRequestParams("clusterid", clusterId); //很奇怪，加了这个参数就返回空，不知为啥！
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		List<PrimaryStorageDto> result = new ArrayList<PrimaryStorageDto>();
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject primaryStorageListJsonObj = responseJsonObj.getJSONObject("liststoragepoolsresponse");
+			JSONArray primaryStorageJsonArrayObj = primaryStorageListJsonObj.getJSONArray("storagepool");
+			if (primaryStorageJsonArrayObj != null) {
+				for (int i = 0; i < primaryStorageJsonArrayObj.length(); i++) {
+					PrimaryStorageDto primaryStorageDto = new PrimaryStorageDto();
+					primaryStorageDto.setPrimaryStorageId(((JSONObject)primaryStorageJsonArrayObj.get(i)).getString("id"));
+					primaryStorageDto.setPrimaryStorageName(((JSONObject)primaryStorageJsonArrayObj.get(i)).getString("name"));
+					primaryStorageDto.setType(((JSONObject)primaryStorageJsonArrayObj.get(i)).getString("type"));
+					primaryStorageDto.setPath(((JSONObject)primaryStorageJsonArrayObj.get(i)).getString("path"));
+					primaryStorageDto.setHostIpAddress(((JSONObject)primaryStorageJsonArrayObj.get(i)).getString("ipaddress"));
+					primaryStorageDto.setState(((JSONObject)primaryStorageJsonArrayObj.get(i)).getString("state"));
+					result.add(primaryStorageDto);
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<HostDto> getHostsList(String clusterId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_LIST_HOSTS);
+		request.addRequestParams("clusterid", clusterId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		List<HostDto> result = new ArrayList<HostDto>();
+		
+		if (result != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
+			JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
+			if (hostsJsonArrayObj != null) {
+				for (int i = 0; i < hostsJsonArrayObj.length(); i++) {
+					HostDto hostDto = new HostDto();
+					hostDto.setHostId(((JSONObject)hostsJsonArrayObj.get(i)).getString("id"));
+					hostDto.setHostName(((JSONObject)hostsJsonArrayObj.get(i)).getString("name"));
+					hostDto.setHypervisor(((JSONObject)hostsJsonArrayObj.get(i)).getString("hypervisor"));
+					hostDto.setIpAddress(((JSONObject)hostsJsonArrayObj.get(i)).getString("ipaddress"));
+					hostDto.setState(((JSONObject)hostsJsonArrayObj.get(i)).getString("state"));
+					hostDto.setType(((JSONObject)hostsJsonArrayObj.get(i)).getString("type"));
+					hostDto.setCreatedDate(((JSONObject)hostsJsonArrayObj.get(i)).getString("created"));
+					result.add(hostDto);
+				}
+			}
+			
 		}
 		
 		return result;

@@ -2,7 +2,10 @@ package com.cloud.ocs.portal.core.resource.service;
 
 import java.util.List;
 
+import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
+import com.cloud.ocs.portal.core.resource.dto.HostDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
+import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
@@ -22,4 +25,9 @@ public interface InfrastructureService {
 	public List<PodDto> getPodsList(String zoneId);
 	public List<SecondaryStorageDto> getSecondaryStorageList(String zoneId);
 	public List<SystemVmDto> getSystemVmsList(String zoneId);
+	
+	public List<ClusterDto> getClustersList(String podId);
+	
+	public List<PrimaryStorageDto> getPrimaryStorageList(String clusterId);
+	public List<HostDto> getHostsList(String clusterId);
 }

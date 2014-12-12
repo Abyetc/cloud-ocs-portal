@@ -3,12 +3,11 @@ package com.cloud.ocs.portal.common.dao.impl;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import com.cloud.ocs.portal.common.dao.GenericDao;
 
 /**
  * 通用Dao抽象类，实现对实体最基本的“增删改查”的通用功能
+ * 
  * @author Wang Chao
  * 
  * @date 2014-12-9 下午8:33:49
