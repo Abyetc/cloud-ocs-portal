@@ -2,6 +2,7 @@ package com.cloud.ocs.portal.core.resource.service;
 
 import java.util.List;
 
+import com.cloud.ocs.portal.core.resource.dto.AddHostDto;
 import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
 import com.cloud.ocs.portal.core.resource.dto.HostDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
@@ -30,4 +31,6 @@ public interface InfrastructureService {
 	
 	public List<PrimaryStorageDto> getPrimaryStorageList(String clusterId);
 	public List<HostDto> getHostsList(String clusterId);
+	public AddHostDto addHost(String zoneId, String podId, String clusterId,
+			String ipAddress, String hostAccount, String hostPassword);
 }

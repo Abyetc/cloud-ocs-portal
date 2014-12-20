@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.core.resource.dto.AddHostDto;
 import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
 import com.cloud.ocs.portal.core.resource.dto.HostDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
@@ -74,5 +75,16 @@ public class InfrastructureController {
 	@ResponseBody
 	public List<HostDto> listHosts(@RequestParam("clusterId") String clusterId) {
 		return infrastructureService.getHostsList(clusterId);
+	}
+	
+	@RequestMapping(value="/addHost", method=RequestMethod.POST)
+	@ResponseBody
+	public AddHostDto addHost(@RequestParam("zoneId") String zoneId,
+			@RequestParam("podId") String podId,
+			@RequestParam("clusterId") String clusterId,
+			@RequestParam("ipAddress") String ipAddress,
+			@RequestParam("hostAccount") String hostAccount,
+			@RequestParam("hostPassword") String hostPassword) {
+		return infrastructureService.addHost(zoneId, podId, clusterId, ipAddress, hostAccount, hostPassword);
 	}
 }

@@ -88,7 +88,7 @@
 			<tx:method name="find*" propagation="SUPPORTS" isolation="READ_COMMITTED" read-only="true"/>
 			<tx:method name="get*" propagation="SUPPORTS" isolation="READ_COMMITTED" read-only="true"/>
 			<tx:method name="search*" propagation="SUPPORTS" isolation="READ_COMMITTED" read-only="true"/>
-			<tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/>
+<!-- 			<tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> -->
 		</tx:attributes>
 	</tx:advice>
 	<!-- 定义切入点-->

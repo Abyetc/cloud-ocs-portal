@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.resource.constant.ResourceApiName;
+import com.cloud.ocs.portal.core.resource.dto.AddHostDto;
 import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
 import com.cloud.ocs.portal.core.resource.dto.HostDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
@@ -236,6 +237,51 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 				}
 			}
 			
+		}
+		
+		return result;
+	}
+
+	@Override
+	public AddHostDto addHost(String zoneId, String podId, String clusterId, String ipAddress,
+			String hostAccount, String hostPassword) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_ADD_HOST);
+		request.addRequestParams("hypervisor", "KVM");
+		request.addRequestParams("zoneid", zoneId);
+		request.addRequestParams("podid", podId);
+		request.addRequestParams("clusterid", clusterId);
+		request.addRequestParams("url", "http://" + ipAddress);
+		request.addRequestParams("username", hostAccount);
+		request.addRequestParams("password", hostPassword);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		AddHostDto result = new AddHostDto();
+		result.setCode(AddHostDto.ADD_HOST_CODE_ERROR);
+		result.setMessage("Unable to add the host");
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject addHostJsonObj = responseJsonObj.getJSONObject("addhostresponse");
+			if (!addHostJsonObj.has("host")) {
+				result.setMessage(addHostJsonObj.getString("errortext"));
+			}
+			else {
+				result.setCode(AddHostDto.ADD_HOST_CODE_SUCCESS);
+				result.setMessage("Add host success.");
+				JSONArray hostsJsonArrayObj = addHostJsonObj.getJSONArray("host");
+				HostDto hostDto = new HostDto();
+				hostDto.setHostId(((JSONObject)hostsJsonArrayObj.get(0)).getString("id"));
+				hostDto.setHostName(((JSONObject)hostsJsonArrayObj.get(0)).getString("name"));
+				hostDto.setHypervisor(((JSONObject)hostsJsonArrayObj.get(0)).getString("hypervisor"));
+				hostDto.setIpAddress(((JSONObject)hostsJsonArrayObj.get(0)).getString("ipaddress"));
+				hostDto.setState(((JSONObject)hostsJsonArrayObj.get(0)).getString("state"));
+				hostDto.setType(((JSONObject)hostsJsonArrayObj.get(0)).getString("type"));
+				hostDto.setCreatedDate(((JSONObject)hostsJsonArrayObj.get(0)).getString("created"));
+				result.setHostDto(hostDto);
+				result.setIndex(this.getHostsList(clusterId).size());
+			}
 		}
 		
 		return result;

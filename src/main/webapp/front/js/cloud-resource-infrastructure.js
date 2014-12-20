@@ -340,26 +340,26 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
           				   +					"<div class=\"form-group\">"
           				   +						"<label for=\"\" class=\"col-lg-4 control-label\">IP地址：</label>"
           				   +						"<div class=\"col-lg-8\">"
-          				   +							"<input type=\"text\" class=\"form-control\" id=\"\" placeholder=\"请输入主机IP地址\">"
+          				   +							"<input type=\"text\" class=\"form-control\" id=\"host-ip-address\" placeholder=\"请输入主机IP地址\">"
           				   +						"</div>"
           				   +					"</div>"
           				   +					"<div class=\"form-group\">"
           				   +						"<label for=\"\" class=\"col-lg-4 control-label\">用户名：</label>"
           				   +						"<div class=\"col-lg-8\">"
-          				   +							"<input type=\"text\" class=\"form-control\" id=\"\" placeholder=\"请输入用户名\">"
+          				   +							"<input type=\"text\" class=\"form-control\" id=\"host-account\" placeholder=\"请输入用户名\">"
           				   +						"</div>"
           				   +					"</div>"
           				   +					"<div class=\"form-group\">"
           				   +						"<label for=\"\" class=\"col-lg-4 control-label\">密码：</label>"
           				   +						"<div class=\"col-lg-8\">"
-          				   +							"<input type=\"password\" class=\"form-control\" id=\"\" placeholder=\"请输入主机密码\">"
+          				   +							"<input type=\"password\" class=\"form-control\" id=\"host-password\" placeholder=\"请输入主机密码\">"
           				   +						"</div>"
           				   +					"</div>"
           				   +				"</div>"
          				   +			"</div>"
          				   +			"<div class=\"modal-footer\">"
          				   +				"<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">关闭</button>"
-         				   +				"<button type=\"button\" class=\"btn btn-primary\" id=\"add-host-submit-btn\">提交</button>"
+         				   +				"<button type=\"button\" class=\"btn btn-primary\" onclick=\"addHost('" + zoneId + "','" + podId + "','" + clusterId + "','" + clusterName + "')\">" + "提交</button>"
          				   +			"</div>"
    						   +		"</div>"
    						   + 	"</div>"
@@ -373,7 +373,66 @@ $("body").on("click", '#add-host-btn', function(){
 	});
 });
 
-//对提交添加物理主机按钮进行监听
-$("body").on("click", '#add-host-submit-btn', function(){
-	//$("#myModal div.modal-body").text("hi");
-});
+//添加物理主机表单提交按钮触发函数
+function addHost(zoneId, podId, clusterId, clusterName) {
+	var ipAddress = $("#host-ip-address").val();
+	var hostAccount = $("#host-account").val();
+	var hostPassword = $("#host-password").val();
+
+	if (ipAddress == "") {
+		alert("IP地址不能为空！");
+		return;
+	}
+	if (hostAccount == "") {
+		alert("主机用户名不能为空！");
+		return;
+	}
+	if (hostPassword == "") {
+		alert("主机密码不能为空！");
+		return;
+	}
+
+	//添加转菊花
+	$("#add-host-modal div.modal-body").append("<div class=\"loader\"></div>");
+	$("#add-host-modal div.modal-body").append("<span class=\"text-primary pull-right\">正在添加，事件稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+
+
+	$.ajax({
+		type: "POST",
+		url: "resource/infrastructure/addHost",
+		dataType: "json",
+		data: {
+			zoneId: zoneId,
+			podId: podId,
+			clusterId: clusterId,
+			ipAddress: ipAddress,
+			hostAccount: hostAccount,
+			hostPassword: hostPassword 
+		},
+		success: function(data) {
+			$("#add-host-modal div.loader").shCircleLoader('destroy');
+			$("#add-host-modal div.loader").remove();
+			$("#add-host-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //添加成功
+				$("#host-ip-address").val('');
+				$("#host-account").val('');
+				$("#host-password").val('');
+				alert("主机添加成功！");
+				$('#add-host-modal').modal('hide');
+				$(".table.host-list-table tbody").append("<tr><td>" + data.index + "</td><td>" + data.hostDto.ipAddress + "</td>"
+					+ "<td>" + data.hostDto.hostName + "</td><td>" + data.hostDto.hypervisor + "</td><td>" + data.hostDto.createdDate + "</td>"
+					+ (data.hostDto.state == "Up" ? "<td><span class=\"label label-success\">Up</span></td>" : "<td><span class=\"label label-danger\">Down</span></td>")
+					+ "<td><button type=\"button\" class=\"btn btn-xs btn-danger\">删除</button></td>");
+			}
+			else {
+				alert("主机添加失败！消息：" + data.message);
+			}
+		},
+		error: function( xhr, status ) {
+			alert(status); 
+		} 
+	});
+}
