@@ -2,13 +2,16 @@ package com.cloud.ocs.portal.core.resource.controller;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cloud.ocs.portal.core.resource.dto.HostDto;
+import com.cloud.ocs.portal.core.resource.dto.CapacityDto;
+import com.cloud.ocs.portal.core.resource.service.CapacityService;
 
 /**
  * 系统资源系统容量模块Controller
@@ -21,11 +24,13 @@ import com.cloud.ocs.portal.core.resource.dto.HostDto;
 @Controller
 @RequestMapping(value="/resource/capacity")
 public class CapacityController {
+	
+	@Resource
+	private CapacityService capacityService;
 
 	@RequestMapping(value="/listCapacity", method=RequestMethod.GET)
 	@ResponseBody
-	public String listHosts(@RequestParam("zoneId") String zoneId) {
-//		return infrastructureService.getHostsList(clusterId);
-		return null;
+	public List<CapacityDto> listHosts(@RequestParam("zoneId") String zoneId) {
+		return capacityService.getCapacityList(zoneId);
 	}
 }

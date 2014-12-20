@@ -1,5 +1,9 @@
 package com.cloud.ocs.portal.core.resource.service;
 
+import java.util.List;
+
+import com.cloud.ocs.portal.core.resource.dto.CapacityDto;
+
 /**
  * 系统资源系统容量模块service接口
  * @author Wang Chao
@@ -9,4 +13,5 @@ package com.cloud.ocs.portal.core.resource.service;
  */
 public interface CapacityService {
 
+	public List<CapacityDto> getCapacityList(String zoneId);
 }

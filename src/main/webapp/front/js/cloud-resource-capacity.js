@@ -86,7 +86,7 @@ var capacityPieOption = {
     plotShadow: false
   },
   title: {
-    text: '<strong>CPU</strong><br>50/100',
+    //text: '<strong>CPU</strong><br>50/100',
     align: 'center',
     verticalAlign: 'middle',
     y: 50
@@ -115,12 +115,15 @@ var capacityPieOption = {
     name: '比重',
     innerSize: '50%',
     data: [
-    ['已使用',   45.0],
-    ['未使用',   50.0],
     {
-      name: 'Point 1',
-      color: '#00FF00',
-      y: 5.0
+      name: '已使用',
+      color: '#FF7070', 
+      //y: 25.0
+    },
+    {
+      name: '未使用',
+      //color: '#00FF00', 
+     //y: 75.0
     }
     ]
   }],
@@ -141,16 +144,33 @@ function listCapacity(zoneId, zoneName) {
   
   $("#content-area").empty();
   $("#content-area").append("<h4 class=\"text-center\">区域（机房）" + zoneName + "系统容量</h4>");
-  var dataLength = 8;
-  for (var i = 0;  i < dataLength; i++) {
-    if (i % 2 == 0) {
-      $("#content-area").append("<div class=\"row row-" + (i+2)/2 + "\"></div>");
-      $(".row-" + (i+2)/2).append("<div class=\"col-xs-6 capacity-pie-" + (i+1) + "\"></div>");
-      $(".capacity-pie-" + (i+1)).highcharts(capacityPieOption);
-    }
-    if (i % 2 == 1) {
-      $(".row-" + (i+1)/2).append("<div class=\"col-xs-6 capacity-pie-" + (i+1) + "\"></div>");
-      $(".capacity-pie-" + (i+1)).highcharts(capacityPieOption);
-    }
-  }
+
+  $.ajax({
+    type: "GET",
+    url: "resource/capacity/listCapacity",
+    dataType: "json",
+    data: {
+      zoneId: zoneId
+    },
+    success: function(data) {
+      for (var i = 0; i < data.length; i++) {
+        var oneCapacityPieOption = capacityPieOption;
+        oneCapacityPieOption.title.text = "<strong>" + data[i].capacityName + "</strong><br><sapn style=\"font-size:11px;\">" + data[i].capacityUsed + "/" + data[i].capacityTotal + "</span>";
+        oneCapacityPieOption.series[0].data[0].y = data[i].percentUsed;
+        oneCapacityPieOption.series[0].data[1].y = 100 - data[i].percentUsed;
+        if (i % 2 == 0) {
+          $("#content-area").append("<div class=\"row row-" + (i+2)/2 + "\"></div>");
+          $(".row-" + (i+2)/2).append("<div class=\"col-xs-6 capacity-pie-" + (i+1) + "\"></div>");
+          $(".capacity-pie-" + (i+1)).highcharts(oneCapacityPieOption);
+        }
+        if (i % 2 == 1) {
+          $(".row-" + (i+1)/2).append("<div class=\"col-xs-6 capacity-pie-" + (i+1) + "\"></div>");
+          $(".capacity-pie-" + (i+1)).highcharts(oneCapacityPieOption);
+        }
+      }
+    },
+    error: function( xhr, status ) {
+      alert(status); 
+    } 
+  });
 }
