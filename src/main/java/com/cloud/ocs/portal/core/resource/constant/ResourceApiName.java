@@ -20,4 +20,7 @@ public class ResourceApiName {
 	
 	public final static String RESOURCE_API_LIST_PRIMARY_STORAGE   = 	"listStoragePools";
 	public final static String RESOURCE_API_LIST_HOSTS 			   = 	"listHosts";
+	
+	
+	public final static String RESOURCE_API_LIST_CAPACITY		   =	"listCapacity";
 }

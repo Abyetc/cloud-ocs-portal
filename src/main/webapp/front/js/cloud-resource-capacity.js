@@ -43,15 +43,34 @@ function listCapacityZones() {
   $("#content-area").empty();
 
   var zoneListTable = $("<table class=\"table table-bordered text-center\">"
-    + "<caption>系统区域（机房）列表</caption>"
+    + "<caption><strong>系统区域（机房）列表</strong></caption>"
     + "<thead><tr><th>序号</th><th>区域（机房）名称</th><th>网络类型</th><th>状态</th><th>查看</th></tr></thead>"
     + "<tbody></tbody>"
     + "</table>");  
   $("#content-area").append(zoneListTable);
+  $("#content-area").append("<div class=\"loader\"></div>");
+  $("div.loader").shCircleLoader({
+    duration: 0.75
+  });
+
   //请求获取区域列表数据
-  $(".table tbody").append("<tr><td>1</td><td>zoneName</td><td>高级网络</td>"
-    + "<td><span class=\"label label-success\">成功标签</span></td>"
-    + "<td><button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"listCapacity('zoneId', 'zoneName');\">点击查看</button></td></tr>");
+  $.ajax({
+    type: "GET",
+    url: "resource/infrastructure/listZones",
+    dataType: "json",
+    success: function(data) {
+      $("div.loader").shCircleLoader('destroy');
+      $("div.loader").remove();
+      for (var i = 0; i < data.length; i++) {
+        $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].zoneName + "</td><td>" + data[i].networkType + "</td>"
+          + (data[i].allocationState == "Enabled" ? "<td><span class=\"label label-success\">Enabled</span></td>" : "<td><span class=\"label label-danger\">Disabled</span></td>")
+          + "<td><button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"listCapacity('" + data[i].zoneId + "','" + data[i].zoneName + "');\">点击查看</button></td></tr>");
+      }
+    },
+    error: function( xhr, status ) {
+      alert(status); 
+    } 
+  });
 }
 
 Highcharts.setOptions({

@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.utils;
+package com.cloud.ocs.portal.utils.cs;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

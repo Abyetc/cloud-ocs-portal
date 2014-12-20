@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ocs</groupId>
-	<artifactId>CloudOCSManagementPortal</artifactId>
+	<artifactId>cloud-ocs-portal</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CloudOCSManagementPortal Maven Webapp</name>
+	<name>cloud-ocs-portal Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -17,7 +17,7 @@
 	</properties>
 
 	<build>
-		<finalName>CloudOCSManagementPortal</finalName>
+		<finalName>cloud-ocs-portal</finalName>
 		<plugins>
 			<!-- Maven compiler plugin -->
 			<plugin>
@@ -98,6 +98,12 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+		
 <!-- 		<dependency> -->
 <!-- 			<groupId>org.codehaus.jackson</groupId> -->
 <!-- 			<artifactId>jackson-core-asl</artifactId> -->
@@ -108,6 +114,7 @@
 <!-- 			<artifactId>jackson-mapper-asl</artifactId> -->
 <!-- 			<version>1.9.13</version> -->
 <!-- 		</dependency> -->
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -138,6 +145,11 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20140107</version>
+		</dependency>
+		<dependency>
+			<groupId>org.fusesource</groupId>
+			<artifactId>sigar</artifactId>
+			<version>1.6.4</version>
 		</dependency>
 	</dependencies>
 </project>

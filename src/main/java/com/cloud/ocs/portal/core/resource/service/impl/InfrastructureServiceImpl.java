@@ -18,8 +18,8 @@ import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
 import com.cloud.ocs.portal.core.resource.service.InfrastructureService;
-import com.cloud.ocs.portal.utils.CloudStackApiRequestSender;
-import com.cloud.ocs.portal.utils.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
+import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 
 /**
  * 系统资源基础设施模块service实现类

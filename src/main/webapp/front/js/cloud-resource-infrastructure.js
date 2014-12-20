@@ -58,7 +58,7 @@ function listInfrastructureZones() {
 	$("#content-area").empty();
 
 	var zoneListTable = $("<table class=\"table table-bordered text-center\">"
-		+ "<caption>系统区域（机房）列表</caption>"
+		+ "<caption><strong>系统区域（机房）列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>区域（机房）名称</th><th>网络类型</th><th>状态</th><th>查看</th></tr></thead>"
 		+ "<tbody></tbody>"
 		+ "</table>");	
@@ -98,7 +98,7 @@ function listPods(zoneId, zoneName) {
 	$("#content-area").empty();
 
 	var podListTable = $("<table class=\"table table-bordered text-center pods-list-table\">"
-		+ "<caption>区域" + zoneName + "提供点列表</caption>"
+		+ "<caption><strong>区域" + zoneName + "提供点列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>提供点名称</th><th>状态</th><th>查看</th></tr></thead>"
 		+ "<tbody></tbody>"
 		+ "</table>");
@@ -109,7 +109,7 @@ function listPods(zoneId, zoneName) {
 	});
 
 	var secondaryStorageList = $("<table class=\"table table-bordered text-center secondary-storage-list-table\">"
-		+ "<caption>区域" + zoneName + "二级存储列表</caption>"
+		+ "<caption><strong>区域" + zoneName + "二级存储列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>名称</th><th>URL</th>"
 		+ "<th>协议</th><th>提供者</th></tr></thead>"
 		+ "<tbody></tbody>"
@@ -121,7 +121,7 @@ function listPods(zoneId, zoneName) {
 	});
 
 	var systemVMList = $("<table class=\"table table-bordered text-center system-VM-list-table\">"
-		+ "<caption>区域" + zoneName + "系统虚拟机列表</caption>"
+		+ "<caption><strong>区域" + zoneName + "系统虚拟机列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>名称</th><th>主机名称</th>"
 		+ "<th>类型</th><th>创建时间</th><th>状态</th></tr></thead>"
 		+ "<tbody></tbody>"
@@ -212,7 +212,7 @@ function listClusters(zoneId, podId, podName) {
 	$("#content-area").empty();
 
 	var clusterListTable = $("<table class=\"table table-bordered text-center\">"
-		+ "<caption>提供点" + podName + "集群列表</caption>"
+		+ "<caption><strong>提供点" + podName + "集群列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>集群名称</th><th>虚拟机平台</th><th>状态</th><th>查看</th></tr></thead>"
 		+ "<tbody></tbody>"
 		+ "</table>");
@@ -237,7 +237,7 @@ function listClusters(zoneId, podId, podName) {
 				$(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].clusterName + "</td>"
 					+ "<td>" + data[i].hypervisorType + "</td>"
 					+ (data[i].allocationState == "Enabled" ? "<td><span class=\"label label-success\">Enabled</span></td>" : "<td><span class=\"label label-danger\">Disabled</span></td>")
-					+ "<td><button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"listHosts('" + zoneId + "','" + podId + "','" + data[i].clusterId + "','" + data[i].clusterName + "');\">查看</button></td></tr>");
+					+ "<td><button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"listHosts('" + zoneId + "','" + podId + "','" + data[i].clusterId + "','" + data[i].clusterName + "');\">点击查看</button></td></tr>");
 			}
 		},
 		error: function( xhr, status ) {
@@ -255,7 +255,7 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 	$("#content-area").empty();
 
 	var primaryStorageList = $("<table class=\"table table-bordered text-center primary-storage-list-table\">"
-		+ "<caption>集群" + clusterName + "主存储列表</caption>"
+		+ "<caption><strong>集群" + clusterName + "主存储列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>名称</th><th>主机IP</th>"
 		+ "<th>路径</th><th>类型</th><th>状态</th></tr></thead>"
 		+ "<tbody></tbody>"
@@ -267,7 +267,7 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 	});
 
 	var hostListTable = $("<table class=\"table table-bordered text-center host-list-table\">"
-		+ "<caption>集群" + clusterName + "主机列表</caption>"
+		+ "<caption><strong>集群" + clusterName + "主机列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>IP地址</th><th>主机名称</th>"
 		+ "<th>Hypervisor</th><th>创建时间</th><th>状态</th>"
 		+ "<th>操作</th></tr></thead>"
@@ -326,5 +326,54 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 		} 
 	});
 
-	$("#content-area").append("<button type=\"button\" class=\"btn btn-primary btn-sm pull-right\"><span class=\"glyphicon glyphicon-plus\"></span>  点击添加物理主机</button>");
+	$("#content-area").append("<button type=\"button\" class=\"btn btn-primary btn-sm pull-right\" id=\"add-host-btn\" data-toggle=\"modal\" data-target=\"\"><span class=\"glyphicon glyphicon-plus\"></span>  点击添加物理主机</button>");
+	//弹出的模态框
+	$("#add-host-btn").after("<div class=\"modal fade\" id=\"add-host-modal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">"
+   						   + 	"<div class=\"modal-dialog modal-dialog-center\">"
+   						   +		"<div class=\"modal-content\">"
+   						   +			"<div class=\"modal-header\">"
+   						   +				"<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>"
+   						   +				"<h4 class=\"modal-title\">添加物理主机</h4>"
+   						   +			"</div>"
+   						   +			"<div class=\"modal-body\">"
+          				   +       			"<div class=\"form-horizontal\" role=\"form\">"
+          				   +					"<div class=\"form-group\">"
+          				   +						"<label for=\"\" class=\"col-lg-4 control-label\">IP地址：</label>"
+          				   +						"<div class=\"col-lg-8\">"
+          				   +							"<input type=\"text\" class=\"form-control\" id=\"\" placeholder=\"请输入主机IP地址\">"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class=\"form-group\">"
+          				   +						"<label for=\"\" class=\"col-lg-4 control-label\">用户名：</label>"
+          				   +						"<div class=\"col-lg-8\">"
+          				   +							"<input type=\"text\" class=\"form-control\" id=\"\" placeholder=\"请输入用户名\">"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class=\"form-group\">"
+          				   +						"<label for=\"\" class=\"col-lg-4 control-label\">密码：</label>"
+          				   +						"<div class=\"col-lg-8\">"
+          				   +							"<input type=\"password\" class=\"form-control\" id=\"\" placeholder=\"请输入主机密码\">"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +				"</div>"
+         				   +			"</div>"
+         				   +			"<div class=\"modal-footer\">"
+         				   +				"<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">关闭</button>"
+         				   +				"<button type=\"button\" class=\"btn btn-primary\" id=\"add-host-submit-btn\">提交</button>"
+         				   +			"</div>"
+   						   +		"</div>"
+   						   + 	"</div>"
+   						   + "</div>");
 }
+
+//对“添加物理主机”按钮进行监听(弹出模态框)
+$("body").on("click", '#add-host-btn', function(){
+	$('#add-host-modal').modal({
+		keyboard: true
+	});
+});
+
+//对提交添加物理主机按钮进行监听
+$("body").on("click", '#add-host-submit-btn', function(){
+	//$("#myModal div.modal-body").text("hi");
+});
