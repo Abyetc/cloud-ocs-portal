@@ -54,8 +54,8 @@ public class CapacityServiceImpl implements CapacityService {
 						case 0: //内存
 							capacityDto.setCapacityName("内存");
 							capacityDto.setUnit("GB");
-							capacityDto.setCapacityTotal(UnitUtil.formatSizeFromByteToGigaByte(jsonObject.getLong("capacitytotal")));
-							capacityDto.setCapacityUsed(UnitUtil.formatSizeFromByteToGigaByte(jsonObject.getLong("capacityused")));
+							capacityDto.setCapacityTotal(UnitUtil.formatSizeUnit(jsonObject.getLong("capacitytotal")));
+							capacityDto.setCapacityUsed(UnitUtil.formatSizeUnit(jsonObject.getLong("capacityused")));
 							break;
 						case 1: //CPU
 							capacityDto.setCapacityName("CPU");
@@ -68,8 +68,8 @@ public class CapacityServiceImpl implements CapacityService {
 						case 3: //主存储
 							capacityDto.setCapacityName("主存储");
 							capacityDto.setUnit("GB");
-							capacityDto.setCapacityTotal(UnitUtil.formatSizeFromByteToGigaByte(jsonObject.getLong("capacitytotal")));
-							capacityDto.setCapacityUsed(UnitUtil.formatSizeFromByteToGigaByte(jsonObject.getLong("capacityused")));
+							capacityDto.setCapacityTotal(UnitUtil.formatSizeUnit(jsonObject.getLong("capacitytotal")));
+							capacityDto.setCapacityUsed(UnitUtil.formatSizeUnit(jsonObject.getLong("capacityused")));
 							break;
 						case 4: //公用类IP地址
 							capacityDto.setCapacityName("公用类IP地址");
@@ -86,8 +86,8 @@ public class CapacityServiceImpl implements CapacityService {
 						case 6: //辅助存储
 							capacityDto.setCapacityName("辅助存储");
 							capacityDto.setUnit("GB");
-							capacityDto.setCapacityTotal(UnitUtil.formatSizeFromByteToGigaByte(jsonObject.getLong("capacitytotal")));
-							capacityDto.setCapacityUsed(UnitUtil.formatSizeFromByteToGigaByte(jsonObject.getLong("capacityused")));
+							capacityDto.setCapacityTotal(UnitUtil.formatSizeUnit(jsonObject.getLong("capacitytotal")));
+							capacityDto.setCapacityUsed(UnitUtil.formatSizeUnit(jsonObject.getLong("capacityused")));
 							break;
 						case 7: //VLAN
 							capacityDto.setCapacityName("VLAN");

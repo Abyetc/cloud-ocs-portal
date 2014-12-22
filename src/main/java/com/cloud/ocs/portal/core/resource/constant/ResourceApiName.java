@@ -2,6 +2,7 @@ package com.cloud.ocs.portal.core.resource.constant;
 
 /**
  * 系统资源模块调用CloudStack API名称
+ * 
  * @author Wang Chao
  *
  * @date 2014-12-11 下午2:43:59

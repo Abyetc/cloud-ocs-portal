@@ -56,6 +56,20 @@ div.col-xs-9.content {
 .table th, .table td, .table caption {
 	text-align: center;
 }
+
+.text-left-table caption {
+	text-align: center;
+}
+
+.table-left-head {
+	font-weight: bold;
+	width: 40%;
+}
+
+.text-left-table td {
+	text-align: left;
+}
+
 .footer {
 	padding: 15px 0px;
 }

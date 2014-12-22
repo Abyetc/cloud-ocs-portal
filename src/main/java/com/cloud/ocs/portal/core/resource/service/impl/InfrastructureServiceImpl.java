@@ -236,7 +236,6 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 					result.add(hostDto);
 				}
 			}
-			
 		}
 		
 		return result;

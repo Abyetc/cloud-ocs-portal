@@ -73,4 +73,5 @@ public class HostDto {
 	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
 	}
+
 }
