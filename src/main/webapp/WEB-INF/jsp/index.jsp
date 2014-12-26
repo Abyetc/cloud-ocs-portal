@@ -25,7 +25,7 @@
 			</div>
 			<div class="col-lg-2">
 				<p class="text-right">
-					欢迎, ${loginUser.name} | <a href="login">退出</a>
+					欢迎, ${loginUser.name} | <a href="login" id="logout">退出</a>
 				</p>
 			</div>
 		</div>

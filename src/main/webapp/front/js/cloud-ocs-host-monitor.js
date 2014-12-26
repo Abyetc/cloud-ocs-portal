@@ -97,7 +97,7 @@ function listMonitorHosts(zoneId, zoneName) {
     + "<caption><strong>区域" + zoneName + "主机列表</strong></caption>"
     + "<thead><tr><th>序号</th><th>提供点名称</th><th>集群名称</th>" 
     + "<th>主机名称</th><th>主机IP</th>"
-    + "<th>状态</th><th>详细信息</th></tr></thead>"
+    + "<th>状态</th><th>详细信息</th><th>VM</th></tr></thead>"
     + "<tbody></tbody>"
     + "</table>");
   $("#content-area").append(monitorHostListTable);
@@ -121,7 +121,9 @@ function listMonitorHosts(zoneId, zoneName) {
         $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].podName + "</td>"
           + "<td>" + data[i].clusterName + "</td><td>" + data[i].hostName + "</td><td>" + data[i].ipAddress + "</td>"
           + (data[i].state == "Up" ? "<td><span class=\"label label-success\">Up</span></td>" : "<td><span class=\"label label-danger\">Down</span></td>")
-          + "<td><button type=\"button\" class=\"btn btn-xs btn-primary host-detail-btn-" + i + "\">点击查看</button></td>");
+          + "<td><button type=\"button\" class=\"btn btn-xs btn-primary host-detail-btn-" + i + "\">查看</button></td>"
+          + "<td><button type=\"button\" class=\"btn btn-xs btn-link\" onclick=\"listVMsOnHost('" +  data[i].hostId + "'')\">3</button></td>"
+          + "</tr>");
         $(".table tbody button.btn.btn-xs.btn-primary.host-detail-btn-" + i).on("click", {hostDetail: data[i]}, monitorHostDetail);
       }
     },
@@ -130,6 +132,9 @@ function listMonitorHosts(zoneId, zoneName) {
     } 
   });
 }
+
+//==================================================================================================
+//以下是主机详情和监控主机的页面逻辑实现
 
 //用于Host监控图表的全局变量
 var hostCpuUsageMonitorChart;
@@ -181,6 +186,9 @@ function monitorHostDetail(event) {
     + "</td></tr>");
   $(".table.table-hover.text-left-table").append("<tr><td class=\"table-left-head\">网络读取量</td><td>" + hostDetail.networkRead + "</td></tr>");
   $(".table.table-hover.text-left-table").append("<tr><td class=\"table-left-head\">网络写入量</td><td>" + hostDetail.networkWrite + "</td></tr>");
+
+  //将当前host Id设置为全局变量
+  window.curMonitorHostId = hostDetail.hostId;
 
   //主机CPU使用率实时监控区域
   $("#content-area").append("<div id=\"host-cpu-usage-monitor-area\" style=\"margin-top:100px;\">"
@@ -277,7 +285,7 @@ function monitorHostDetail(event) {
       formatter: function() {
         return '<b>' + this.series.name + '</b><br/>' +
           Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-          Highcharts.numberFormat(this.y, 2);
+          Highcharts.numberFormat(this.y, 6) + 'GB';
       }
     },
     legend: {

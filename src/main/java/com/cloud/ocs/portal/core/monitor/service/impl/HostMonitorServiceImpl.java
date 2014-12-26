@@ -78,4 +78,50 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		return result;
 	}
 
+	@Override
+	public double getCurHostCpuUsagePercentage(String hostId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
+		request.addRequestParams("id", hostId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		double result = 0.0;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
+			JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
+			if (hostsJsonArrayObj != null && hostsJsonArrayObj.length() != 0) {
+				String resultStr = ((JSONObject)hostsJsonArrayObj.get(0)).getString("cpuused");
+				result = Double.parseDouble(resultStr.substring(0, resultStr.indexOf('%')));
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public double getCurHostUsedMemory(String hostId) {
+		
+		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
+		request.addRequestParams("id", hostId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		double result = 0.0;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
+			JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
+			if (hostsJsonArrayObj != null && hostsJsonArrayObj.length() != 0) {
+				result = UnitUtil.formatSizeUnitToGB(((JSONObject)hostsJsonArrayObj.get(0)).getLong("memoryused"));
+			}
+		}
+		
+		return result;
+	}
+
 }

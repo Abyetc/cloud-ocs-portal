@@ -3,6 +3,7 @@
 */
 
 $("body").on("click", "#host-cpu-usage-monitor-btn", function() {
+	console.log("click btn");
 	$el = $(this);
 	$el.toggleClass("reading");
 
@@ -24,18 +25,36 @@ $("body").on("click", "#host-cpu-usage-monitor-btn", function() {
 
 function startMonitoringHostCpuUsage() {
 	var x = (new Date()).getTime();
-	var y = Math.random();
-	var shiftFlag = hostCpuUsageMonitorChart.series[hostCpuUsageMonitorChartCurrSeries - 1].data.length > 100;
-	var point = [x, y];
+	var y = 0.0;
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/host/getCurHostCpuUsagePercentage",
+		dataType: "json",
+		data: {
+			hostId: window.curMonitorHostId
+		},
+		success: function(data) {
+			console.log("getCurHostCpuUsagePercentage:" + data);
+			y = data;
+			var shiftFlag = hostCpuUsageMonitorChart.series[hostCpuUsageMonitorChartCurrSeries - 1].data.length > 100;
+			var point = [x, y];
 
-	hostCpuUsageMonitorChart.series[hostCpuUsageMonitorChartCurrSeries - 1].addPoint(point, false, shiftFlag);
+			hostCpuUsageMonitorChart.series[hostCpuUsageMonitorChartCurrSeries - 1].addPoint(point, false, shiftFlag);
 
-	hostCpuUsageMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
-	hostCpuUsageMonitorChart.redraw();
-	window.hostCpuUsageMonitorTimer = setTimeout(startMonitoringHostCpuUsage, 1000);
+			hostCpuUsageMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
+			hostCpuUsageMonitorChart.redraw();
+			window.hostCpuUsageMonitorTimer = setTimeout(startMonitoringHostCpuUsage, 1000);
+		},
+		error: function(xhr, status) {
+			clearTimeout(window.hostCpuUsageMonitorTimer);
+			alert(status);
+		}
+	});
 }
 
 function stopMonitoringHostCpuUsage() {
+	console.log("stop timer");
 	clearTimeout(window.hostCpuUsageMonitorTimer);
 }
 
@@ -65,18 +84,36 @@ $("body").on("click", "#host-memory-usage-monitor-btn", function() {
 
 function startMonitoringHostMemoryUsage() {
 	var x = (new Date()).getTime();
-	var y = Math.random();
-	var shiftFlag = hostMemoryUsageMonitorChart.series[hostMemoryUsageMonitorChartCurrSeries - 1].data.length > 100;
-	var point = [x, y];
+	var y = 0.0;
 
-	hostMemoryUsageMonitorChart.series[hostMemoryUsageMonitorChartCurrSeries - 1].addPoint(point, false, shiftFlag);
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/host/getCurHostUsedMemory",
+		dataType: "json",
+		data: {
+			hostId: window.curMonitorHostId
+		},
+		success: function(data) {
+			console.log("getCurHostUsedMemory:" + data);
+			y = data;
+			var shiftFlag = hostMemoryUsageMonitorChart.series[hostMemoryUsageMonitorChartCurrSeries - 1].data.length > 100;
+			var point = [x, y];
 
-	hostMemoryUsageMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
-	hostMemoryUsageMonitorChart.redraw();
-	window.hostMemoryUsageMonitorTimer = setTimeout(startMonitoringHostMemoryUsage, 1000);
+			hostMemoryUsageMonitorChart.series[hostMemoryUsageMonitorChartCurrSeries - 1].addPoint(point, false, shiftFlag);
+
+			hostMemoryUsageMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
+			hostMemoryUsageMonitorChart.redraw();
+			window.hostMemoryUsageMonitorTimer = setTimeout(startMonitoringHostMemoryUsage, 1000);
+		},
+		error: function(xhr, status) {
+			clearTimeout(window.hostMemoryUsageMonitorTimer);
+			alert(status);
+		}
+	});
+
 }
 
 function stopMonitoringHostMemoryUsage() {
 	clearTimeout(window.hostMemoryUsageMonitorTimer);
 }
-

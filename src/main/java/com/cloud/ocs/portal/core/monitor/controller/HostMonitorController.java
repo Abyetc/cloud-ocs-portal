@@ -33,4 +33,16 @@ public class HostMonitorController {
 	public List<HostDetail> listHostDetail(@RequestParam("zoneId") String zoneId) {
 		return hostMonitorService.getHostDetailList(zoneId);
 	}
+	
+	@RequestMapping(value="/getCurHostCpuUsagePercentage", method=RequestMethod.GET)
+	@ResponseBody
+	public double getCurHostCpuUsagePercentage(@RequestParam("hostId") String hostId) {
+		return hostMonitorService.getCurHostCpuUsagePercentage(hostId);
+	}
+	
+	@RequestMapping(value="/getCurHostUsedMemory", method=RequestMethod.GET)
+	@ResponseBody
+	public double getCurHostUsedMemory(@RequestParam("hostId") String hostId) {
+		return hostMonitorService.getCurHostUsedMemory(hostId);
+	}
 }

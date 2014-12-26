@@ -15,4 +15,6 @@ import com.cloud.ocs.portal.core.monitor.dto.HostDetail;
 public interface HostMonitorService {
 
 	public List<HostDetail> getHostDetailList(String zoneId);
+	public double getCurHostCpuUsagePercentage(String hostId);
+	public double getCurHostUsedMemory(String hostId);
 }

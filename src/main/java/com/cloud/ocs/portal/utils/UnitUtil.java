@@ -46,6 +46,21 @@ public class UnitUtil {
 	}
 	
 	/**
+	 * 根据传入的数值大小，将Byte装换为GB
+	 * @param size
+	 * @return
+	 */
+	public static double formatSizeUnitToGB(long size) {
+		double result = 0.0;
+		
+		if (size >= 0) {
+			result = (((size/1024.0)/1024.0)/1024.0);
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * 将Hz装换为GHz
 	 * @param sizeInHz
 	 * @return
