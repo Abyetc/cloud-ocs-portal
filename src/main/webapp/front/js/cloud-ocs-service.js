@@ -7,7 +7,7 @@ $( ".sidebar-cloud-ocs-service" ).click(function() {
   $("div.content").append($("<div id=\"content-area\"></div>"));
 
   //插入面包屑导航栏
-  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-ocs-service\"></ol>"));
+  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-ocs-service\" id=\"nav-breadcrumb\"></ol>"));
 
   var preActiveItem = $("ul.nav li.active");
   preActiveItem.removeClass("active");

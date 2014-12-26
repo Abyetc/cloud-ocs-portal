@@ -1,3 +1,7 @@
+/*
+	系统前端页面系统用户登陆逻辑入口
+*/
+
 $( "#login-btn" ).click(function() {
 	$("#login-warn").remove();
 	var accountId = $("#accountId").val();

@@ -1,3 +1,9 @@
+/*
+  系统前端页面资源管理模块-基础设施 逻辑入口
+  包括：slide、breadcrumb、及所有逻辑
+*/
+
+//对breadcrumb的点击行为进行处理
 $("body").on("click", 'ol.breadcrumb.breadcrumb-resource-infrastructure li a', function(){
 	var cmd = $(this).attr("cmd");
 	if (cmd == "cloudResourceInfrastructureHome") {
@@ -38,7 +44,7 @@ $( ".sidebar-cloud-resource-infrastructure" ).click(function() {
   $("div.content").append($("<div id=\"content-area\"></div>"));
 
   //插入面包屑导航栏
-  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-resource-infrastructure\"></ol>"));
+  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-resource-infrastructure\" id=\"nav-breadcrumb\"></ol>"));
 
   var preActiveItem = $("ul.nav li.active");
   preActiveItem.removeClass("active");

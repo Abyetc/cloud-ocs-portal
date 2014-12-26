@@ -1,3 +1,9 @@
+/*
+  系统前端页面物理资源监控模块-Host监控逻辑入口
+  包括：slide、breadcrumb、及一些简单逻辑
+*/
+
+//对breadcrumb的点击行为进行处理
 $("body").on("click", 'ol.breadcrumb.breadcrumb-ocs-host-monitor li a', function(){
   var cmd = $(this).attr("cmd");
   if (cmd == "monitorHostsHome") {
@@ -30,7 +36,7 @@ $( ".sidebar-cloud-ocs-host-monitor" ).click(function() {
   $("div.content").append($("<div id=\"content-area\"></div>"));
 
   //插入面包屑导航栏
-  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-ocs-host-monitor\"></ol>"));
+  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-ocs-host-monitor\" id=\"nav-breadcrumb\"></ol>"));
 
   var preActiveItem = $("ul.nav li.active");
   preActiveItem.removeClass("active");
@@ -125,6 +131,13 @@ function listMonitorHosts(zoneId, zoneName) {
   });
 }
 
+//用于Host监控图表的全局变量
+var hostCpuUsageMonitorChart;
+var hostCpuUsageMonitorChartCurrSeries = 0;
+var hostMemoryUsageMonitorChart;
+var hostMemoryUsageMonitorChartCurrSeries = 0;
+
+//获取主机详细信息
 function monitorHostDetail(event) {
   var hostDetail = event.data.hostDetail;
   var thirdLevelTitle = $("ol.breadcrumb.breadcrumb-ocs-host-monitor li.active").text();
@@ -139,6 +152,7 @@ function monitorHostDetail(event) {
     + "</table>");
   $("#content-area").append(hostDetailTable);
 
+  //插入主机详细信息
   $(".table.table-hover.text-left-table").append("<tr><td class=\"table-left-head\">主机名称</td><td>" + hostDetail.hostName + "</td></tr>");
   $(".table.table-hover.text-left-table").append("<tr><td class=\"table-left-head\">主机IP</td><td>" + hostDetail.ipAddress + "</td></tr>");
   $(".table.table-hover.text-left-table").append("<tr><td class=\"table-left-head\">状态</td>" + (hostDetail.state == "Up" ? "<td><span class=\"label label-success\">Up</span></td>" : "<td><span class=\"label label-danger\">Down</span></td>") + "</tr>");
@@ -167,4 +181,115 @@ function monitorHostDetail(event) {
     + "</td></tr>");
   $(".table.table-hover.text-left-table").append("<tr><td class=\"table-left-head\">网络读取量</td><td>" + hostDetail.networkRead + "</td></tr>");
   $(".table.table-hover.text-left-table").append("<tr><td class=\"table-left-head\">网络写入量</td><td>" + hostDetail.networkWrite + "</td></tr>");
+
+  //主机CPU使用率实时监控区域
+  $("#content-area").append("<div id=\"host-cpu-usage-monitor-area\" style=\"margin-top:100px;\">"
+    +   "<div>"
+    +     "<button type=\"button\" class=\"btn btn-primary btn-sm pull-right\" id=\"host-cpu-usage-monitor-btn\">点击开始监控CPU使用情况</button>"
+    +   "</div>"
+    +   "<div id=\"host-cpu-usage-monitor-chart\"></div>"
+    + "</div>");
+  hostCpuUsageMonitorChart = new Highcharts.Chart({
+    chart: {
+      renderTo: 'host-cpu-usage-monitor-chart',
+      type: 'line', //原来是：spline
+      animation: Highcharts.svg, // don't animate in old IE
+      marginRight: 10,
+      plotBorderWidth: 1
+    },
+    title: {
+      text: "主机" + hostDetail.hostName + $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text() + " CPU使用率实时曲线"
+    },
+    xAxis: {
+      type: 'datetime',
+      // tickPixelInterval: 5,
+      // tickLength: 20,
+      tickInterval: 10 * 1000, //十秒钟一个间隔
+    },
+    yAxis: {
+      min: 0,
+      max: 100,
+      title: {
+        text: 'CPU使用率(%)'
+      },
+      plotLines: [{
+        value: 0,
+        width: 1,
+        color: '#808080'
+      }]
+    },
+    tooltip: { //鼠标指在线上出现的框
+      formatter: function() {
+        return '<b>' + this.series.name + '</b><br/>' +
+          Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+          Highcharts.numberFormat(this.y, 2);
+      }
+    },
+    legend: {
+      enabled: false
+    },
+    exporting: {
+      enabled: false
+    },
+    credits: {
+      enabled: false
+    },
+    series: []
+  });
+  hostCpuUsageMonitorChartCurrSeries = 0;
+
+
+  //主机内存使用率实时监控区域
+  $("#content-area").append("<div id=\"host-memory-usage-monitor-area\" style=\"margin-top:100px;\">"
+    +   "<div>"
+    +     "<button type=\"button\" class=\"btn btn-primary btn-sm pull-right\" id=\"host-memory-usage-monitor-btn\">点击开始监控内存使用情况</button>"
+    +   "</div>"
+    +   "<div id=\"host-memory-usage-monitor-chart\"></div>"
+    + "</div>");
+  hostMemoryUsageMonitorChart = new Highcharts.Chart({
+    chart: {
+      renderTo: 'host-memory-usage-monitor-chart',
+      type: 'line', //原来是：spline
+      animation: Highcharts.svg, // don't animate in old IE
+      marginRight: 10,
+      plotBorderWidth: 1
+    },
+    title: {
+      text: "主机" + hostDetail.hostName + $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text() + " 内存使用情况实时曲线"
+    },
+    xAxis: {
+      type: 'datetime',
+      tickInterval: 10 * 1000, //十秒钟一个间隔
+    },
+    yAxis: {
+      min: 0,
+      max: parseFloat(hostDetail.memoryTotal.slice(0, hostDetail.memoryTotal.indexOf(' '))),
+      title: {
+        text: '内存使用情况(GB)'
+      },
+      plotLines: [{
+        value: 0,
+        width: 1,
+        color: '#808080'
+      }]
+    },
+    tooltip: { //鼠标指在线上出现的框
+      formatter: function() {
+        return '<b>' + this.series.name + '</b><br/>' +
+          Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+          Highcharts.numberFormat(this.y, 2);
+      }
+    },
+    legend: {
+      enabled: false
+    },
+    exporting: {
+      enabled: false
+    },
+    credits: {
+      enabled: false
+    },
+    series: []
+  });
+  hostMemoryUsageMonitorChartCurrSeries = 0;
 }

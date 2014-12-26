@@ -1,3 +1,9 @@
+/*
+  系统前端页面资源管理模块-系统容量 逻辑入口
+  包括：slide、breadcrumb、及所有逻辑
+*/
+
+//对breadcrumb的点击行为进行处理
 $("body").on("click", 'ol.breadcrumb.breadcrumb-resource-capacity li a', function(){
   var cmd = $(this).attr("cmd");
   if (cmd == "cloudResourceCapacityHome") {
@@ -23,7 +29,7 @@ $( ".sidebar-cloud-resource-capacity" ).click(function() {
   $("div.content").append($("<div id=\"content-area\"></div>"));
 
   //插入面包屑导航栏
-  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-resource-capacity\"></ol>"));
+  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-resource-capacity\" id=\"nav-breadcrumb\"></ol>"));
 
   var preActiveItem = $("ul.nav li.active");
   preActiveItem.removeClass("active");
@@ -114,24 +120,21 @@ var capacityPieOption = {
     type: 'pie',
     name: '比重',
     innerSize: '50%',
-    data: [
-    {
+    data: [{
       name: '已使用',
-      color: '#FF7070', 
+      color: '#FF7070',
       //y: 25.0
-    },
-    {
+    }, {
       name: '未使用',
       //color: '#00FF00', 
-     //y: 75.0
-    }
-    ]
+      //y: 75.0
+    }]
   }],
-  credits: { 
-    enabled:false
+  credits: {
+    enabled: false
   },
   exporting: {
-    enabled:false
+    enabled: false
   }
 };
 
