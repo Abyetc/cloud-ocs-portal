@@ -14,7 +14,7 @@ import com.cloud.ocs.portal.core.monitor.dto.HostDetail;
 import com.cloud.ocs.portal.core.monitor.service.HostMonitorService;
 
 /**
- * 系统主机监控模块
+ * 系统主机监控模块Controller
  * 
  * @author Wang Chao
  *

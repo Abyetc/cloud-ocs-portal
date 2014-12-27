@@ -33,6 +33,8 @@ public class HostDetail {
 	private String networkRead; // 网络读取量
 	private String networkWrite; // 网络写入量
 	private boolean haHost; // 是否启用了高可用HA
+	
+	private int vmNumOnHost; //该主机上用户虚拟机的数量
 
 	public String getZoneId() {
 		return zoneId;
@@ -208,6 +210,14 @@ public class HostDetail {
 
 	public void setHaHost(boolean haHost) {
 		this.haHost = haHost;
+	}
+
+	public int getVmNumOnHost() {
+		return vmNumOnHost;
+	}
+
+	public void setVmNumOnHost(int vmNumOnHost) {
+		this.vmNumOnHost = vmNumOnHost;
 	}
 
 }

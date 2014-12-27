@@ -4,7 +4,7 @@
 */
 
 //对breadcrumb的点击行为进行处理
-$("body").on("click", 'ol.breadcrumb.breadcrumb-ocs-host-monitor li a', function(){
+$("body").on("click", 'ol.breadcrumb.breadcrumb-ocs-host-monitor li a', function() {
   var cmd = $(this).attr("cmd");
   if (cmd == "monitorHostsHome") {
     $(this).parent().next().nextAll().remove();
@@ -24,6 +24,16 @@ $("body").on("click", 'ol.breadcrumb.breadcrumb-ocs-host-monitor li a', function
     var zoneId = $(this).attr("zoneId");
     $(this).parent().remove();
     listMonitorHosts(zoneId, zoneName);
+  }
+  if (cmd == "listMonitorVms") {
+    $(this).parent().nextAll().remove();
+    var zoneId = $(this).attr("zoneId");
+    var hostId = $(this).attr("hostId");
+    var nameAndIp = $(this).text();
+    var hostName = nameAndIp.substring(0, nameAndIp.indexOf('('));
+    var hostIp = nameAndIp.substring(nameAndIp.indexOf('(') + 1, nameAndIp.indexOf(')'));
+    $(this).parent().remove();
+    listVMsOnHost(zoneId, hostId, hostName, hostIp);
   }
 });
 
@@ -122,7 +132,7 @@ function listMonitorHosts(zoneId, zoneName) {
           + "<td>" + data[i].clusterName + "</td><td>" + data[i].hostName + "</td><td>" + data[i].ipAddress + "</td>"
           + (data[i].state == "Up" ? "<td><span class=\"label label-success\">Up</span></td>" : "<td><span class=\"label label-danger\">Down</span></td>")
           + "<td><button type=\"button\" class=\"btn btn-xs btn-primary host-detail-btn-" + i + "\">查看</button></td>"
-          + "<td><button type=\"button\" class=\"btn btn-xs btn-link\" onclick=\"listVMsOnHost('" +  data[i].hostId + "'')\">3</button></td>"
+          + "<td><button type=\"button\" class=\"btn btn-xs btn-link\" onclick=\"listVMsOnHost('" + data[i].zoneId + "','" + data[i].hostId + "','" + data[i].hostName + "','" + data[i].ipAddress + "')\">" + data[i].vmNumOnHost + "</button></td>"
           + "</tr>");
         $(".table tbody button.btn.btn-xs.btn-primary.host-detail-btn-" + i).on("click", {hostDetail: data[i]}, monitorHostDetail);
       }
