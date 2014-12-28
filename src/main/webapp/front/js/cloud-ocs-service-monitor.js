@@ -27,10 +27,10 @@ $( ".sidebar-cloud-ocs-vm-monitor" ).click(function() {
   $("div.content").empty();
 
   //插入内容显示区域
-  $("div.content").append($("<div id=\"content-area\"></div>"));
+  $("div.content").append($("<div id='content-area'></div>"));
 
   //插入面包屑导航栏
-  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-ocs-vm-monitor\" id=\"nav-breadcrumb\"></ol>"));
+  $("div.content").prepend($("<ol class='breadcrumb breadcrumb-ocs-vm-monitor' id='nav-breadcrumb'></ol>"));
 
   var preActiveItem = $("ul.nav li.active");
   preActiveItem.removeClass("active");
@@ -39,8 +39,8 @@ $( ".sidebar-cloud-ocs-vm-monitor" ).click(function() {
   var firstLevelTitle = curActiveItem.children("a").text().trim();
   var secondLevelTitle = $(this).text();
   $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").empty();
-  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li><a href=\"javascript:void(0);\" cmd=\"MonitorCityVMsHome\"><span class=\"glyphicon glyphicon-eye-open\"></span>&nbsp;&nbsp;" + firstLevelTitle + "</a></li>");
-  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li class=\"active\">" + secondLevelTitle + "</li>");
+  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li><a href='javascript:void(0);' cmd='MonitorCityVMsHome'><span class='glyphicon glyphicon-eye-open'></span>&nbsp;&nbsp;" + firstLevelTitle + "</a></li>");
+  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li class='active'>" + secondLevelTitle + "</li>");
 
   listServiceMonitorCities();
 });
@@ -48,7 +48,7 @@ $( ".sidebar-cloud-ocs-vm-monitor" ).click(function() {
 function listServiceMonitorCities() {
   $("#content-area").empty();
 
-  var cloudOCSServiceCitiesTable = $("<table class=\"table table-bordered text-center\">"
+  var cloudOCSServiceCitiesTable = $("<table class='table table-bordered text-center'>"
     + "<caption>云在线计费系统服务城市列表</caption>"
     + "<thead><tr><th>序号</th><th>城市名称</th><th>说明</th><th>状态</th><th>监控</th></tr></thead>"
     + "<tbody></tbody>"
@@ -56,20 +56,20 @@ function listServiceMonitorCities() {
   $("#content-area").append(cloudOCSServiceCitiesTable);
 
   $(".table tbody").append("<tr><td>1</td><td>广州</td><td>100</td>"
-    + "<td><span class=\"label label-success\">成功标签</span></td>"
-    + "<td><button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"listCityVms('cityId', 'cityName');\">点击监控</button></td></tr>");
+    + "<td><span class='label label-success'>成功标签</span></td>"
+    + "<td><button type='button' class='btn btn-primary btn-xs' onclick=\"listCityVms('cityId', 'cityName');\">点击监控</button></td></tr>");
 }
 
 function listCityVms(cityId, cityName) {
   var secondLevelTitle = $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text();
   $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text("");
-  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").append("<a href=\"javascript:void(0);\" cmd=\"listServiceMonitorCities\">" + secondLevelTitle + "</a>");
+  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").append("<a href='javascript:void(0);' cmd='listServiceMonitorCities'>" + secondLevelTitle + "</a>");
   $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").removeClass("active");
-  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li class=\"active\">" + cityName + "</li>");
+  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li class='active'>" + cityName + "</li>");
   
   $("#content-area").empty();
 
-  var monitorVMListTable = $("<table class=\"table table-bordered text-center\">"
+  var monitorVMListTable = $("<table class='table table-bordered text-center'>"
     + "<caption>城市" + cityName + "虚拟机列表"
     + "<thead><tr><th>序号</th><th>区域</th><th>提供点</th><th>集群</th>" 
     + "<th>名称</th><th>IP</th><th>CPU</th><th>内存</th>"
@@ -79,16 +79,16 @@ function listCityVms(cityId, cityName) {
   $("#content-area").append(monitorVMListTable);
   $(".table tbody").append("<tr><td>1</td><td>Zone Name</td><td>Pod Name</td><td>Cluster Name</td>"
     + "<td>Host Name</td><td>192.168.0.3</td><td>4*2.5GHz</td><td>4.00GB</td>"
-    + "<td><span class=\"label label-success\">标签</span></td>"
-    + "<td><button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"monitorVM('cityId', 'VMId', 'VMName', '192.168.0.33');\">监控</button></td></tr>");
+    + "<td><span class='label label-success'>标签</span></td>"
+    + "<td><button type='button' class='btn btn-primary btn-xs' onclick='monitorVM('cityId', 'VMId', 'VMName', '192.168.0.33');'>监控</button></td></tr>");
 }
 
 function monitorVM(cityId, VMId, VMName, VMIP) {
   var thirdLevelTitle = $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text();
   $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text("");
-  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").append("<a href=\"javascript:void(0);\" cmd=\"listCityVms\" cityId=\"" + cityId + "\">" + thirdLevelTitle + "</a>");
+  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").append("<a href='javascript:void(0);' cmd='listCityVms' cityId='" + cityId + "'>" + thirdLevelTitle + "</a>");
   $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").removeClass("active");
-  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li class=\"active\">" + VMName + "(" + VMIP + ")" + "</li>");
+  $("ol.breadcrumb.breadcrumb-ocs-vm-monitor").append("<li class='active'>" + VMName + "(" + VMIP + ")" + "</li>");
   $("#content-area").empty();
 
   var VMCPUMonitorLineOption = {
@@ -168,6 +168,6 @@ function monitorVM(cityId, VMId, VMName, VMIP) {
     }]
   };
 
-  $("#content-area").append("<div class=\"vm-cpu-monitor-line\"></div>");
+  $("#content-area").append("<div class='vm-cpu-monitor-line'></div>");
   $(".vm-cpu-monitor-line").highcharts(VMCPUMonitorLineOption);
 }

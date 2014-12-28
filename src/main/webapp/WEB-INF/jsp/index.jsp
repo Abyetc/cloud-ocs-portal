@@ -109,6 +109,7 @@
 	<script src="front/js/cloud-ocs-host-monitor-dynamic-chart.js"></script>
 	<script src="front/js/cloud-ocs-vm-monitor.js"></script>
 	<script src="front/js/cloud-ocs-vm-monitor-dynamic-chart.js"></script>
+	<script src="front/js/cloud-ocs-service-monitor.js"></script>
 	<script src="front/js/common.js"></script>
 </body>
 

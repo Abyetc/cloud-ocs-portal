@@ -26,10 +26,10 @@ $( ".sidebar-cloud-resource-capacity" ).click(function() {
   $("div.content").empty();
 
   //插入内容显示区域
-  $("div.content").append($("<div id=\"content-area\"></div>"));
+  $("div.content").append($("<div id='content-area'></div>"));
 
   //插入面包屑导航栏
-  $("div.content").prepend($("<ol class=\"breadcrumb breadcrumb-resource-capacity\" id=\"nav-breadcrumb\"></ol>"));
+  $("div.content").prepend($("<ol class='breadcrumb breadcrumb-resource-capacity' id='nav-breadcrumb'></ol>"));
 
   var preActiveItem = $("ul.nav li.active");
   preActiveItem.removeClass("active");
@@ -38,8 +38,8 @@ $( ".sidebar-cloud-resource-capacity" ).click(function() {
   var firstLevelTitle = curActiveItem.children("a").text().trim();
   var secondLevelTitle = $(this).text();
   $("ol.breadcrumb.breadcrumb-resource-capacity").empty();
-  $("ol.breadcrumb.breadcrumb-resource-capacity").append("<li><a href=\"javascript:void(0);\" cmd=\"cloudResourceCapacityHome\"><span class=\"glyphicon glyphicon-home\"></span>&nbsp;&nbsp;" + firstLevelTitle + "</a></li>");
-  $("ol.breadcrumb.breadcrumb-resource-capacity").append("<li class=\"active\">" + secondLevelTitle + "</li>");
+  $("ol.breadcrumb.breadcrumb-resource-capacity").append("<li><a href='javascript:void(0);' cmd='cloudResourceCapacityHome'><span class='glyphicon glyphicon-home'></span>&nbsp;&nbsp;" + firstLevelTitle + "</a></li>");
+  $("ol.breadcrumb.breadcrumb-resource-capacity").append("<li class='active'>" + secondLevelTitle + "</li>");
 
   listCapacityZones();
 });
@@ -48,13 +48,13 @@ $( ".sidebar-cloud-resource-capacity" ).click(function() {
 function listCapacityZones() {
   $("#content-area").empty();
 
-  var zoneListTable = $("<table class=\"table table-bordered text-center\">"
+  var zoneListTable = $("<table class='table table-bordered text-center'>"
     + "<caption><strong>系统区域（机房）列表</strong></caption>"
     + "<thead><tr><th>序号</th><th>区域（机房）名称</th><th>网络类型</th><th>状态</th><th>查看</th></tr></thead>"
     + "<tbody></tbody>"
     + "</table>");  
   $("#content-area").append(zoneListTable);
-  $("#content-area").append("<div class=\"loader\"></div>");
+  $("#content-area").append("<div class='loader'></div>");
   $("div.loader").shCircleLoader({
     duration: 0.75
   });
@@ -69,8 +69,8 @@ function listCapacityZones() {
       $("div.loader").remove();
       for (var i = 0; i < data.length; i++) {
         $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].zoneName + "</td><td>" + data[i].networkType + "</td>"
-          + (data[i].allocationState == "Enabled" ? "<td><span class=\"label label-success\">Enabled</span></td>" : "<td><span class=\"label label-danger\">Disabled</span></td>")
-          + "<td><button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"listCapacity('" + data[i].zoneId + "','" + data[i].zoneName + "');\">点击查看</button></td></tr>");
+          + (data[i].allocationState == "Enabled" ? "<td><span class='label label-success'>Enabled</span></td>" : "<td><span class='label label-danger'>Disabled</span></td>")
+          + "<td><button type='button' class='btn btn-primary btn-xs' onclick='listCapacity('" + data[i].zoneId + "','" + data[i].zoneName + "');'>点击查看</button></td></tr>");
       }
     },
     error: function( xhr, status ) {
@@ -141,12 +141,12 @@ var capacityPieOption = {
 function listCapacity(zoneId, zoneName) {
   var secondLevelTitle = $("ol.breadcrumb.breadcrumb-resource-capacity li.active").text();
   $("ol.breadcrumb.breadcrumb-resource-capacity li.active").text("");
-  $("ol.breadcrumb.breadcrumb-resource-capacity li.active").append("<a href=\"javascript:void(0);\" cmd=\"listCapacityZones\">" + secondLevelTitle + "</a>");
+  $("ol.breadcrumb.breadcrumb-resource-capacity li.active").append("<a href='javascript:void(0);' cmd='listCapacityZones'>" + secondLevelTitle + "</a>");
   $("ol.breadcrumb.breadcrumb-resource-capacity li.active").removeClass("active");
-  $("ol.breadcrumb.breadcrumb-resource-capacity").append("<li class=\"active\">" + zoneName + "</li>");
+  $("ol.breadcrumb.breadcrumb-resource-capacity").append("<li class='active'>" + zoneName + "</li>");
   
   $("#content-area").empty();
-  $("#content-area").append("<h4 class=\"text-center\">区域（机房）" + zoneName + "系统容量</h4>");
+  $("#content-area").append("<h4 class='text-center'>区域（机房）" + zoneName + "系统容量</h4>");
 
   $.ajax({
     type: "GET",
@@ -158,16 +158,16 @@ function listCapacity(zoneId, zoneName) {
     success: function(data) {
       for (var i = 0; i < data.length; i++) {
         var oneCapacityPieOption = capacityPieOption;
-        oneCapacityPieOption.title.text = "<strong>" + data[i].capacityName + "</strong><br><sapn style=\"font-size:11px;\">" + data[i].capacityUsed + "/" + data[i].capacityTotal + "</span>";
+        oneCapacityPieOption.title.text = "<strong>" + data[i].capacityName + "</strong><br><sapn style='font-size:11px;'>" + data[i].capacityUsed + "/" + data[i].capacityTotal + "</span>";
         oneCapacityPieOption.series[0].data[0].y = data[i].percentUsed;
         oneCapacityPieOption.series[0].data[1].y = 100 - data[i].percentUsed;
         if (i % 2 == 0) {
-          $("#content-area").append("<div class=\"row row-" + (i+2)/2 + "\"></div>");
-          $(".row-" + (i+2)/2).append("<div class=\"col-xs-6 capacity-pie-" + (i+1) + "\"></div>");
+          $("#content-area").append("<div class='row row-" + (i+2)/2 + "'></div>");
+          $(".row-" + (i+2)/2).append("<div class='col-xs-6 capacity-pie-" + (i+1) + "'></div>");
           $(".capacity-pie-" + (i+1)).highcharts(oneCapacityPieOption);
         }
         if (i % 2 == 1) {
-          $(".row-" + (i+1)/2).append("<div class=\"col-xs-6 capacity-pie-" + (i+1) + "\"></div>");
+          $(".row-" + (i+1)/2).append("<div class='col-xs-6 capacity-pie-" + (i+1) + "'></div>");
           $(".capacity-pie-" + (i+1)).highcharts(oneCapacityPieOption);
         }
       }
