@@ -13,6 +13,7 @@ import com.cloud.ocs.portal.core.resource.constant.ResourceApiName;
 import com.cloud.ocs.portal.core.resource.dto.AddHostDto;
 import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
 import com.cloud.ocs.portal.core.resource.dto.HostDto;
+import com.cloud.ocs.portal.core.resource.dto.NetworkOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
 import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
@@ -294,6 +295,49 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 				hostDto.setCreatedDate(((JSONObject)hostsJsonArrayObj.get(0)).getString("created"));
 				result.setHostDto(hostDto);
 				result.setIndex(this.getHostsList(clusterId).size());
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<NetworkOfferingDto> getIsolatedNetworkOfferingsWithSourceNatServiceList() {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_LIST_NETWORK_OFFERINGS);
+		//这里做一个简化处理，去第一个zone内的network offering返回
+		List<ZoneDto> zoneList = this.getZonesList();
+		if (zoneList != null && zoneList.size() > 0) {
+			request.addRequestParams("zoneid", zoneList.get(0).getZoneId());
+		}
+		request.addRequestParams("guestiptype", "Isolated");
+		request.addRequestParams("supportedservices", "SourceNat");
+		request.addRequestParams("state", "Enabled");
+		request.addRequestParams("forvpc", "false");
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		List<NetworkOfferingDto> result = new ArrayList<NetworkOfferingDto>();
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject networkOfferingsListJsonObj = responseJsonObj.getJSONObject("listnetworkofferingsresponse");
+			if (networkOfferingsListJsonObj.has("networkoffering")) {
+				JSONArray networkOfferingsJsonArrayObj = networkOfferingsListJsonObj.getJSONArray("networkoffering");
+				if (networkOfferingsJsonArrayObj != null) {
+					for (int i = 0; i < networkOfferingsJsonArrayObj.length(); i++) {
+						JSONObject JsonObj = (JSONObject)networkOfferingsJsonArrayObj.get(i);
+						NetworkOfferingDto networkOfferingDto = new NetworkOfferingDto();
+						networkOfferingDto.setNetworkOfferingId(JsonObj.getString("id"));
+						networkOfferingDto.setNetworkOfferingName(JsonObj.getString("name"));
+						networkOfferingDto.setDisplayText(JsonObj.getString("displaytext"));
+						networkOfferingDto.setGuestIpType(JsonObj.getString("guestiptype"));
+						networkOfferingDto.setState(JsonObj.getString("state"));
+						networkOfferingDto.setTrafficType(JsonObj.getString("traffictype"));
+						networkOfferingDto.setServiceOfferingId(JsonObj.getString("serviceofferingid"));
+						result.add(networkOfferingDto);
+					}
+				}
 			}
 		}
 		

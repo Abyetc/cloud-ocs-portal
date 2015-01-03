@@ -5,6 +5,7 @@ import java.util.List;
 import com.cloud.ocs.portal.core.resource.dto.AddHostDto;
 import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
 import com.cloud.ocs.portal.core.resource.dto.HostDto;
+import com.cloud.ocs.portal.core.resource.dto.NetworkOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
 import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
@@ -33,4 +34,6 @@ public interface InfrastructureService {
 	public List<HostDto> getHostsList(String clusterId);
 	public AddHostDto addHost(String zoneId, String podId, String clusterId,
 			String ipAddress, String hostAccount, String hostPassword);
+	
+	public List<NetworkOfferingDto> getIsolatedNetworkOfferingsWithSourceNatServiceList();
 }

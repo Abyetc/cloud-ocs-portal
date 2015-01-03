@@ -85,7 +85,7 @@ function listHostMonitorZones() {
       for (var i = 0; i < data.length; i++) {
         $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].zoneName + "</td><td>" + data[i].networkType + "</td>"
           + (data[i].allocationState == "Enabled" ? "<td><span class='label label-success'>Enabled</span></td>" : "<td><span class='label label-danger'>Disabled</span></td>")
-          + "<td><button type='button' class='btn btn-primary btn-xs' onclick='listMonitorHosts('" + data[i].zoneId + "','" + data[i].zoneName + "');'>点击进入</button></td></tr>");
+          + "<td><button type='button' class='btn btn-primary btn-xs' onclick=\"listMonitorHosts('" + data[i].zoneId + "','" + data[i].zoneName + "');\">点击进入</button></td></tr>");
       }
     },
     error: function( xhr, status ) {
@@ -130,9 +130,9 @@ function listMonitorHosts(zoneId, zoneName) {
       for (var i = 0; i < data.length; i++) {
         $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].podName + "</td>"
           + "<td>" + data[i].clusterName + "</td><td>" + data[i].hostName + "</td><td>" + data[i].ipAddress + "</td>"
-          + (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>Down</span></td>")
+          + (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>"+ data[i].state + "</span></td>")
           + "<td><button type='button' class='btn btn-xs btn-primary host-detail-btn-" + i + "'>查看</button></td>"
-          + "<td><button type='button' class='btn btn-xs btn-link' onclick='listVMsOnHost('" + data[i].zoneId + "','" + data[i].hostId + "','" + data[i].hostName + "','" + data[i].ipAddress + "')'>" + data[i].vmNumOnHost + "</button></td>"
+          + "<td><button type='button' class='btn btn-xs btn-link' onclick=\"listVMsOnHost('" + data[i].zoneId + "','" + data[i].hostId + "','" + data[i].hostName + "','" + data[i].ipAddress + "')\">" + data[i].vmNumOnHost + "</button></td>"
           + "</tr>");
         $(".table tbody button.btn.btn-xs.btn-primary.host-detail-btn-" + i).on("click", {hostDetail: data[i]}, monitorHostDetail);
       }

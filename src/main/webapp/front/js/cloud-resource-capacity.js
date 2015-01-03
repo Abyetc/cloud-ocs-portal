@@ -70,7 +70,7 @@ function listCapacityZones() {
       for (var i = 0; i < data.length; i++) {
         $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].zoneName + "</td><td>" + data[i].networkType + "</td>"
           + (data[i].allocationState == "Enabled" ? "<td><span class='label label-success'>Enabled</span></td>" : "<td><span class='label label-danger'>Disabled</span></td>")
-          + "<td><button type='button' class='btn btn-primary btn-xs' onclick='listCapacity('" + data[i].zoneId + "','" + data[i].zoneName + "');'>点击查看</button></td></tr>");
+          + "<td><button type='button' class='btn btn-primary btn-xs' onclick=\"listCapacity('" + data[i].zoneId + "','" + data[i].zoneName + "');\">点击查看</button></td></tr>");
       }
     },
     error: function( xhr, status ) {

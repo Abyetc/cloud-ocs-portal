@@ -13,6 +13,7 @@ import com.cloud.ocs.portal.core.user.dao.UserDao;
 
 /**
  * 系统用户Dao实现类
+ * 
  * @author Wang Chao
  *
  * @date 2014-12-9 下午9:06:32

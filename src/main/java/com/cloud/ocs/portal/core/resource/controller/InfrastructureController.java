@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cloud.ocs.portal.core.resource.dto.AddHostDto;
 import com.cloud.ocs.portal.core.resource.dto.ClusterDto;
 import com.cloud.ocs.portal.core.resource.dto.HostDto;
+import com.cloud.ocs.portal.core.resource.dto.NetworkOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
 import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
@@ -75,6 +76,12 @@ public class InfrastructureController {
 	@ResponseBody
 	public List<HostDto> listHosts(@RequestParam("clusterId") String clusterId) {
 		return infrastructureService.getHostsList(clusterId);
+	}
+	
+	@RequestMapping(value="/listIsolatedNetworkOfferingsWithSourceNatService", method=RequestMethod.GET)
+	@ResponseBody
+	public List<NetworkOfferingDto> listIsolatedNetworkOfferingsWithSourceNatService() {
+		return infrastructureService.getIsolatedNetworkOfferingsWithSourceNatServiceList();
 	}
 	
 	@RequestMapping(value="/addHost", method=RequestMethod.POST)

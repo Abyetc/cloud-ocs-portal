@@ -5,6 +5,7 @@ import com.cloud.ocs.portal.core.user.bean.User;
 
 /**
  * 系统用户Dao接口
+ * 
  * @author Wang Chao
  *
  * @date 2014-12-9 下午9:07:09

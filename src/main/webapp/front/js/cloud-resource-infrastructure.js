@@ -85,7 +85,7 @@ function listInfrastructureZones() {
 			for (var i = 0; i < data.length; i++) {
 				$(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].zoneName + "</td><td>" + data[i].networkType + "</td>"
 					+ (data[i].allocationState == "Enabled" ? "<td><span class='label label-success'>Enabled</span></td>" : "<td><span class='label label-danger'>Disabled</span></td>")
-					+ "<td><button type='button' class='btn btn-primary btn-xs' onclick='listPods('" + data[i].zoneId + "','" + data[i].zoneName + "');'>点击查看</button></td></tr>");
+					+ "<td><button type='button' class='btn btn-primary btn-xs' onclick=\"listPods('" + data[i].zoneId + "','" + data[i].zoneName + "');\">点击查看</button></td></tr>");
 			}
 		},
 		error: function( xhr, status ) {
@@ -153,7 +153,7 @@ function listPods(zoneId, zoneName) {
 			for (var i = 0; i < data.length; i++) {
 				$(".table.pods-list-table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].podName + "</td>"
 					+ (data[i].allocationState == "Enabled" ? "<td><span class='label label-success'>Enabled</span></td>" : "<td><span class='label label-danger'>Disabled</span></td>")
-					+ "<td><button type='button' class='btn btn-primary btn-xs' onclick='listClusters('" + zoneId + "','" + data[i].podId + "','" + data[i].podName + "');'>点击查看</button></td></tr>");
+					+ "<td><button type='button' class='btn btn-primary btn-xs' onclick=\"listClusters('" + zoneId + "','" + data[i].podId + "','" + data[i].podName + "');\">点击查看</button></td></tr>");
 			}
 		},
 		error: function( xhr, status ) {
@@ -243,7 +243,7 @@ function listClusters(zoneId, podId, podName) {
 				$(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].clusterName + "</td>"
 					+ "<td>" + data[i].hypervisorType + "</td>"
 					+ (data[i].allocationState == "Enabled" ? "<td><span class='label label-success'>Enabled</span></td>" : "<td><span class='label label-danger'>Disabled</span></td>")
-					+ "<td><button type='button' class='btn btn-primary btn-xs' onclick='listHosts('" + zoneId + "','" + podId + "','" + data[i].clusterId + "','" + data[i].clusterName + "');'>点击查看</button></td></tr>");
+					+ "<td><button type='button' class='btn btn-primary btn-xs' onclick=\"listHosts('" + zoneId + "','" + podId + "','" + data[i].clusterId + "','" + data[i].clusterName + "');\">点击查看</button></td></tr>");
 			}
 		},
 		error: function( xhr, status ) {
@@ -300,7 +300,7 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 			for (var i = 0; i < data.length; i++) {
 				$(".table.primary-storage-list-table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].primaryStorageName + "</td>"
 					+ "<td>" + data[i].hostIpAddress + "</td><td>" + data[i].path + "</td><td>" + data[i].type + "</td>"
-					+ (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>Down</span></td>"));
+					+ (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>" + data[i].state + "</span></td>"));
 			}
 		},
 		error: function( xhr, status ) {
@@ -365,7 +365,7 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
          				   +			"</div>"
          				   +			"<div class='modal-footer'>"
          				   +				"<button type='button' class='btn btn-default' data-dismiss='modal'>关闭</button>"
-         				   +				"<button type='button' class='btn btn-primary' onclick='addHost('" + zoneId + "','" + podId + "','" + clusterId + "','" + clusterName + "')'>" + "提交</button>"
+         				   +				"<button type='button' class='btn btn-primary' onclick=\"addHost('" + zoneId + "','" + podId + "','" + clusterId + "','" + clusterName + "')\">" + "提交</button>"
          				   +			"</div>"
    						   +		"</div>"
    						   + 	"</div>"
@@ -385,15 +385,15 @@ function addHost(zoneId, podId, clusterId, clusterName) {
 	var hostAccount = $("#host-account").val();
 	var hostPassword = $("#host-password").val();
 
-	if (ipAddress == "") {
+	if (ipAddress.trim() == "") {
 		alert("IP地址不能为空！");
 		return;
 	}
-	if (hostAccount == "") {
+	if (hostAccount.trim() == "") {
 		alert("主机用户名不能为空！");
 		return;
 	}
-	if (hostPassword == "") {
+	if (hostPassword.trim() == "") {
 		alert("主机密码不能为空！");
 		return;
 	}
@@ -414,9 +414,9 @@ function addHost(zoneId, podId, clusterId, clusterName) {
 			zoneId: zoneId,
 			podId: podId,
 			clusterId: clusterId,
-			ipAddress: ipAddress,
-			hostAccount: hostAccount,
-			hostPassword: hostPassword 
+			ipAddress: ipAddress.trim(),
+			hostAccount: hostAccount.trim(),
+			hostPassword: hostPassword.trim()
 		},
 		success: function(data) {
 			$("#add-host-modal div.loader").shCircleLoader('destroy');
@@ -430,7 +430,7 @@ function addHost(zoneId, podId, clusterId, clusterName) {
 				$('#add-host-modal').modal('hide');
 				$(".table.host-list-table tbody").append("<tr><td>" + data.index + "</td><td>" + data.hostDto.ipAddress + "</td>"
 					+ "<td>" + data.hostDto.hostName + "</td><td>" + data.hostDto.hypervisor + "</td><td>" + data.hostDto.createdDate + "</td>"
-					+ (data.hostDto.state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>Down</span></td>")
+					+ (data.hostDto.state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>" + data.hostDto.state + "</span></td>")
 					+ "<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td>");
 			}
 			else {
@@ -438,6 +438,9 @@ function addHost(zoneId, podId, clusterId, clusterName) {
 			}
 		},
 		error: function( xhr, status ) {
+			$("#add-host-modal div.loader").shCircleLoader('destroy');
+			$("#add-host-modal div.loader").remove();
+			$("#add-host-modal span.text-primary.pull-right").remove();
 			alert(status); 
 		} 
 	});

@@ -43,7 +43,7 @@ function listVMsOnHost(zoneId, hostId, hostName, hostIpAddress) {
 				$(".table tbody").append("<tr><td>" + (i+1) + "</td>"
 					+ "<td>" + data[i].vmName + "</td>"
 					+ "<td>" + data[i].instanceName + "</td>"
-					+ (data[i].state == "Running" ? "<td><span class='label label-success'>Running</span></td>" : "<td><span class='label label-danger'>Stoped</span></td>")
+					+ (data[i].state == "Running" ? "<td><span class='label label-success'>Running</span></td>" : "<td><span class='label label-danger'>" + data[i].state + "</span></td>")
 					+ "<td><button type='button' class='btn btn-xs btn-primary vm-detail-btn-" + i + "'>点击查看</button></td>"
 					+ "</tr>"
 				);
@@ -72,26 +72,26 @@ function monitorVmDetail(event) {
 	var vmDetailTable = $("<table class='table table-hover text-left-table'>"
     + "<caption><strong>VM " + vmDetail.vmName + "详细信息</strong></caption>"
     + "</table>");
-  $("#content-area").append(vmDetailTable);
+	$("#content-area").append(vmDetailTable);
 
-  //插入VM详细信息
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>VM名称</td><td>" + vmDetail.vmName + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>内部名称</td><td>" + vmDetail.instanceName + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>状态</td>" + (vmDetail.state == "Running" ? "<td><span class='label label-success'>Running</span></td>" : "<td><span class='label label-danger'>Stoped</span></td>") + "</tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>模板名称</td><td>" + vmDetail.templateName + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>虚拟机管理程序</td><td>" + vmDetail.hypervisor + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>创建时间</td><td>" + vmDetail.created + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>网络名称</td><td>" + vmDetail.networkName + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>IP地址</td><td>" + vmDetail.ipAddress + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>VLAN</td><td>" + vmDetail.isolationUri + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>CPU总量</td><td>" + vmDetail.cpuNum + " * " + vmDetail.cupSpeed + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>内存总量</td><td>" + vmDetail.memory + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>网络读取量</td><td>" + vmDetail.networkRead + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>网络写入量</td><td>" + vmDetail.networkWrite + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘读取量</td><td>" + vmDetail.diskRead + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘写入量</td><td>" + vmDetail.diskWrite + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘IO读取量(个)</td><td>" + vmDetail.diskIORead + "</td></tr>");
-  $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘IO写入量(个)</td><td>" + vmDetail.diskIOWrite + "</td></tr>");
+	//插入VM详细信息
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>VM名称</td><td>" + vmDetail.vmName + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>内部名称</td><td>" + vmDetail.instanceName + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>状态</td>" + (vmDetail.state == "Running" ? "<td><span class='label label-success'>Running</span></td>" : "<td><span class='label label-danger'>Stoped</span></td>") + "</tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>模板名称</td><td>" + vmDetail.templateName + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>虚拟机管理程序</td><td>" + vmDetail.hypervisor + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>创建时间</td><td>" + vmDetail.created + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>网络名称</td><td>" + vmDetail.networkName + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>IP地址</td><td>" + vmDetail.ipAddress + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>VLAN</td><td>" + vmDetail.isolationUri + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>CPU总量</td><td>" + vmDetail.cpuNum + " * " + vmDetail.cupSpeed + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>内存总量</td><td>" + vmDetail.memory + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>网络读取量</td><td>" + vmDetail.networkRead + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>网络写入量</td><td>" + vmDetail.networkWrite + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘读取量</td><td>" + vmDetail.diskRead + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘写入量</td><td>" + vmDetail.diskWrite + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘IO读取量(个)</td><td>" + vmDetail.diskIORead + "</td></tr>");
+	$(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>磁盘IO写入量(个)</td><td>" + vmDetail.diskIOWrite + "</td></tr>");
 
   //将当前vm Id设置为全局变量
   window.curMonitorVmId = vmDetail.vmId;

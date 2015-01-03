@@ -105,11 +105,13 @@
 	<script src="front/js/cloud-resource-infrastructure.js"></script>
 	<script src="front/js/cloud-resource-capacity.js"></script>
 	<script src="front/js/cloud-ocs-service.js"></script>
+	<script src="front/js/cloud-ocs-service-network.js"></script>
 	<script src="front/js/cloud-ocs-host-monitor.js"></script>
 	<script src="front/js/cloud-ocs-host-monitor-dynamic-chart.js"></script>
 	<script src="front/js/cloud-ocs-vm-monitor.js"></script>
 	<script src="front/js/cloud-ocs-vm-monitor-dynamic-chart.js"></script>
 	<script src="front/js/cloud-ocs-service-monitor.js"></script>
+	<script src="front/js/utils.js"></script>
 	<script src="front/js/common.js"></script>
 </body>
 

@@ -20,6 +20,22 @@ div.login-container input.form-control {
 	width: 70%;
 }
 
+#add-city-modal input.form-control {
+	width: 70%;
+}
+
+#add-city-modal textarea.form-control {
+	width: 70%;
+}
+
+#add-city-network-modal input.form-control {
+	width: 70%;
+}
+
+#add-city-network-modal select.form-control {
+	width: 70%;
+}
+
 .modal-dialog-center {
     margin-top: 15% !important;
 }
@@ -59,7 +75,7 @@ div.col-xs-9.content {
 
 .text-left-table caption {
 	text-align: center;
-	font-size: 18px;
+	font-size: 15px;
 }
 
 .table-left-head {
