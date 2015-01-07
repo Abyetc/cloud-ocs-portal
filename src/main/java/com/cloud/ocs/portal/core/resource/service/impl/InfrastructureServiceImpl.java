@@ -17,7 +17,9 @@ import com.cloud.ocs.portal.core.resource.dto.NetworkOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
 import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
+import com.cloud.ocs.portal.core.resource.dto.ServiceOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
+import com.cloud.ocs.portal.core.resource.dto.TemplateDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
 import com.cloud.ocs.portal.core.resource.service.InfrastructureService;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
@@ -336,6 +338,73 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 						networkOfferingDto.setTrafficType(JsonObj.getString("traffictype"));
 						networkOfferingDto.setServiceOfferingId(JsonObj.getString("serviceofferingid"));
 						result.add(networkOfferingDto);
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<TemplateDto> getSelfExecutableTemplates() {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_LIST_TEMPLATES);
+		request.addRequestParams("templatefilter", "selfexecutable");
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		List<TemplateDto> result = new ArrayList<TemplateDto>();
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject templatesListJsonObj = responseJsonObj.getJSONObject("listtemplatesresponse");
+			if (templatesListJsonObj.has("template")) {
+				JSONArray templatesJsonArrayObj = templatesListJsonObj.getJSONArray("template");
+				if (templatesJsonArrayObj != null) {
+					for (int i = 0; i < templatesJsonArrayObj.length(); i++) {
+						JSONObject jsonObj = (JSONObject)templatesJsonArrayObj.get(i);
+						TemplateDto templateDto = new TemplateDto();
+						templateDto.setTemplateId(jsonObj.getString("id"));
+						templateDto.setTemplateName(jsonObj.getString("name"));
+						templateDto.setDisplayText(jsonObj.getString("displaytext"));
+						result.add(templateDto);
+					}
+				}
+			}
+			
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<ServiceOfferingDto> getNonSystemServiceOfferingList() {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_LIST_SERVICE_OFFERINGS);
+		request.addRequestParams("issystem", "false");
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		List<ServiceOfferingDto> result = new ArrayList<ServiceOfferingDto>();
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject serviceOfferingListJsonObj = responseJsonObj.getJSONObject("listserviceofferingsresponse");
+			if (serviceOfferingListJsonObj.has("serviceoffering")) {
+				JSONArray serviceOfferingJsonArrayObj = serviceOfferingListJsonObj.getJSONArray("serviceoffering");
+				if (serviceOfferingJsonArrayObj != null) {
+					for (int i = 0; i < serviceOfferingJsonArrayObj.length(); i++) {
+						JSONObject jsonObj = (JSONObject)serviceOfferingJsonArrayObj.get(i);
+						ServiceOfferingDto serviceOfferingDto = new ServiceOfferingDto();
+						serviceOfferingDto.setServiceOfferingId(jsonObj.getString("id"));
+						serviceOfferingDto.setServiceOfferingName(jsonObj.getString("name"));
+						serviceOfferingDto.setDisplayText(jsonObj.getString("displaytext"));
+						serviceOfferingDto.setCpuNum(jsonObj.getInt("cpunumber"));
+						serviceOfferingDto.setCpuSpeed(jsonObj.getInt("cpuspeed"));
+						serviceOfferingDto.setMemory(jsonObj.getInt("memory"));
+						serviceOfferingDto.setStorageType(jsonObj.getString("storagetype"));
+						result.add(serviceOfferingDto);
 					}
 				}
 			}

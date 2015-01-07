@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
+import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
 
 /**
  * 城市-网络service接口
@@ -15,6 +16,7 @@ import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
  */
 public interface CityNetworkService {
 
-	public List<CityNetwork> getCityNetworksList(Integer cityId);
+	public CityNetwork getCityNetworkByNetworkId(String networkId);
+	public List<CityNetworkListDto> getCityNetworksList(Integer cityId);
 	public AddCityNetworkDto addCityNetwork(CityNetwork cityNetwork);
 }

@@ -14,8 +14,12 @@ import com.cloud.ocs.portal.core.business.bean.City;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.dto.AddCityDto;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
+import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;
+import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
+import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.CityService;
+import com.cloud.ocs.portal.core.business.service.OcsVmService;
 
 /**
  * 城市云服务相关功能入口Controller
@@ -35,6 +39,9 @@ public class CityBusinessController {
 	@Resource
 	private CityNetworkService cityNetworkService;
 	
+	@Resource
+	private OcsVmService ocsVmService;
+	
 	@RequestMapping(value="/listCities", method=RequestMethod.GET)
 	@ResponseBody
 	public List<City> listCities() {
@@ -48,12 +55,12 @@ public class CityBusinessController {
 		City city = new City();
 		city.setName(cityName);
 		city.setDescription(cityDescription);
-		return cityService.addCity(city);
+		return cityService.addCity(city); 
 	}
 	
 	@RequestMapping(value="/listCityNetworks", method=RequestMethod.GET)
 	@ResponseBody
-	public List<CityNetwork> listCityNetworks(@RequestParam("cityId") Integer cityId) {
+	public List<CityNetworkListDto> listCityNetworks(@RequestParam("cityId") Integer cityId) {
 		return cityNetworkService.getCityNetworksList(cityId);
 	}
 	
@@ -72,5 +79,22 @@ public class CityBusinessController {
 		cityNetwork.setNetworkOfferingId(networkOfferingId);
 		
 		return cityNetworkService.addCityNetwork(cityNetwork);
+	}
+	
+	@RequestMapping(value="/listOcsVms", method=RequestMethod.GET)
+	@ResponseBody
+	public List<OcsVmDto> listOcsVms(@RequestParam("networkId") String networkId) {
+		return ocsVmService.getOcsVmsList(networkId);
+	}
+	
+	@RequestMapping(value="/addOcsVm", method=RequestMethod.POST)
+	@ResponseBody
+	public AddOcsVmDto addOcsVm(@RequestParam("vmName") String vmName,
+			@RequestParam("networkId") String networkId,
+			@RequestParam("zoneId") String zoneId,
+			@RequestParam("serviceOfferingId") String serviceOfferingId,
+			@RequestParam("templateId") String templateId) {
+		return ocsVmService.addOcsVm(vmName, networkId, zoneId,
+				serviceOfferingId, templateId);
 	}
 }

@@ -1,6 +1,7 @@
 package com.cloud.ocs.portal.core.business.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,9 @@ import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePublicPort;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
 import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
+import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
+import com.cloud.ocs.portal.core.business.service.OcsVmService;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 
@@ -35,11 +38,38 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 	
 	@Resource
 	private CityNetworkDao cityNetworkDao;
+	
+	@Resource
+	private OcsVmService networkVmService;
+	
+	@Override
+	public CityNetwork getCityNetworkByNetworkId(String networkId) {
+		
+		return cityNetworkDao.findCityNetworkByNetworkId(networkId);
+	}
 
 	@Override
-	public List<CityNetwork> getCityNetworksList(Integer cityId) {
+	public List<CityNetworkListDto> getCityNetworksList(Integer cityId) {
+		List<CityNetworkListDto> result = null;
+		List<CityNetwork> networkList = cityNetworkDao.findCityNetworksByCityId(cityId);
 		
-		return cityNetworkDao.findCityNetworksbyCityId(cityId);
+		if (networkList != null) {
+			result = new ArrayList<CityNetworkListDto>();
+			for (int i = 0; i < networkList.size(); i++) {
+				CityNetworkListDto cityNetworkListDto = new CityNetworkListDto();
+				CityNetwork network = networkList.get(i);
+				cityNetworkListDto.setNetworkId(network.getNetworkId());
+				cityNetworkListDto.setNetworkName(network.getNetworkName());
+				cityNetworkListDto.setNetworkState(network.getNetworkState());
+				cityNetworkListDto.setPublicIp(network.getPublicIp());
+				cityNetworkListDto.setRealmName(network.getRealmName());
+				cityNetworkListDto.setCreated(network.getCreated());
+				cityNetworkListDto.setVmNum(networkVmService.getOcsVmsNum(network.getNetworkId()));
+				result.add(cityNetworkListDto);
+			}
+		}
+		
+		return result;
 	}
 
 	@Override
@@ -49,26 +79,32 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 		result.setMessage("Add City-Network Error.");
 		
 		this.sendAddingNetworkRequestToCS(cityNetwork);
-		if (cityNetwork.getNetworkId() != null) {
+		if (cityNetwork.getNetworkId() != null) { 
+			//如果networkId不为null，则表示CloudStack创建成功
+			result.setCode(AddCityNetworkDto.ADD_NETWORK_CODE_SUCCESS);
+			result.setMessage("Add City-Network Success.");
 			Date created = new Date();
 			cityNetwork.setCreated(new Timestamp(created.getTime()));
 			cityNetwork.setServicePort(CloudOcsServicePublicPort.PUBLIC_SERVICE_PORT);
 			cityNetwork.setNetworkState(NetworkState.ALLOCATED.getCode());
-			//持久化到数据库
+			
+			//持久化到本地数据库
 			cityNetworkDao.persist(cityNetwork);
-			if (cityNetwork.getId() != null) {  //添加成功
-				result.setCode(AddCityNetworkDto.ADD_NETWORK_CODE_SUCCESS);
-				result.setMessage("Add City-Network Success.");
+			if (cityNetwork.getId() != null) {  //持久化到自己的数据库成功
 				result.setCityNetwork(cityNetwork);
-				result.setIndex(cityNetworkDao.findCityNetworksbyCityId(cityNetwork.getCityId()).size());
+				result.setVmNum(networkVmService.getOcsVmsNum(cityNetwork.getNetworkId()));
+				result.setIndex(cityNetworkDao.findCityNetworksByCityId(cityNetwork.getCityId()).size());
 			}
+			
+			//添加该新增网络的出口规则(异步)
+			sendCreatingEgressFirewallRuleAsyncRequestToCs(cityNetwork.getNetworkId());
 		}
 		
 		return result;
 	}
 
 	/**
-	 * 发送添加网络的请求到CloudStack
+	 * 发送 添加网络 的请求到CloudStack
 	 * @return
 	 */
 	private void sendAddingNetworkRequestToCS(CityNetwork cityNetwork) {
@@ -89,4 +125,32 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 			}
 		}
 	}
+	
+	/**
+	 * 发送添加出口规则的异步请求到CloudStack
+	 * @param networkId
+	 * @return 异步Job的Id
+	 */
+	private String sendCreatingEgressFirewallRuleAsyncRequestToCs(String networkId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_CREATE_EGRESS_FIREWALL_RULE);
+		request.addRequestParams("networkid", networkId);
+		request.addRequestParams("protocol", "all");
+		request.addRequestParams("cidrlist", "0.0.0.0/0");
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("createegressfirewallruleresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
+		return result;
+	}
+
 }

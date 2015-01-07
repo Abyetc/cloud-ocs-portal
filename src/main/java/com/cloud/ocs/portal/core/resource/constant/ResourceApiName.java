@@ -27,4 +27,6 @@ public class ResourceApiName {
 	public final static String RESOURCE_API_LIST_CAPACITY		   =	"listCapacity";
 	
 	public final static String RESOURCE_API_LIST_NETWORK_OFFERINGS =	"listNetworkOfferings";
+	public final static String RESOURCE_API_LIST_TEMPLATES		   =	"listTemplates";
+	public final static String RESOURCE_API_LIST_SERVICE_OFFERINGS =	"listServiceOfferings";
 }

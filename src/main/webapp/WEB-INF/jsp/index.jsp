@@ -85,7 +85,7 @@
 	</div>
 
 	<div class="row footer">
-		<p class="text-center">©2014 中国移动通信版权所有</p>
+		<p class="text-center">©2014-2015 中国移动通信版权所有</p>
 	</div>
 
 	<!-- JavaScript 放置在文档最后面可以使页面加载速度更快 -->
@@ -106,6 +106,7 @@
 	<script src="front/js/cloud-resource-capacity.js"></script>
 	<script src="front/js/cloud-ocs-service.js"></script>
 	<script src="front/js/cloud-ocs-service-network.js"></script>
+	<script src="front/js/cloud-ocs-service-vm.js"></script>
 	<script src="front/js/cloud-ocs-host-monitor.js"></script>
 	<script src="front/js/cloud-ocs-host-monitor-dynamic-chart.js"></script>
 	<script src="front/js/cloud-ocs-vm-monitor.js"></script>

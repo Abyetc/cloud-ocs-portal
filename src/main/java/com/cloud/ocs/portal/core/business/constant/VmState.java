@@ -1,7 +1,5 @@
 package com.cloud.ocs.portal.core.business.constant;
 
-import com.cloud.ocs.portal.core.user.constant.LoginStatus;
-
 /**
  * CloudStack中VM的状态
  * 
@@ -19,7 +17,9 @@ public enum VmState {
 	MIGRATING("Migrating", 4), 
 	ERROR("Error", 5), 
 	UNKNOWN("Unknown", 6),
-	SHUTDOWNED("Shutdowned", 7),;
+	SHUTDOWNED("Shutdowned", 7),
+	DESTROYED("Destroyed", 8),
+	EXPUNGING("Expunging", 9);
 
 	private String description;
 	private int code;
@@ -36,12 +36,27 @@ public enum VmState {
 	 * @return
 	 */
 	public static String getDescription(int code) {
-		for (LoginStatus status : LoginStatus.values()) {
+		for (VmState status : VmState.values()) {
 			if (status.getCode() == code) {
 				return status.getDescription();
 			}
 		}
 
+		return null;
+	}
+	
+	/**
+	 * 根据描述找到对应的code
+	 * @param description
+	 * @return
+	 */
+	public static Integer getCode(String description) {
+		for (VmState status : VmState.values()) {
+			if (status.getDescription().equals(description)) {
+				return status.getCode();
+			}
+		}
+		
 		return null;
 	}
 

@@ -8,11 +8,20 @@ $("body").on("click", 'ol.breadcrumb.breadcrumb-ocs-service li a', function(){
   var cmd = $(this).attr("cmd");
   if (cmd == "listCities") {
     var firstLevelTitle = $(this).parent().text(); // $(this)是<a>，$(this).parent()才是<li>
-    $(this).parent().next().remove();
+    $(this).parent().nextAll().remove();
     $(this).parent().addClass("active");
     $(this).parent().empty();
     $("ol.breadcrumb.breadcrumb-ocs-service li.active").append("<span class='glyphicon glyphicon-cloud'></span>" + firstLevelTitle);
     listCloudOCSServiceCities();
+  }
+  if (cmd == "listNetworks") {
+    var firstLevelTitle = $(this).parent().prev();
+    firstLevelTitle.nextAll().remove();
+    firstLevelTitle.addClass("active");
+    firstLevelTitleText = firstLevelTitle.text();
+    firstLevelTitle.empty();
+    firstLevelTitle.append("<span class='glyphicon glyphicon-cloud'></span>" + firstLevelTitleText);
+    listNetworks(window.listNetworksEvent);
   }
 });
 
@@ -102,7 +111,7 @@ function listCloudOCSServiceCities() {
             state = "<td><span class='label label-default'>无服务</span></td>";
             break;
           case 1:
-            state = "<td><span class='label label-success'>正常服务中</span></td>";
+            state = "<td><span class='label label-success'>服务中</span></td>";
             break;
           case 2:
             state = "<td><span class='label label-danger'>发生故障</span></td>";
@@ -175,7 +184,7 @@ function addCity() {
             state = "<td><span class='label label-default'>无服务</span></td>";
             break;
           case 1:
-            state = "<td><span class='label label-success'>正常服务中</span></td>";
+            state = "<td><span class='label label-success'>服务中</span></td>";
             break;
           case 2:
             state = "<td><span class='label label-danger'>发生故障</span></td>";

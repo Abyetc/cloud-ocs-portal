@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cloud.ocs.portal.core.user.bean.User;
 import com.cloud.ocs.portal.core.user.constant.LoginStatus;
 import com.cloud.ocs.portal.core.user.constant.LoginUserConstant;
-import com.cloud.ocs.portal.core.user.servcie.UserService;
+import com.cloud.ocs.portal.core.user.service.UserService;
 import com.cloud.ocs.portal.utils.sigar.NetworkData;
 import com.cloud.ocs.portal.utils.sigar.SigarUtil;
 

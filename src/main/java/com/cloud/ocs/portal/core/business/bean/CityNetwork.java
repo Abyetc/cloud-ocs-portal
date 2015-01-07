@@ -17,7 +17,6 @@ public class CityNetwork implements java.io.Serializable {
 
 	// Fields
 	private static final long serialVersionUID = 1L;
-	
 	private Integer id;
 	private Integer cityId;
 	private String zoneId;
@@ -25,6 +24,7 @@ public class CityNetwork implements java.io.Serializable {
 	private String networkOfferingId;
 	private String networkName;
 	private String publicIp;
+	private String publicIpId;
 	private Integer servicePort;
 	private String vlan;
 	private Integer networkState;
@@ -53,14 +53,15 @@ public class CityNetwork implements java.io.Serializable {
 	/** full constructor */
 	public CityNetwork(Integer cityId, String zoneId, String networkId,
 			String networkOfferingId, String networkName, String publicIp,
-			Integer servicePort, String vlan, Integer networkState,
-			String realmName, Timestamp created) {
+			String publicIpId, Integer servicePort, String vlan,
+			Integer networkState, String realmName, Timestamp created) {
 		this.cityId = cityId;
 		this.zoneId = zoneId;
 		this.networkId = networkId;
 		this.networkOfferingId = networkOfferingId;
 		this.networkName = networkName;
 		this.publicIp = publicIp;
+		this.publicIpId = publicIpId;
 		this.servicePort = servicePort;
 		this.vlan = vlan;
 		this.networkState = networkState;
@@ -132,6 +133,15 @@ public class CityNetwork implements java.io.Serializable {
 
 	public void setPublicIp(String publicIp) {
 		this.publicIp = publicIp;
+	}
+
+	@Column(name = "public_ip_id", length = 40)
+	public String getPublicIpId() {
+		return this.publicIpId;
+	}
+
+	public void setPublicIpId(String publicIpId) {
+		this.publicIpId = publicIpId;
 	}
 
 	@Column(name = "service_port")

@@ -17,7 +17,9 @@ import com.cloud.ocs.portal.core.resource.dto.NetworkOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
 import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
+import com.cloud.ocs.portal.core.resource.dto.ServiceOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
+import com.cloud.ocs.portal.core.resource.dto.TemplateDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
 import com.cloud.ocs.portal.core.resource.service.InfrastructureService;
 
@@ -82,6 +84,18 @@ public class InfrastructureController {
 	@ResponseBody
 	public List<NetworkOfferingDto> listIsolatedNetworkOfferingsWithSourceNatService() {
 		return infrastructureService.getIsolatedNetworkOfferingsWithSourceNatServiceList();
+	}
+	
+	@RequestMapping(value="/listSelfExecutableTemplates", method=RequestMethod.GET)
+	@ResponseBody
+	public List<TemplateDto> listTemplates() {
+		return infrastructureService.getSelfExecutableTemplates();
+	}
+	
+	@RequestMapping(value="/listNonSystemServiceOffering", method=RequestMethod.GET)
+	@ResponseBody
+	public List<ServiceOfferingDto> listNonSystemServiceOffering() {
+		return infrastructureService.getNonSystemServiceOfferingList();
 	}
 	
 	@RequestMapping(value="/addHost", method=RequestMethod.POST)

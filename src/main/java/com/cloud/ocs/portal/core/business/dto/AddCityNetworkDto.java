@@ -18,6 +18,7 @@ public class AddCityNetworkDto {
 	private int code;
 	private String message;
 	private CityNetwork cityNetwork;
+	private Integer vmNum;
 	private int index;
 
 	public int getCode() {
@@ -50,6 +51,14 @@ public class AddCityNetworkDto {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	public Integer getVmNum() {
+		return vmNum;
+	}
+
+	public void setVmNum(Integer vmNum) {
+		this.vmNum = vmNum;
 	}
 
 }

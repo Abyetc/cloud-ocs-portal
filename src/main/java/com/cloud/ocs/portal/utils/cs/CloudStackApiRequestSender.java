@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Logger;
+
+import com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob;
 
 /**
  * 用于向CloudStack发送API请求的工具类
@@ -13,6 +16,8 @@ import java.net.URL;
  *
  */
 public class CloudStackApiRequestSender {
+	
+	private final static Logger LOGGER = Logger.getLogger(CloudStackApiRequestSender.class.getName());
 
 	/**
 	 * 向CloudStack管理节点发送GET请求
@@ -20,6 +25,7 @@ public class CloudStackApiRequestSender {
 	 * @return Json字符串
 	 */
 	public static String sendGetRequest(String targetURL) {
+		LOGGER.info("Start to Send request:" + targetURL);
 		URL url = null;
 		HttpURLConnection connection = null;
 		try {
@@ -53,6 +59,7 @@ public class CloudStackApiRequestSender {
 				response.append('\r');
 			}
 			rd.close();
+			LOGGER.info(response.toString());
 			return response.toString();
 
 		} catch (Exception e) {

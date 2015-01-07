@@ -9,7 +9,9 @@ import com.cloud.ocs.portal.core.resource.dto.NetworkOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.PodDto;
 import com.cloud.ocs.portal.core.resource.dto.PrimaryStorageDto;
 import com.cloud.ocs.portal.core.resource.dto.SecondaryStorageDto;
+import com.cloud.ocs.portal.core.resource.dto.ServiceOfferingDto;
 import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
+import com.cloud.ocs.portal.core.resource.dto.TemplateDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
 
 /**
@@ -36,4 +38,6 @@ public interface InfrastructureService {
 			String ipAddress, String hostAccount, String hostPassword);
 	
 	public List<NetworkOfferingDto> getIsolatedNetworkOfferingsWithSourceNatServiceList();
+	public List<TemplateDto> getSelfExecutableTemplates();
+	public List<ServiceOfferingDto> getNonSystemServiceOfferingList();
 }

@@ -117,5 +117,30 @@
 	<bean id="handlerMapping"
 		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 	</bean>
+	
+	
+	<!-- 配置执行同步city和network状态的定时Job -->
+	<bean id="syncCityNetworkStateJob" class="com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob"></bean>
+	<bean id="syncCityNetworkStateJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 指定任务类 -->
+		<property name="targetObject" ref="syncCityNetworkStateJob" />
+		<!-- 指定任务执行的方法 -->
+		<property name="targetMethod" value="executeSyncCityNetworkStateJob" />
+	</bean>
+	<bean id="syncCityNetworkStateJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="syncCityNetworkStateJobDetail" />
+		<!-- 每1分钟运行一次 -->
+		<property name="cronExpression" value="0 */1 * * * ?" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+  				<ref bean="syncCityNetworkStateJobTrigger" />
+			</list>
+		</property>
+	</bean>
 
 </beans>

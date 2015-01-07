@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.user.servcie.impl;
+package com.cloud.ocs.portal.core.user.service.impl;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cloud.ocs.portal.core.user.bean.User;
 import com.cloud.ocs.portal.core.user.constant.LoginStatus;
 import com.cloud.ocs.portal.core.user.dao.UserDao;
-import com.cloud.ocs.portal.core.user.servcie.UserService;
+import com.cloud.ocs.portal.core.user.service.UserService;
 
 /**
  * 系统用户service实现类

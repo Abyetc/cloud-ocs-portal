@@ -1,5 +1,6 @@
 package com.cloud.ocs.portal.core.business.dao.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -22,10 +23,22 @@ import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 public class CityNetworkDaoImpl extends GenericDaoImpl<CityNetwork> implements CityNetworkDao {
 
 	@Override
-	public List<CityNetwork> findCityNetworksbyCityId(Integer cityId) {
+	public List<CityNetwork> findCityNetworksByCityId(Integer cityId) {
 		Query query = em.createQuery("select model from CityNetwork model where model.cityId='" + cityId + "'");
 		
 		return query.getResultList();
+	}
+
+	@Override
+	public CityNetwork findCityNetworkByNetworkId(String networkId) {
+		Query query = em.createQuery("select model from CityNetwork model where model.networkId='" + networkId + "'");
+		List result = query.getResultList();
+		Iterator iterator = result.iterator();
+		while( iterator.hasNext() ) {
+			return (CityNetwork)iterator.next();
+		}
+		
+		return null;
 	}
 
 }

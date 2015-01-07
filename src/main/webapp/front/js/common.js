@@ -23,3 +23,6 @@ $("body").on("click", "#nav-breadcrumb li a", function() {
 });
 
 //=========================================================================
+
+//虚拟机状态描述
+var vmStateArray = ["Starting", "Running", "Stopping", "Stopped", "Migrating", "Error", "Unknown", "Shutdowned", "Destroyed", "Expunging"];

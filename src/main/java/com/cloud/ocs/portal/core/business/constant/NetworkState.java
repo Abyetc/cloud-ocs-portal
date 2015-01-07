@@ -1,7 +1,5 @@
 package com.cloud.ocs.portal.core.business.constant;
 
-import com.cloud.ocs.portal.core.user.constant.LoginStatus;
-
 /**
  * CloudStack中Network对象的状态
  * 
@@ -13,7 +11,7 @@ import com.cloud.ocs.portal.core.user.constant.LoginStatus;
 public enum NetworkState {
 	
 	ALLOCATED("Allocated", 0), 
-	SETUP("Setup", 1), 
+	SETUP("Setup", 1), //Happens for Shared networks. Isolated network不涉及
 	IMPLEMENTING("Implementing", 2),
 	IMPLEMENTED("Implemented", 3);
 
@@ -32,9 +30,24 @@ public enum NetworkState {
 	 * @return
 	 */
 	public static String getDescription(int code) {
-		for (LoginStatus status : LoginStatus.values()) {
+		for (NetworkState status : NetworkState.values()) {
 			if (status.getCode() == code) {
 				return status.getDescription();
+			}
+		}
+
+		return null;
+	}
+	
+	/**
+	 * 根据描述找到对应的Code
+	 * @param description
+	 * @return
+	 */
+	public static Integer getCode(String description) {
+		for (NetworkState status : NetworkState.values()) {
+			if (status.getDescription().equals(description)) {
+				return status.getCode();
 			}
 		}
 

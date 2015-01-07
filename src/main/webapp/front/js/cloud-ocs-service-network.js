@@ -5,6 +5,7 @@
 
 //获取城市所属网络列表
 function listNetworks(event) {
+  window.listNetworksEvent = event;
   var cityDetail = event.data.cityDetail;
   //先处理面包屑导航栏
   var firstLevelTitle = $("ol.breadcrumb.breadcrumb-ocs-service li.active").text();
@@ -28,7 +29,7 @@ function listNetworks(event) {
       state = "<td><span class='label label-default'>无服务</span></td>";
       break;
     case 1:
-      state = "<td><span class='label label-success'>正常服务中</span></td>";
+      state = "<td><span class='label label-success'>服务中</span></td>";
       break;
     case 2:
       state = "<td><span class='label label-danger'>发生故障</span></td>";
@@ -113,7 +114,7 @@ function listNetworks(event) {
       $("div.loader").remove();
       for (var i = 0; i < data.length; i++) {
         var created = new Date(data[i].created);
-        var state;
+        var state = "";
         switch (data[i].networkState) {
           case 0:
             state = "<td><span class='label label-default'>Allocated</span></td>";
@@ -135,9 +136,10 @@ function listNetworks(event) {
           + "<td>" + data[i].realmName + "</td>"
           + "<td>" + created.Format("yyyy-MM-dd hh:mm:ss") + "</td>"
           + state
-          + "<td>" + "</td>"
-          + "<td>" + "<button type='button' class='btn btn-sm btn-danger'>删除</button>" + "</td>"
+          + "<td><button type='button' class='btn btn-xs btn-link network-vm-btn-" + (i+1) + "'>" + data[i].vmNum + "</button></td>"
+          + "<td>" + "<button type='button' class='btn btn-xs btn-danger'>删除</button>" + "</td>"
           + "</tr>");
+        $("#city-network-table tbody button.btn.btn-xs.btn-link.network-vm-btn-" + (i+1)).on("click", {networkId: data[i].networkId, networkName: data[i].networkName}, listNetworkVms);
       }
     },
     error: function(xhr, status) {
@@ -248,9 +250,15 @@ function addCityNetwork(cityId) {
           + "<td>" + data.cityNetwork.realmName + "</td>"
           + "<td>" + created.Format("yyyy-MM-dd hh:mm:ss") + "</td>"
           + state
-          + "<td>" + "</td>"
-          + "<td>" + "<button type='button' class='btn btn-sm btn-danger'>删除</button>" + "</td>"
+          + "<td><button type='button' class='btn btn-xs btn-link network-vm-btn-" + data.index + "'>" + data.vmNum + "</button></td>"
+          + "<td>" + "<button type='button' class='btn btn-xs btn-danger'>删除</button>" + "</td>"
           + "</tr>");
+        $("#city-network-table tbody button.btn.btn-xs.btn-link.network-vm-btn-" + data.index).on("click", {networkId: data.cityNetwork.networkId, networkName: data.cityNetwork.networkName}, listNetworkVms);
+      }
+      else {
+        $("#city-network-name").val('');
+        $("#city-network-realm").val('');
+        alert("服务城市网络添加失败！");
       }
     },
     error: function(xhr, status) {
