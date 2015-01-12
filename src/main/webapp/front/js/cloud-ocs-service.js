@@ -104,7 +104,7 @@ function listCloudOCSServiceCities() {
       $("div.loader").shCircleLoader('destroy');
       $("div.loader").remove();
       for (var i = 0; i < data.length; i++) {
-        var state;
+        var state = "";
         var created = new Date(data[i].created);
         switch (data[i].state) {
           case 0:
@@ -177,7 +177,7 @@ function addCity() {
         $('#add-city-modal').modal('hide');
 
         //添加新增城市到列表中
-        var state;
+        var state = "";
         var created = new Date(data.city.created);
         switch (data.city.state) {
           case 0:

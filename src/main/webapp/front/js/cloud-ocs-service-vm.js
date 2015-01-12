@@ -80,7 +80,7 @@ function listNetworkVms(event) {
 	});
 	$.ajax({
 		type: "GET",
-		url: "business/listOcsVms",
+		url: "business/listOcsVmsByNetwork",
 		dataType: "json",
 		data: {
 			networkId: networkId

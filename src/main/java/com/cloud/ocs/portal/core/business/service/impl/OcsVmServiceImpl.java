@@ -1,7 +1,9 @@
 package com.cloud.ocs.portal.core.business.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -19,12 +21,14 @@ import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
 import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePublicPort;
 import com.cloud.ocs.portal.core.business.constant.VmState;
 import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;
+import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
 import com.cloud.ocs.portal.core.business.dto.LoadBalancerRuleDto;
 import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.OcsVmService;
 import com.cloud.ocs.portal.core.business.service.PublicIpService;
 import com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob;
+import com.cloud.ocs.portal.utils.UnitUtil;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 
@@ -49,7 +53,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 	private CityNetworkService cityNetworkSerivce;
 
 	@Override
-	public List<OcsVmDto> getOcsVmsList(String networkId) {	
+	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId) {	
 		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_LIST_OCS_VM);
 		request.addRequestParams("networkid", networkId);
 		CloudStackApiSignatureUtil.generateSignature(request);
@@ -76,11 +80,29 @@ public class OcsVmServiceImpl implements OcsVmService {
 						ocsVmDto.setNetworkId(networkId);
 						ocsVmDto.setServiceOfferingId(jsonObj.getString("serviceofferingid"));
 						ocsVmDto.setTemplateId(jsonObj.getString("templateid"));
+						ocsVmDto.setCpuNum(jsonObj.getInt("cpunumber"));
+						ocsVmDto.setCpuSpeed(UnitUtil.formatSizeFromHzToGHz(jsonObj.getLong("cpuspeed")));
+						ocsVmDto.setMemory(UnitUtil.formatSizeUnit(jsonObj.getLong("memory")*1024*1024));
 						ocsVmDto.setVmState(VmState.getCode(jsonObj.getString("state")));
 						ocsVmDto.setCreated(jsonObj.getString("created"));
 						result.add(ocsVmDto);
 					}
 				}
+			}
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public Map<String, List<OcsVmDto>> getOcsVmsListByCityId(Integer cityId) {
+		Map<String, List<OcsVmDto>> result = new HashMap<String, List<OcsVmDto>>();
+		
+		List<CityNetworkListDto> cityNetworks = cityNetworkSerivce.getCityNetworksList(cityId);
+		
+		if (cityNetworks != null) {
+			for (CityNetworkListDto cityNetwork : cityNetworks) {
+				result.put(cityNetwork.getNetworkName(), this.getOcsVmsListByNetworkId(cityNetwork.getNetworkId()));
 			}
 		}
 		
@@ -159,7 +181,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 				ocsVmDto.setVmState(VmState.getCode(jsonObj.getString("state")));
 				ocsVmDto.setCreated(jsonObj.getString("created"));
 				result.setOcsVmDto(ocsVmDto);
-				result.setIndex(this.getOcsVmsList(networkId).size());
+				result.setIndex(this.getOcsVmsNum(networkId));
 				
 				//执行一次更新本地数据库中的城市、网络状态(包括public ip等等字段)
 				SyncCityNetworkStateJob syncCityNetworkStateJob = new SyncCityNetworkStateJob();

@@ -1,6 +1,7 @@
 package com.cloud.ocs.portal.core.business.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;
 import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
@@ -15,7 +16,14 @@ import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
  */
 public interface OcsVmService {
 
-	public List<OcsVmDto> getOcsVmsList(String networkId);
+	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId);
+	
+	/**
+	 * 
+	 * @param cityId
+	 * @return 返回以network name为key，该network中的Vm List为value的map
+	 */
+	public Map<String, List<OcsVmDto>> getOcsVmsListByCityId(Integer cityId);
 
 	public Integer getOcsVmsNum(String networkId);
 

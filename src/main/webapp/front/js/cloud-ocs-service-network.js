@@ -22,7 +22,7 @@ function listNetworks(event) {
   //插入城市详细信息
   $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>城市名称</td><td>" + cityDetail.name + "</td></tr>");
   $(".table.table-hover.text-left-table").append("<tr><td class='table-left-head'>描述</td><td>" + cityDetail.description + "</td></tr>");
-  var state;
+  var state = "";
   var created = new Date(cityDetail.created);
   switch (cityDetail.state) {
     case 0:
@@ -228,7 +228,7 @@ function addCityNetwork(cityId) {
         $('#add-city-network-modal').modal('hide');
         //添加新增数据到表格中
         var created = new Date(data.cityNetwork.created);
-        var state;
+        var state = "";
         switch (data.cityNetwork.networkState) {
           case 0:
             state = "<td><span class='label label-default'>Allocated</span></td>";

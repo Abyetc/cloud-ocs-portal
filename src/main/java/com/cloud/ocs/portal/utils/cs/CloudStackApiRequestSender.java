@@ -8,8 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob;
-
 /**
  * 用于向CloudStack发送API请求的工具类
  * @author Wang Chao

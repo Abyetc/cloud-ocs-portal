@@ -15,10 +15,14 @@ public class OcsVmDto {
 	private String zoneId;
 	private String zoneName;
 	private String networkId;
+	private String networkName;
 	private String templateId;
 	private String serviceOfferingId;
 	private String hostId;
 	private String hostName;
+	private int cpuNum;
+	private String cpuSpeed;
+	private String memory;
 	private Integer vmState;
 	private String created;
 
@@ -61,6 +65,14 @@ public class OcsVmDto {
 	public void setNetworkId(String networkId) {
 		this.networkId = networkId;
 	}
+	
+	public String getNetworkName() {
+		return networkName;
+	}
+
+	public void setNetworkName(String networkName) {
+		this.networkName = networkName;
+	}
 
 	public String getTemplateId() {
 		return templateId;
@@ -92,6 +104,30 @@ public class OcsVmDto {
 
 	public void setHostName(String hostName) {
 		this.hostName = hostName;
+	}
+
+	public int getCpuNum() {
+		return cpuNum;
+	}
+
+	public void setCpuNum(int cpuNum) {
+		this.cpuNum = cpuNum;
+	}
+
+	public String getCpuSpeed() {
+		return cpuSpeed;
+	}
+
+	public void setCpuSpeed(String cpuSpeed) {
+		this.cpuSpeed = cpuSpeed;
+	}
+
+	public String getMemory() {
+		return memory;
+	}
+
+	public void setMemory(String memory) {
+		this.memory = memory;
 	}
 
 	public Integer getVmState() {

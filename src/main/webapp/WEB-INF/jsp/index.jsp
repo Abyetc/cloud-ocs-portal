@@ -62,7 +62,7 @@
 					</li>
 					<li class="dropdown "><a href="javascript:void(0);"
 						class="dropdown-toggle" data-toggle="dropdown"><span
-							class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;ccc<b
+							class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;警报<b
 							class="caret"></b> </a>
 						<ul class="dropdown-menu">
 							<li><a href="javascript:void(0);">jmeter</a></li>
@@ -104,14 +104,23 @@
 	<!-- Cloud OCS Portal的JS文件 -->
 	<script src="front/js/cloud-resource-infrastructure.js"></script>
 	<script src="front/js/cloud-resource-capacity.js"></script>
+	
 	<script src="front/js/cloud-ocs-service.js"></script>
 	<script src="front/js/cloud-ocs-service-network.js"></script>
 	<script src="front/js/cloud-ocs-service-vm.js"></script>
-	<script src="front/js/cloud-ocs-host-monitor.js"></script>
-	<script src="front/js/cloud-ocs-host-monitor-dynamic-chart.js"></script>
-	<script src="front/js/cloud-ocs-vm-monitor.js"></script>
-	<script src="front/js/cloud-ocs-vm-monitor-dynamic-chart.js"></script>
-	<script src="front/js/cloud-ocs-service-monitor.js"></script>
+	
+	<script src="front/js/cloud-ocs-monitor-res-host.js"></script>
+	<script src="front/js/cloud-ocs-monitor-res-host-dynamic-chart.js"></script>
+	<script src="front/js/cloud-ocs-monitor-res-vm.js"></script>
+	<script src="front/js/cloud-ocs-monitor-res-vm-dynamic-chart.js"></script>
+	
+	<script src="front/js/cloud-ocs-monitor-service-city.js"></script>
+	<script src="front/js/cloud-ocs-monitor-service-city-dynamic-chart.js"></script>
+	<script src="front/js/cloud-ocs-monitor-service-city-vm.js"></script>
+	<script src="front/js/cloud-ocs-monitor-service-city-vm-dynamic-chart.js"></script>
+	<script src="front/js/cloud-ocs-monitor-service-city-network.js"></script>
+	<script src="front/js/cloud-ocs-monitor-service-city-network-dynamic-chart.js"></script>
+	
 	<script src="front/js/utils.js"></script>
 	<script src="front/js/common.js"></script>
 </body>

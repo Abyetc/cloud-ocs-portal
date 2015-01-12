@@ -1,6 +1,7 @@
 package com.cloud.ocs.portal.core.business.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -81,10 +82,16 @@ public class CityBusinessController {
 		return cityNetworkService.addCityNetwork(cityNetwork);
 	}
 	
-	@RequestMapping(value="/listOcsVms", method=RequestMethod.GET)
+	@RequestMapping(value="/listOcsVmsByNetwork", method=RequestMethod.GET)
 	@ResponseBody
-	public List<OcsVmDto> listOcsVms(@RequestParam("networkId") String networkId) {
-		return ocsVmService.getOcsVmsList(networkId);
+	public List<OcsVmDto> listOcsVmsByNetwork(@RequestParam("networkId") String networkId) {
+		return ocsVmService.getOcsVmsListByNetworkId(networkId);
+	}
+	
+	@RequestMapping(value="/listOcsVmsByCity", method=RequestMethod.GET)
+	@ResponseBody
+	public Map<String, List<OcsVmDto>> listOcsVmsByCity(@RequestParam("cityId") Integer cityId) {
+		return ocsVmService.getOcsVmsListByCityId(cityId);
 	}
 	
 	@RequestMapping(value="/addOcsVm", method=RequestMethod.POST)
