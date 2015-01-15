@@ -22,8 +22,8 @@ import com.cloud.ocs.portal.core.resource.dto.SystemVmDto;
 import com.cloud.ocs.portal.core.resource.dto.TemplateDto;
 import com.cloud.ocs.portal.core.resource.dto.ZoneDto;
 import com.cloud.ocs.portal.core.resource.service.InfrastructureService;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 系统资源基础设施模块service实现类
@@ -42,7 +42,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_LIST_ZONES);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<ZoneDto> result = new ArrayList<ZoneDto>();
 		
@@ -73,7 +73,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("zoneid", zoneId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<PodDto> result = new ArrayList<PodDto>();
 		
@@ -103,7 +103,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("zoneid", zoneId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<SecondaryStorageDto> result = new ArrayList<SecondaryStorageDto>();
 		
@@ -134,7 +134,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("zoneid", zoneId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<SystemVmDto> result = new ArrayList<SystemVmDto>();
 		
@@ -167,7 +167,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("podid", podId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<ClusterDto> result = new ArrayList<ClusterDto>();
 		
@@ -198,7 +198,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 //		request.addRequestParams("clusterid", clusterId); //很奇怪，加了这个参数就返回空，不知为啥！
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<PrimaryStorageDto> result = new ArrayList<PrimaryStorageDto>();
 		
@@ -230,7 +230,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("clusterid", clusterId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<HostDto> result = new ArrayList<HostDto>();
 		
@@ -271,7 +271,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("password", hostPassword);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		AddHostDto result = new AddHostDto();
 		result.setCode(AddHostDto.ADD_HOST_CODE_ERROR);
@@ -317,7 +317,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("forvpc", "false");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<NetworkOfferingDto> result = new ArrayList<NetworkOfferingDto>();
 		
@@ -352,7 +352,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("templatefilter", "selfexecutable");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<TemplateDto> result = new ArrayList<TemplateDto>();
 		
@@ -384,7 +384,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		request.addRequestParams("issystem", "false");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<ServiceOfferingDto> result = new ArrayList<ServiceOfferingDto>();
 		

@@ -24,4 +24,6 @@ public class BusinessApiName {
 	public static final String BUSINESS_API_CREATE_LOAD_BALANCER_RULE    =	  "createLoadBalancerRule";
 	
 	public static final String BUSINESS_API_ASSIGN_TO_LOAD_BALANCER_RULE =    "assignToLoadBalancerRule";
+	
+	public static final String BUSINESS_API_CREATE_PORT_FORWARDING_RULE  =    "createPortForwardingRule";
 }

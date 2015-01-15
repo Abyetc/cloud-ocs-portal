@@ -102,9 +102,9 @@ function monitorVM(cityId, networkId, VMId, VMName) {
     },
     yAxis: {
       min: 0,
-      max: 1000,
+      max: 1500,
       title: {
-        text: 'Kbps'
+        text: 'KBps'
       },
       plotLines: [{
         value: 0,

@@ -98,51 +98,44 @@ $("body").on("click", "#city-vm-rxbps-txbps-monitor-btn", function() {
 		startMonitoringCityVmRxbpsTxbps();
 	} else {
 		//设置button文字
-		$(this).text("点击开始监控数据吞吐率");
 		stopMonitoringCityVmRxbpsTxbps();
+		$(this).text("点击开始监控数据吞吐率");
 	}
 });
 
 function startMonitoringCityVmRxbpsTxbps() {
-	var x = (new Date()).getTime();
-	var y = 0.0;
+	//var y = 0.0;
 	// //请求数据
-	// $.ajax({
-	// 	type: "GET",
-	// 	url: "monitor/",
-	// 	dataType: "json",
-	// 	data: {
-	// 		cityVmId: window.curMonitorCityVmId
-	// 	},
-	// 	success: function(data) {
-	// 		console.log("startMonitoringCityVmRxbpsTxbps:" + data);
-	// 		y = data;
-	// 		var shiftFlag = cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 1].data.length > 100;
-	// 		var point = [x, y];
+	$.ajax({
+		type: "GET",
+		url: "monitor/vm/getRxbpsTxbps",
+		dataType: "json",
+		data: {
+			// cityVmId: window.curMonitorCityVmId
+			cityVmId: "df98ab26-bc39-4471-a836-a9081922adbe",
+			interfaceName: "eth0"
+		},
+		success: function(data) {
+			console.log("startMonitoringCityVmRxbpsTxbps:" + data);
+			var rxKBpsY = data.rxbps/1024;
+			var txKBpsY = data.txbps/1024;
+			var x = (new Date()).getTime();
+			var shiftFlag = cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 1].data.length > 100;
+			var rxKbpsPoint = [x, rxKBpsY];
+			var txKbpsPoint = [x, txKBpsY];
 
-	// 		cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 1].addPoint(point, false, shiftFlag);
+			cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 2].addPoint(rxKbpsPoint, false, shiftFlag);
+			cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 1].addPoint(txKbpsPoint, false, shiftFlag);
 
-	// 		cityVmRxbpsTxbpsMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
-	// 		cityVmRxbpsTxbpsMonitorChart.redraw();
-	// 		window.cityVmRxbpsTxbpsMonitorTimer = setTimeout(startMonitoringCityVmRxbpsTxbps, 1000);
-	// 	},
-	// 	error: function(xhr, status) {
-	// 		clearTimeout(window.cityVmRxbpsTxbpsMonitorTimer);
-	// 		alert(status);
-	// 	}
-	// });
-	y = 500;
-	y1 = 300;
-	var shiftFlag = cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 1].data.length > 100;
-	var point = [x, y];
-	var point1 = [x, y1];
-
-	cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 2].addPoint(point, false, shiftFlag);
-	cityVmRxbpsTxbpsMonitorChart.series[cityVmRxbpsTxbpsMonitorChartCurrSeries - 1].addPoint(point1, false, shiftFlag);
-	
-	cityVmRxbpsTxbpsMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
-	cityVmRxbpsTxbpsMonitorChart.redraw();
-	window.cityVmRxbpsTxbpsMonitorTimer = setTimeout(startMonitoringCityVmRxbpsTxbps, 1000);
+			cityVmRxbpsTxbpsMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
+			cityVmRxbpsTxbpsMonitorChart.redraw();
+			window.cityVmRxbpsTxbpsMonitorTimer = setTimeout(startMonitoringCityVmRxbpsTxbps, 1000);
+		},
+		error: function(xhr, status) {
+			clearTimeout(window.cityVmRxbpsTxbpsMonitorTimer);
+			alert(status);
+		}
+	});
 }
 
 function stopMonitoringCityVmRxbpsTxbps() {

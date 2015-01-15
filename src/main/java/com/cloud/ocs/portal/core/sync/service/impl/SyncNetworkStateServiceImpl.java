@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
-import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePublicPort;
+import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
 import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.dto.PublicIpDto;
 import com.cloud.ocs.portal.core.sync.constant.SyncApiName;
 import com.cloud.ocs.portal.core.sync.service.SyncNetworkStateService;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 调用CloudStack API将network状态同步到本地数据库的Service实现类
@@ -62,7 +62,7 @@ public class SyncNetworkStateServiceImpl implements SyncNetworkStateService{
 		request.addRequestParams("type", "Isolated");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<CityNetwork> result = new ArrayList<CityNetwork>();
 		
@@ -79,7 +79,7 @@ public class SyncNetworkStateServiceImpl implements SyncNetworkStateService{
 						network.setNetworkName(jsonObj.getString("name"));
 						network.setZoneId(jsonObj.getString("zoneid"));
 						network.setNetworkOfferingId(jsonObj.getString("networkofferingid"));
-						network.setServicePort(CloudOcsServicePublicPort.PUBLIC_SERVICE_PORT);
+						network.setServicePort(CloudOcsServicePort.PUBLIC_SERVICE_PORT);
 						if (jsonObj.has("vlan")) {
 							network.setVlan(jsonObj.getString("vlan"));
 						}
@@ -114,7 +114,7 @@ public class SyncNetworkStateServiceImpl implements SyncNetworkStateService{
 		request.addRequestParams("listall", "true");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		PublicIpDto result = null;
 		

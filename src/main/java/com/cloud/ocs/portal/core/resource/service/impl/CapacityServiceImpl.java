@@ -13,8 +13,8 @@ import com.cloud.ocs.portal.core.resource.constant.ResourceApiName;
 import com.cloud.ocs.portal.core.resource.dto.CapacityDto;
 import com.cloud.ocs.portal.core.resource.service.CapacityService;
 import com.cloud.ocs.portal.utils.UnitUtil;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 系统资源系统容量模块service实现类
@@ -36,7 +36,7 @@ public class CapacityServiceImpl implements CapacityService {
 		request.addRequestParams("sortby", "usage");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<CapacityDto> result = new ArrayList<CapacityDto>();
 		

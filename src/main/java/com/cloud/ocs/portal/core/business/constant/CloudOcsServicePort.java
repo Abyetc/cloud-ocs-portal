@@ -8,7 +8,9 @@ package com.cloud.ocs.portal.core.business.constant;
  * @date 2015-1-3 下午5:29:06
  *
  */
-public class CloudOcsServicePublicPort {
+public class CloudOcsServicePort {
 
 	public static final Integer PUBLIC_SERVICE_PORT = 3868;
+	
+	public static final Integer MONITOR_SERVICE_PRIVATE_PORT = 8080;
 }

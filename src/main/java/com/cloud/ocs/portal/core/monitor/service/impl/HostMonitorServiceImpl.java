@@ -16,8 +16,8 @@ import com.cloud.ocs.portal.core.monitor.dto.HostDetail;
 import com.cloud.ocs.portal.core.monitor.service.HostMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.VmMonitorService;
 import com.cloud.ocs.portal.utils.UnitUtil;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 监控主机service实现类
@@ -42,7 +42,7 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		request.addRequestParams("listall", "true");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<HostDetail> result = new ArrayList<HostDetail>();
 		
@@ -93,7 +93,7 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		request.addRequestParams("id", hostId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		double result = 0.0;
 		
@@ -119,7 +119,7 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		request.addRequestParams("id", hostId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		double result = 0.0;
 		

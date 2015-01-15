@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.VmDetail;
 import com.cloud.ocs.portal.core.monitor.service.VmMonitorService;
 
@@ -38,6 +39,19 @@ public class VmMonitorController {
 	@ResponseBody
 	public double getCurVmCpuUsagePercentage(@RequestParam("vmId") String vmId) {
 		return vmMonitorService.getCurVmCpuUsagePercentage(vmId);
+	}
+	
+	@RequestMapping(value="/getRxbpsTxbps", method=RequestMethod.GET)
+	@ResponseBody
+	public RxbpsTxbpsDto getRxbpsTxbps(@RequestParam("cityVmId") String cityVmId,
+			@RequestParam("interfaceName") String interfaceName) {
+		return vmMonitorService.getVmRxbpsTxbps(cityVmId, interfaceName);
+	}
+	
+	@RequestMapping(value="/getConcurrencyRequestNum", method=RequestMethod.GET)
+	@ResponseBody
+	public Long getConcurrencyRequestNum(@RequestParam("cityVmId") String cityVmId) {
+		return vmMonitorService.getVmConcurrencyRequestNum(cityVmId);
 	}
 
 }

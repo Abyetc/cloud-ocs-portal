@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
-import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePublicPort;
+import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.dto.LoadBalancerRuleDto;
 import com.cloud.ocs.portal.core.business.service.PublicIpService;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 用于操作Public IP的service的实现类
@@ -35,7 +35,7 @@ public class PublicIpServiceImpl implements PublicIpService {
 		request.addRequestParams("listall", "true");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<LoadBalancerRuleDto> result = new ArrayList<LoadBalancerRuleDto>();
 		
@@ -49,8 +49,8 @@ public class PublicIpServiceImpl implements PublicIpService {
 					LoadBalancerRuleDto loadBalancerRuleDto = new LoadBalancerRuleDto();
 					loadBalancerRuleDto.setLoadBalancerRuleId(jsonObj.getString("id"));
 					loadBalancerRuleDto.setLoadBalancerRuleName(jsonObj.getString("name"));
-					loadBalancerRuleDto.setPrivatePort(CloudOcsServicePublicPort.PUBLIC_SERVICE_PORT.toString());
-					loadBalancerRuleDto.setPublicPort(CloudOcsServicePublicPort.PUBLIC_SERVICE_PORT.toString());
+					loadBalancerRuleDto.setPrivatePort(CloudOcsServicePort.PUBLIC_SERVICE_PORT.toString());
+					loadBalancerRuleDto.setPublicPort(CloudOcsServicePort.PUBLIC_SERVICE_PORT.toString());
 					loadBalancerRuleDto.setAlgorithm(jsonObj.getString("algorithm"));
 					loadBalancerRuleDto.setState(jsonObj.getString("state"));
 					result.add(loadBalancerRuleDto);
@@ -69,7 +69,7 @@ public class PublicIpServiceImpl implements PublicIpService {
 		request.addRequestParams("ipaddressid", publicIpId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		if (response != null) {
 			JSONObject responseJsonObj = new JSONObject(response);
@@ -102,7 +102,7 @@ public class PublicIpServiceImpl implements PublicIpService {
 		request.addRequestParams("endport", endPort);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		String result = null;
 		
@@ -127,7 +127,7 @@ public class PublicIpServiceImpl implements PublicIpService {
 		request.addRequestParams("icmpcode", icmpCode);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		String result = null;
 		
@@ -159,7 +159,7 @@ public class PublicIpServiceImpl implements PublicIpService {
 		request.addRequestParams("openfirewall", "false");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		String loadBalancerRuleId = null;
 		
@@ -182,7 +182,7 @@ public class PublicIpServiceImpl implements PublicIpService {
 		request.addRequestParams("virtualmachineids", vmId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		String result = null;
 		

@@ -6,8 +6,8 @@ import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobApiName;
 import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
 import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 用于查询CloudStack异步Job执行结果的Service类
@@ -24,7 +24,7 @@ public class QueryAsyncJobResultService {
 		request.addRequestParams("jobid", jobId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		AsynJobResultDto result = null;
 		

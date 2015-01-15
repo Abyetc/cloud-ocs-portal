@@ -18,7 +18,7 @@ import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
 import com.cloud.ocs.portal.common.cs.asyncjob.service.QueryAsyncJobResultService;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
-import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePublicPort;
+import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.constant.VmState;
 import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;
 import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
@@ -27,10 +27,13 @@ import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.OcsVmService;
 import com.cloud.ocs.portal.core.business.service.PublicIpService;
+import com.cloud.ocs.portal.core.business.service.VmForwardingPortService;
 import com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob;
+import com.cloud.ocs.portal.core.sync.service.SyncCityStateService;
+import com.cloud.ocs.portal.core.sync.service.SyncNetworkStateService;
 import com.cloud.ocs.portal.utils.UnitUtil;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 网络-Vm Service实现类
@@ -51,6 +54,15 @@ public class OcsVmServiceImpl implements OcsVmService {
 	
 	@Resource
 	private CityNetworkService cityNetworkSerivce;
+	
+	@Resource
+	private VmForwardingPortService vmForwardingPortService;
+	
+	@Resource
+	private SyncNetworkStateService syncNetworkStateService;
+	
+	@Resource
+	private SyncCityStateService syncCityStateService;
 
 	@Override
 	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId) {	
@@ -58,7 +70,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 		request.addRequestParams("networkid", networkId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		List<OcsVmDto> result = new ArrayList<OcsVmDto>();
 		
@@ -117,7 +129,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 		request.addRequestParams("networkid", networkId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		if (response != null) {
 			JSONObject responseJsonObj = new JSONObject(response);
@@ -184,11 +196,14 @@ public class OcsVmServiceImpl implements OcsVmService {
 				result.setIndex(this.getOcsVmsNum(networkId));
 				
 				//执行一次更新本地数据库中的城市、网络状态(包括public ip等等字段)
-				SyncCityNetworkStateJob syncCityNetworkStateJob = new SyncCityNetworkStateJob();
-				syncCityNetworkStateJob.executeSyncCityNetworkStateJob();
+				//同步网络状态
+				syncNetworkStateService.syncNetworkState();
+				//同步城市状态
+				syncCityStateService.syncCityState();
 				
 				CityNetwork cityNetwork = cityNetworkSerivce.getCityNetworkByNetworkId(ocsVmDto.getNetworkId());
 				String publicIpId = cityNetwork.getPublicIpId();
+				String publicIp = cityNetwork.getPublicIp();
 				String networkName = cityNetwork.getNetworkName();
 				
 				//检查网络防火墙是否配置，若无则异步添加防火墙规则
@@ -196,6 +211,9 @@ public class OcsVmServiceImpl implements OcsVmService {
 				
 				//检查负载均衡是否配置，若无则异步添加负载均衡规则，并将新增的VM添加到负载均衡的规则中
 				this.checkAndAddVmToLoadBalancerRule(publicIpId, ocsVmDto.getVmId(), ocsVmDto.getNetworkId(), networkName);
+				
+				//添加用于监控的端口转发规则
+				this.addPortForwardingRule(networkId, publicIpId, publicIp, ocsVmDto.getVmId());
 				
 				return result;
 			}
@@ -224,7 +242,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 		request.addRequestParams("iptonetworklist[0].networkid", networkId);
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		String result = null;
 		
@@ -275,8 +293,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 			//首先异步创建规则
 			loadBalancerRuleId = publicIpService.addLoadBalancerRule(
 					publicIpId, networkId, networkName + "-lb-rule", "roundrobin",
-					CloudOcsServicePublicPort.PUBLIC_SERVICE_PORT.toString(),
-					CloudOcsServicePublicPort.PUBLIC_SERVICE_PORT.toString());
+					CloudOcsServicePort.PUBLIC_SERVICE_PORT.toString(),
+					CloudOcsServicePort.PUBLIC_SERVICE_PORT.toString());
 			
 			//接着将Vm加入到规则中
 			if (loadBalancerRuleId != null) {
@@ -288,6 +306,61 @@ public class OcsVmServiceImpl implements OcsVmService {
 		//否则，默认取除第一条
 		loadBalancerRuleId = loadBalancerRules.get(0).getLoadBalancerRuleId();
 		publicIpService.assignVmToLoadBalancerRule(loadBalancerRuleId, vmId);
+	}
+	
+	/**
+	 * 异步添加端口转发规则，并将规则入库
+	 * @param networkId
+	 * @param vmId
+	 */
+	private void addPortForwardingRule(String networkId, String ipAddressId,
+			String ipAddress, String vmId) {
+		Integer publicPort = vmForwardingPortService
+				.generateUniquePublicPort(networkId);
+		// 异步发送请求到CloudStack
+		this.sendCreatePortForwardingRequestToCs(networkId, ipAddressId, vmId,
+				publicPort);
+		// 然后直接将记录入库(其实这里有问题，应该是等异步任务返回才能入库，先不理)
+		vmForwardingPortService.saveForwardingPort(networkId, ipAddress,
+				ipAddressId, vmId, publicPort,
+				CloudOcsServicePort.MONITOR_SERVICE_PRIVATE_PORT);
+	}
+	
+	/**
+	 * 异步发送添加端口转发的请求到CloudStack
+	 * @param networkId
+	 * @param ipAddressId
+	 * @param vmId
+	 * @param publicPort
+	 * @return 异步Job的Id
+	 */
+	private String sendCreatePortForwardingRequestToCs(String networkId,
+			String ipAddressId, String vmId, Integer publicPort) {
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_CREATE_PORT_FORWARDING_RULE);
+		request.addRequestParams("ipaddressid", ipAddressId);
+		request.addRequestParams("protocol", "tcp");
+		request.addRequestParams("virtualmachineid", vmId);
+		request.addRequestParams("openfirewall", "false");
+		request.addRequestParams("networkid", networkId);
+		request.addRequestParams("publicport", publicPort.toString());
+		request.addRequestParams("publicendport", publicPort.toString());
+		request.addRequestParams("privateport", CloudOcsServicePort.MONITOR_SERVICE_PRIVATE_PORT.toString());
+		request.addRequestParams("privateendport", CloudOcsServicePort.MONITOR_SERVICE_PRIVATE_PORT.toString());
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("createportforwardingruleresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
+		return result;
 	}
 
 }

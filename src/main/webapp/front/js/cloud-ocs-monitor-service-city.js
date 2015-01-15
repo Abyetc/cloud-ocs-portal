@@ -97,9 +97,13 @@ function listServiceMonitorCities() {
           default:
             break;
         }
+        var monitorBtnDisable = "";
+        if (data[i].state != 1) {
+          monitorBtnDisable = "disabled";
+        }
         $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].name + "</td>" 
           + state
-          + "<td><button type='button' class='btn btn-primary btn-xs' onclick=\"monitorCity(" + data[i].id + ",'" + data[i].name + "');\">" + "点击监控</button></td></tr>");
+          + "<td><button type='button' class='btn btn-primary btn-xs " + monitorBtnDisable + "'"+ " onclick=\"monitorCity(" + data[i].id + ",'" + data[i].name + "');\">" + "点击监控</button></td></tr>");
       }
     },
     error: function(xhr, status) {

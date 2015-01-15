@@ -14,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
-import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePublicPort;
+import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
 import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
 import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.OcsVmService;
-import com.cloud.ocs.portal.utils.cs.CloudStackApiRequestSender;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
+import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
 /**
  * 城市-网络service实现类
@@ -85,7 +85,7 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 			result.setMessage("Add City-Network Success.");
 			Date created = new Date();
 			cityNetwork.setCreated(new Timestamp(created.getTime()));
-			cityNetwork.setServicePort(CloudOcsServicePublicPort.PUBLIC_SERVICE_PORT);
+			cityNetwork.setServicePort(CloudOcsServicePort.PUBLIC_SERVICE_PORT);
 			cityNetwork.setNetworkState(NetworkState.ALLOCATED.getCode());
 			
 			//持久化到本地数据库
@@ -115,7 +115,7 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 		request.addRequestParams("displaytext", cityNetwork.getNetworkName());
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		if (response != null) {
 			JSONObject responseJsonObj = new JSONObject(response);
@@ -138,7 +138,7 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 		request.addRequestParams("cidrlist", "0.0.0.0/0");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
-		String response = CloudStackApiRequestSender.sendGetRequest(requestUrl);
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
 		String result = null;
 		

@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.utils.cs;
+package com.cloud.ocs.portal.utils.http;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -13,9 +13,9 @@ import java.util.logging.Logger;
  * @author Wang Chao
  *
  */
-public class CloudStackApiRequestSender {
+public class HttpRequestSender {
 	
-	private final static Logger LOGGER = Logger.getLogger(CloudStackApiRequestSender.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(HttpRequestSender.class.getName());
 
 	/**
 	 * 向CloudStack管理节点发送GET请求
@@ -32,6 +32,7 @@ public class CloudStackApiRequestSender {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setRequestProperty("Content-Type", "application/json");
 
 			// connection.setRequestProperty("Content-Length", "" +
 			// Integer.toString(urlParameters.getBytes().length));
