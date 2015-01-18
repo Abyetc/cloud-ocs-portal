@@ -41,4 +41,11 @@ public class CityNetworkDaoImpl extends GenericDaoImpl<CityNetwork> implements C
 		return null;
 	}
 
+	@Override
+	public List<CityNetwork> findAll() {
+		Query query = em.createQuery("select model from CityNetwork model");
+		
+		return query.getResultList();
+	}
+
 }

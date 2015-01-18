@@ -102,24 +102,24 @@
 	<script src="front/jQuery/shCircleLoader/jquery.shCircleLoader-min.js"></script>
 
 	<!-- Cloud OCS Portal的JS文件 -->
-	<script src="front/js/cloud-resource-infrastructure.js"></script>
-	<script src="front/js/cloud-resource-capacity.js"></script>
+	<script src="front/js/resource/cloud-resource-infrastructure.js"></script>
+	<script src="front/js/resource/cloud-resource-capacity.js"></script>
 	
-	<script src="front/js/cloud-ocs-service.js"></script>
-	<script src="front/js/cloud-ocs-service-network.js"></script>
-	<script src="front/js/cloud-ocs-service-vm.js"></script>
+	<script src="front/js/service/cloud-ocs-service.js"></script>
+	<script src="front/js/service/cloud-ocs-service-network.js"></script>
+	<script src="front/js/service/cloud-ocs-service-vm.js"></script>
 	
-	<script src="front/js/cloud-ocs-monitor-res-host.js"></script>
-	<script src="front/js/cloud-ocs-monitor-res-host-dynamic-chart.js"></script>
-	<script src="front/js/cloud-ocs-monitor-res-vm.js"></script>
-	<script src="front/js/cloud-ocs-monitor-res-vm-dynamic-chart.js"></script>
+	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-host.js"></script>
+	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-host-dynamic-chart.js"></script>
+	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-vm.js"></script>
+	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-vm-dynamic-chart.js"></script>
 	
-	<script src="front/js/cloud-ocs-monitor-service-city.js"></script>
-	<script src="front/js/cloud-ocs-monitor-service-city-dynamic-chart.js"></script>
-	<script src="front/js/cloud-ocs-monitor-service-city-vm.js"></script>
-	<script src="front/js/cloud-ocs-monitor-service-city-vm-dynamic-chart.js"></script>
-	<script src="front/js/cloud-ocs-monitor-service-city-network.js"></script>
-	<script src="front/js/cloud-ocs-monitor-service-city-network-dynamic-chart.js"></script>
+	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city.js"></script>
+	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-dynamic-chart.js"></script>
+	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-vm.js"></script>
+	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-vm-dynamic-chart.js"></script>
+	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-network.js"></script>
+	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-network-dynamic-chart.js"></script>
 	
 	<script src="front/js/utils.js"></script>
 	<script src="front/js/common.js"></script>

@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
@@ -150,6 +152,20 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 			}
 		}
 		
+		return result;
+	}
+
+	@Override
+	public Map<String, Integer> getNetworkIdCityIdMap() {
+		List<CityNetwork> cityNetworkList = cityNetworkDao.findAll();
+		Map<String, Integer> result = null;
+		
+		if (cityNetworkList != null) {
+			result = new TreeMap<String, Integer>();
+			for (CityNetwork cityNetwork : cityNetworkList) {
+				result.put(cityNetwork.getNetworkId(), cityNetwork.getCityId());
+			}
+		}
 		return result;
 	}
 

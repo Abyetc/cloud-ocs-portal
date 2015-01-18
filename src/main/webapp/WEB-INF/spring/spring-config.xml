@@ -135,12 +135,15 @@
 		<property name="cronExpression" value="0 */1 * * * ?" />
 	</bean>
 
-	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-		<property name="triggers">
-			<list>
-  				<ref bean="syncCityNetworkStateJobTrigger" />
-			</list>
-		</property>
+<!-- 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
+<!-- 		<property name="triggers"> -->
+<!--  			<list>  -->
+<!--    				<ref bean="syncCityNetworkStateJobTrigger" /> -->
+<!--  			</list> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+	
+	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.core.business.cache.VmForwardingPortCache">
 	</bean>
 
 </beans>

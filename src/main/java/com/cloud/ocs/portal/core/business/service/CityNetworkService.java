@@ -1,6 +1,7 @@
 package com.cloud.ocs.portal.core.business.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
@@ -16,7 +17,30 @@ import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
  */
 public interface CityNetworkService {
 
+	/**
+	 * 根据network id找到cityNetwork
+	 * @param networkId
+	 * @return
+	 */
 	public CityNetwork getCityNetworkByNetworkId(String networkId);
+	
+	/**
+	 * 根据city id找到cityNetwork列表
+	 * @param cityId
+	 * @return
+	 */
 	public List<CityNetworkListDto> getCityNetworksList(Integer cityId);
+	
+	/**
+	 * 添加cityNetwork
+	 * @param cityNetwork
+	 * @return
+	 */
 	public AddCityNetworkDto addCityNetwork(CityNetwork cityNetwork);
+	
+	/**
+	 * 得到以network id为key, city id为value的map
+	 * @return
+	 */
+	public Map<String, Integer> getNetworkIdCityIdMap();
 }

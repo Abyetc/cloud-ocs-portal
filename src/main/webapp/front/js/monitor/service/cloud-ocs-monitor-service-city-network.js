@@ -103,7 +103,7 @@ function monitorCityNetworks(cityId, networkId, networkName) {
       plotBorderWidth: 1
     },
     title: {
-      text: networkName + " 接收/处理完成的 计费请求数"
+      text: networkName + " 正在处理的并发请求连接数"
     },
     xAxis: {
       type: 'datetime',
@@ -143,7 +143,7 @@ function monitorCityNetworks(cityId, networkId, networkName) {
   });
   cityNetworkRequestNumMonitorChartCurrSeries = 0;
 
-  //city vm数据吞吐率实时监控区域
+  //city network数据吞吐率实时监控区域
   $("#content-area").append("<div id='city-network-rxbps-txbps-monitor-area' style='margin-top:100px;'>"
     +   "<div>"
     +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-network-rxbps-txbps-monitor-btn'>点击开始监控数据吞吐率</button>"
@@ -169,9 +169,9 @@ function monitorCityNetworks(cityId, networkId, networkName) {
     },
     yAxis: {
       min: 0,
-      max: 100,
+      max: 1500,
       title: {
-        text: 'Kbps'
+        text: '接收/发送数据吞吐率(KBps)'
       },
       plotLines: [{
         value: 0,

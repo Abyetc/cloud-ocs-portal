@@ -60,7 +60,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<!-- Bootstrap JavaScript 插件 -->
 		<script src="front/bootstrap/js/bootstrap.min.js"></script>
 		<!-- Login JavaScript -->
-		<script src="front/js/user-login.js"></script>
+		<script src="front/js/user/user-login.js"></script>
 </body>
 
 </html>

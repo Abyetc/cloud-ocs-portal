@@ -36,7 +36,7 @@ function monitorVM(cityId, networkId, VMId, VMName) {
       plotBorderWidth: 1
     },
     title: {
-      text: VMName + " 接收/处理完成的 计费请求数"
+      text: VMName + " 正在处理的并发请求连接数"
     },
     xAxis: {
       type: 'datetime',
@@ -102,9 +102,9 @@ function monitorVM(cityId, networkId, VMId, VMName) {
     },
     yAxis: {
       min: 0,
-      max: 1500,
+      max: 1000,
       title: {
-        text: 'KBps'
+        text: '接收/发送数据吞吐率(KBps)'
       },
       plotLines: [{
         value: 0,

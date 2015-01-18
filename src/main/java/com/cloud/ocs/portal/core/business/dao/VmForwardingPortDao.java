@@ -14,6 +14,12 @@ import com.cloud.ocs.portal.core.business.bean.VmForwardingPort;
  *
  */
 public interface VmForwardingPortDao extends GenericDao<VmForwardingPort> {
+	
+	/**
+	 * 得到所有的端口转发规则
+	 * @return
+	 */
+	public List<VmForwardingPort> findAll();
 
 	/**
 	 * 找到在特定network中已经被使用的public port

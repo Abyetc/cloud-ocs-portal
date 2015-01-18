@@ -22,6 +22,14 @@ import com.cloud.ocs.portal.core.business.dao.VmForwardingPortDao;
 @Repository
 public class VmForwardingPortDaoImpl extends GenericDaoImpl<VmForwardingPort>
 		implements VmForwardingPortDao {
+	
+	@Override
+	public List<VmForwardingPort> findAll() {
+		Query query = em
+				.createQuery("select model from VmForwardingPort model");
+		
+		return query.getResultList();
+	}
 
 	@Override
 	public List<Integer> findAllPublicPortInNetwork(String networkId) {

@@ -15,7 +15,8 @@ $("body").on("click", "#host-cpu-usage-monitor-btn", function() {
 			data: []
 		});
 		hostCpuUsageMonitorChartCurrSeries++;
-		startMonitoringHostCpuUsage();
+		// startMonitoringHostCpuUsage();
+		window.hostCpuUsageMonitorTimer = setTimeout(startMonitoringHostCpuUsage, 0);
 	} else {
 		//设置button文字
 		$(this).text("点击开始监控CPU使用情况");
@@ -44,10 +45,13 @@ function startMonitoringHostCpuUsage() {
 
 			hostCpuUsageMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
 			hostCpuUsageMonitorChart.redraw();
-			window.hostCpuUsageMonitorTimer = setTimeout(startMonitoringHostCpuUsage, 1000);
+			if (window.hostCpuUsageMonitorTimer != null) {
+				window.hostCpuUsageMonitorTimer = setTimeout(startMonitoringHostCpuUsage, 1000);
+			}
 		},
 		error: function(xhr, status) {
 			clearTimeout(window.hostCpuUsageMonitorTimer);
+			window.hostCpuUsageMonitorTimer = null;
 			alert(status);
 		}
 	});
@@ -56,6 +60,7 @@ function startMonitoringHostCpuUsage() {
 function stopMonitoringHostCpuUsage() {
 	console.log("stop timer");
 	clearTimeout(window.hostCpuUsageMonitorTimer);
+	window.hostCpuUsageMonitorTimer = null;
 }
 
 
@@ -74,7 +79,8 @@ $("body").on("click", "#host-memory-usage-monitor-btn", function() {
 			data: []
 		});
 		hostMemoryUsageMonitorChartCurrSeries++;
-		startMonitoringHostMemoryUsage();
+		// startMonitoringHostMemoryUsage();
+		window.hostMemoryUsageMonitorTimer = setTimeout(startMonitoringHostMemoryUsage, 0);
 	} else {
 		//设置button文字
 		$(this).text("点击开始监控内存使用情况");
@@ -104,10 +110,13 @@ function startMonitoringHostMemoryUsage() {
 
 			hostMemoryUsageMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
 			hostMemoryUsageMonitorChart.redraw();
-			window.hostMemoryUsageMonitorTimer = setTimeout(startMonitoringHostMemoryUsage, 1000);
+			if (window.hostMemoryUsageMonitorTimer != null) {
+				window.hostMemoryUsageMonitorTimer = setTimeout(startMonitoringHostMemoryUsage, 1000);
+			}
 		},
 		error: function(xhr, status) {
 			clearTimeout(window.hostMemoryUsageMonitorTimer);
+			window.hostMemoryUsageMonitorTimer = null;
 			alert(status);
 		}
 	});
@@ -115,5 +124,7 @@ function startMonitoringHostMemoryUsage() {
 }
 
 function stopMonitoringHostMemoryUsage() {
+	console.log("stop timer");
 	clearTimeout(window.hostMemoryUsageMonitorTimer);
+	window.hostMemoryUsageMonitorTimer = null;
 }

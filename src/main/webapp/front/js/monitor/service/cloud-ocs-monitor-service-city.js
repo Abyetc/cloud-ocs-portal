@@ -203,7 +203,7 @@ function monitorCity(cityId, cityName) {
       plotBorderWidth: 1
     },
     title: {
-      text: cityName + " 接收/处理完成的 计费请求数"
+      text: cityName + " 正在处理的并发请求连接数"
     },
     xAxis: {
       type: 'datetime',
@@ -269,9 +269,9 @@ function monitorCity(cityId, cityName) {
     },
     yAxis: {
       min: 0,
-      max: 1000,
+      max: 2000,
       title: {
-        text: '接收/发送数据吞吐率(Kbps)'
+        text: '接收/发送数据吞吐率(KBps)'
       },
       plotLines: [{
         value: 0,

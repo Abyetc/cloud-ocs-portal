@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
 import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
 import com.cloud.ocs.portal.common.cs.asyncjob.service.QueryAsyncJobResultService;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
+import com.cloud.ocs.portal.core.business.cache.VmForwardingPortCache;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
 import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.constant.VmState;
@@ -28,7 +30,6 @@ import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.OcsVmService;
 import com.cloud.ocs.portal.core.business.service.PublicIpService;
 import com.cloud.ocs.portal.core.business.service.VmForwardingPortService;
-import com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob;
 import com.cloud.ocs.portal.core.sync.service.SyncCityStateService;
 import com.cloud.ocs.portal.core.sync.service.SyncNetworkStateService;
 import com.cloud.ocs.portal.utils.UnitUtil;
@@ -63,6 +64,9 @@ public class OcsVmServiceImpl implements OcsVmService {
 	
 	@Resource
 	private SyncCityStateService syncCityStateService;
+	
+	@Autowired
+	private VmForwardingPortCache vmForwardingPortCache;
 
 	@Override
 	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId) {	
@@ -214,6 +218,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 				
 				//添加用于监控的端口转发规则
 				this.addPortForwardingRule(networkId, publicIpId, publicIp, ocsVmDto.getVmId());
+				//更新端口转发规则数据缓存
+				vmForwardingPortCache.reloadDataFromDB();
 				
 				return result;
 			}

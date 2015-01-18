@@ -15,6 +15,7 @@ import com.cloud.ocs.portal.core.business.bean.CityNetwork;
  */
 public interface CityNetworkDao extends GenericDao<CityNetwork> {
 
+	public List<CityNetwork> findAll();
 	public List<CityNetwork> findCityNetworksByCityId(Integer cityId);
 	public CityNetwork findCityNetworkByNetworkId(String networkId);
 }

@@ -37,7 +37,7 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 	private VmMonitorService vmMonitorService;
 
 	@Override
-	public RxbpsTxbpsDto getCityRxbpsTxbps(String cityId, final String interfaceName) {
+	public RxbpsTxbpsDto getCityRxbpsTxbps(Integer cityId, final String interfaceName) {
 		RxbpsTxbpsDto result = new RxbpsTxbpsDto();
 		
 		final List<VmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByCityId(cityId);
@@ -80,7 +80,7 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 	}
 
 	@Override
-	public Long getCityConcurrencyRequestNum(String cityId) {
+	public Long getCityConcurrencyRequestNum(Integer cityId) {
 		Long result = 0L;
 		
 		final List<VmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByCityId(cityId);

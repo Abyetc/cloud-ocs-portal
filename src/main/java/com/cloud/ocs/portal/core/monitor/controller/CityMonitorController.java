@@ -2,6 +2,7 @@ package com.cloud.ocs.portal.core.monitor.controller;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,8 @@ import com.cloud.ocs.portal.core.monitor.service.CityMonitorService;
  * @date 2015-1-15 上午10:41:46
  *
  */
+@Controller
+@RequestMapping(value="/monitor/city")
 public class CityMonitorController {
 
 	@Resource
@@ -25,14 +28,14 @@ public class CityMonitorController {
 	
 	@RequestMapping(value="/getCityRxbpsTxbps", method=RequestMethod.GET)
 	@ResponseBody
-	public RxbpsTxbpsDto getCityRxbpsTxbps(@RequestParam("cityId") String cityId,
+	public RxbpsTxbpsDto getCityRxbpsTxbps(@RequestParam("cityId") Integer cityId,
 			@RequestParam("interfaceName") String interfaceName) {
 		return cityMonitorService.getCityRxbpsTxbps(cityId, interfaceName);
 	}
 	
 	@RequestMapping(value="/getCityConcurrencyRequestNum", method=RequestMethod.GET)
 	@ResponseBody
-	public Long getCityConcurrencyRequestNum(@RequestParam("cityId") String cityId) {
+	public Long getCityConcurrencyRequestNum(@RequestParam("cityId") Integer cityId) {
 		return cityMonitorService.getCityConcurrencyRequestNum(cityId);
 	}
 	

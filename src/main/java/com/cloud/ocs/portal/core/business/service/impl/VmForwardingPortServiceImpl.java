@@ -1,13 +1,16 @@
 package com.cloud.ocs.portal.core.business.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.core.business.bean.VmForwardingPort;
+import com.cloud.ocs.portal.core.business.cache.VmForwardingPortCache;
 import com.cloud.ocs.portal.core.business.dao.VmForwardingPortDao;
 import com.cloud.ocs.portal.core.business.service.VmForwardingPortService;
 import com.cloud.ocs.portal.utils.RandomNumUtil;
@@ -29,6 +32,9 @@ public class VmForwardingPortServiceImpl implements VmForwardingPortService {
 	
 	@Resource
 	private VmForwardingPortDao vmForwardingPortDao;
+	
+	@Autowired
+	private VmForwardingPortCache vmForwardingPortCache;
 
 	@Override
 	public Integer generateUniquePublicPort(String networkId) {
@@ -72,21 +78,41 @@ public class VmForwardingPortServiceImpl implements VmForwardingPortService {
 
 	@Override
 	public VmForwardingPort getVmForwardingPortByVmId(String vmId) {
-		
-		return vmForwardingPortDao.findByVmId(vmId);
+		VmForwardingPort result = null;
+
+		Map<String, VmForwardingPort> vmForwardingPortMapByVmId = vmForwardingPortCache
+				.getVmForwardingPortMapByVmId();
+		if (vmForwardingPortMapByVmId != null) {
+			result = vmForwardingPortMapByVmId.get(vmId);
+		}
+
+		return result;
 	}
 
 	@Override
-	public List<VmForwardingPort> getVmForwardingPortListByCityId(String cityId) {
-		
-		return vmForwardingPortDao.findByCityId(cityId);
+	public List<VmForwardingPort> getVmForwardingPortListByCityId(Integer cityId) {
+		List<VmForwardingPort> result = null;
+
+		Map<Integer, List<VmForwardingPort>> vmForwardingPortMapByCityId = vmForwardingPortCache
+				.getVmForwardingPortMapByCityId();
+		if (vmForwardingPortMapByCityId != null) {
+			result = vmForwardingPortMapByCityId.get(cityId);
+		}
+
+		return result;
 	}
 
 	@Override
 	public List<VmForwardingPort> getVmForwardingPortListByNetworkId(
 			String networkId) {
+		List<VmForwardingPort> result = null;
 		
-		return vmForwardingPortDao.findByNetworkId(networkId);
+		Map<String, List<VmForwardingPort>> vmForwardingPortMapByNetworkId = vmForwardingPortCache.getVmForwardingPortMapByNetworkId();
+		if (vmForwardingPortMapByNetworkId != null) {
+			result = vmForwardingPortMapByNetworkId.get(networkId);
+		}
+		
+		return result;
 	}
 
 }

@@ -18,14 +18,14 @@ public interface CityMonitorService {
 	 * @param interfaceName
 	 * @return
 	 */
-	public RxbpsTxbpsDto getCityRxbpsTxbps(String cityId, String interfaceName);
+	public RxbpsTxbpsDto getCityRxbpsTxbps(Integer cityId, String interfaceName);
 	
 	/**
 	 * 某一时刻某个城市正在处理的并发请求连接数汇总
 	 * @param cityId
 	 * @return
 	 */
-	public Long getCityConcurrencyRequestNum(String cityId);
+	public Long getCityConcurrencyRequestNum(Integer cityId);
 	
 	/**
 	 * 某个城市的网络在某个网卡上的数据吞吐率数据汇总

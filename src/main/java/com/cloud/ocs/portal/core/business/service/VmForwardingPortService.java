@@ -46,7 +46,7 @@ public interface VmForwardingPortService {
 	 * @param cityId
 	 * @return
 	 */
-	public List<VmForwardingPort> getVmForwardingPortListByCityId(String cityId);
+	public List<VmForwardingPort> getVmForwardingPortListByCityId(Integer cityId);
 	
 	/**
 	 * 的到某一城市的某一网络下所有虚拟机的端口转发规则

@@ -15,7 +15,8 @@ $("body").on("click", "#vm-cpu-usage-monitor-btn", function() {
 			data: []
 		});
 		vmCpuUsageMonitorChartCurrSeries++;
-		startMonitoringVmCpuUsage();
+		// startMonitoringVmCpuUsage();
+		window.vmCpuUsageMonitorTimer = setTimeout(startMonitoringVmCpuUsage, 0);
 	} else {
 		//设置button文字
 		$(this).text("点击开始监控CPU使用情况");
@@ -44,10 +45,13 @@ function startMonitoringVmCpuUsage() {
 
 			vmCpuUsageMonitorChart.xAxis[0].setExtremes(x - 100 * 1000, x, false); //100个点 
 			vmCpuUsageMonitorChart.redraw();
-			window.vmCpuUsageMonitorTimer = setTimeout(startMonitoringVmCpuUsage, 1000);
+			if (window.vmCpuUsageMonitorTimer != null) {
+				window.vmCpuUsageMonitorTimer = setTimeout(startMonitoringVmCpuUsage, 1000);
+			}
 		},
 		error: function(xhr, status) {
 			clearTimeout(window.vmCpuUsageMonitorTimer);
+			window.vmCpuUsageMonitorTimer = null;
 			alert(status);
 		}
 	});
@@ -56,4 +60,5 @@ function startMonitoringVmCpuUsage() {
 function stopMonitoringVmCpuUsage() {
 	console.log("stop timer");
 	clearTimeout(window.vmCpuUsageMonitorTimer);
+	window.vmCpuUsageMonitorTimer = null;
 }
