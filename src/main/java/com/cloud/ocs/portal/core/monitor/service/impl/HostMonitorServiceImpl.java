@@ -14,7 +14,7 @@ import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
 import com.cloud.ocs.portal.core.monitor.dto.HostDetail;
 import com.cloud.ocs.portal.core.monitor.service.HostMonitorService;
-import com.cloud.ocs.portal.core.monitor.service.VmMonitorService;
+import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 import com.cloud.ocs.portal.utils.UnitUtil;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
@@ -32,7 +32,7 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 public class HostMonitorServiceImpl implements HostMonitorService {
 	
 	@Resource
-	private VmMonitorService vmMonitorService;
+	private OcsVmMonitorService vmMonitorService;
 
 	@Override
 	public List<HostDetail> getHostDetailList(String zoneId) {

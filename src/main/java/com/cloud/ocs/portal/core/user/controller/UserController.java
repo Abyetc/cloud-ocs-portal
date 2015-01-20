@@ -3,8 +3,6 @@ package com.cloud.ocs.portal.core.user.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,8 +13,6 @@ import com.cloud.ocs.portal.core.user.bean.User;
 import com.cloud.ocs.portal.core.user.constant.LoginStatus;
 import com.cloud.ocs.portal.core.user.constant.LoginUserConstant;
 import com.cloud.ocs.portal.core.user.service.UserService;
-import com.cloud.ocs.portal.utils.sigar.NetworkData;
-import com.cloud.ocs.portal.utils.sigar.SigarUtil;
 
 /**
  * 系统用户行为Controller入口
@@ -74,27 +70,4 @@ public class UserController {
 		return "index";
 	}
 	
-	@RequestMapping(value="/test", method=RequestMethod.GET)
-	public String test() {
-//		Sigar sigar = SigarUtil.sigar;
-//		try {
-//			System.out.println(sigar.getCpuInfoList().length);
-//		} catch (SigarException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-        try {
-			new NetworkData(SigarUtil.sigar);
-			NetworkData.newMetricThread();
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-		return "index";
-	}
 }

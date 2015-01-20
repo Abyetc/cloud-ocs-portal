@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
-import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
 import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.dto.PublicIpDto;
 import com.cloud.ocs.portal.core.sync.constant.SyncApiName;
 import com.cloud.ocs.portal.core.sync.service.SyncNetworkStateService;
+import com.cloud.ocs.portal.properties.OcsVmProperties;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
@@ -79,7 +79,7 @@ public class SyncNetworkStateServiceImpl implements SyncNetworkStateService{
 						network.setNetworkName(jsonObj.getString("name"));
 						network.setZoneId(jsonObj.getString("zoneid"));
 						network.setNetworkOfferingId(jsonObj.getString("networkofferingid"));
-						network.setServicePort(CloudOcsServicePort.PUBLIC_SERVICE_PORT);
+						network.setServicePort(OcsVmProperties.getOcsVmEngineServicePort());
 						if (jsonObj.has("vlan")) {
 							network.setVlan(jsonObj.getString("vlan"));
 						}

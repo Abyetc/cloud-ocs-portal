@@ -8,7 +8,7 @@ package com.cloud.ocs.portal.core.monitor.dto;
  * @date 2014-12-27 下午4:43:37
  * 
  */
-public class VmDetail {
+public class OcsVmDetail {
 
 	private String zoneId;
 	private String zoneName;

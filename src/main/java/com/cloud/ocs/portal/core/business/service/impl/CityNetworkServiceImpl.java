@@ -16,13 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
-import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
 import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
 import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.OcsVmService;
+import com.cloud.ocs.portal.properties.OcsVmProperties;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
@@ -87,7 +87,7 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 			result.setMessage("Add City-Network Success.");
 			Date created = new Date();
 			cityNetwork.setCreated(new Timestamp(created.getTime()));
-			cityNetwork.setServicePort(CloudOcsServicePort.PUBLIC_SERVICE_PORT);
+			cityNetwork.setServicePort(OcsVmProperties.getOcsVmEngineServicePort());
 			cityNetwork.setNetworkState(NetworkState.ALLOCATED.getCode());
 			
 			//持久化到本地数据库

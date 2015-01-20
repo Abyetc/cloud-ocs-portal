@@ -9,8 +9,8 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.cloud.ocs.portal.core.business.bean.VmForwardingPort;
-import com.cloud.ocs.portal.core.business.dao.VmForwardingPortDao;
+import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
+import com.cloud.ocs.portal.core.business.dao.OcsVmForwardingPortDao;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 
 /**
@@ -22,39 +22,39 @@ import com.cloud.ocs.portal.core.business.service.CityNetworkService;
  *
  */
 @Service
-public class VmForwardingPortCache {
+public class OcsVmForwardingPortCache {
 	
 	@Resource
-	private VmForwardingPortDao vmForwardingPortDao;
+	private OcsVmForwardingPortDao vmForwardingPortDao;
 	
 	@Resource
 	private CityNetworkService cityNetworkService;
 
-	private Map<String, VmForwardingPort> vmForwardingPortMapByVmId;
-	private Map<String, List<VmForwardingPort>> vmForwardingPortMapByNetworkId;
-	private Map<Integer, List<VmForwardingPort>> vmForwardingPortMapByCityId;
+	private Map<String, OcsVmForwardingPort> vmForwardingPortMapByVmId;
+	private Map<String, List<OcsVmForwardingPort>> vmForwardingPortMapByNetworkId;
+	private Map<Integer, List<OcsVmForwardingPort>> vmForwardingPortMapByCityId;
 	
-	public Map<String, VmForwardingPort> getVmForwardingPortMapByVmId() {
+	public Map<String, OcsVmForwardingPort> getVmForwardingPortMapByVmId() {
 		if (vmForwardingPortMapByVmId == null) {
-			List<VmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
+			List<OcsVmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
 			loadVmForwardingPortMapByVmIdFromDB(vmForwardingPortList);
 		}
 		
 		return vmForwardingPortMapByVmId;
 	}
 	
-	public Map<String, List<VmForwardingPort>> getVmForwardingPortMapByNetworkId() {
+	public Map<String, List<OcsVmForwardingPort>> getVmForwardingPortMapByNetworkId() {
 		if (vmForwardingPortMapByNetworkId == null) {
-			List<VmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
+			List<OcsVmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
 			loadVmForwardingPortMapByNetworkIdFromDB(vmForwardingPortList);
 		}
 		
 		return vmForwardingPortMapByNetworkId;
 	}
 	
-	public Map<Integer, List<VmForwardingPort>> getVmForwardingPortMapByCityId() {
+	public Map<Integer, List<OcsVmForwardingPort>> getVmForwardingPortMapByCityId() {
 		if (vmForwardingPortMapByCityId == null) {
-			List<VmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
+			List<OcsVmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
 			loadVmForwardingPortMapByCityIdFromDB(vmForwardingPortList);
 		}
 		
@@ -62,33 +62,33 @@ public class VmForwardingPortCache {
 	}
 	
 	public void reloadDataFromDB() {
-		List<VmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
+		List<OcsVmForwardingPort> vmForwardingPortList = vmForwardingPortDao.findAll();
 		loadVmForwardingPortMapByVmIdFromDB(vmForwardingPortList);
 		loadVmForwardingPortMapByNetworkIdFromDB(vmForwardingPortList);
 		loadVmForwardingPortMapByCityIdFromDB(vmForwardingPortList);
 	}
 	
-	private void loadVmForwardingPortMapByVmIdFromDB(List<VmForwardingPort> vmForwardingPortList) {
+	private void loadVmForwardingPortMapByVmIdFromDB(List<OcsVmForwardingPort> vmForwardingPortList) {
 		if (vmForwardingPortList != null) {
-			vmForwardingPortMapByVmId = new TreeMap<String, VmForwardingPort>();
-			for (VmForwardingPort vmForwardingPort : vmForwardingPortList) {
+			vmForwardingPortMapByVmId = new TreeMap<String, OcsVmForwardingPort>();
+			for (OcsVmForwardingPort vmForwardingPort : vmForwardingPortList) {
 				vmForwardingPortMapByVmId.put(vmForwardingPort.getVmId(), vmForwardingPort);
 			}
 		}
 	}
 	
-	private void loadVmForwardingPortMapByNetworkIdFromDB(List<VmForwardingPort> vmForwardingPortList) {
+	private void loadVmForwardingPortMapByNetworkIdFromDB(List<OcsVmForwardingPort> vmForwardingPortList) {
 		if (vmForwardingPortList != null) {
-			vmForwardingPortMapByNetworkId = new TreeMap<String, List<VmForwardingPort>>();
-			for (VmForwardingPort vmForwardingPort : vmForwardingPortList) {
+			vmForwardingPortMapByNetworkId = new TreeMap<String, List<OcsVmForwardingPort>>();
+			for (OcsVmForwardingPort vmForwardingPort : vmForwardingPortList) {
 				String networkId = vmForwardingPort.getNetworkId();
 				if (vmForwardingPortMapByNetworkId.containsKey(networkId)) {
-					List<VmForwardingPort> oldVmForwardingPortList = vmForwardingPortMapByNetworkId.get(networkId);
+					List<OcsVmForwardingPort> oldVmForwardingPortList = vmForwardingPortMapByNetworkId.get(networkId);
 					oldVmForwardingPortList.add(vmForwardingPort);
 					vmForwardingPortMapByNetworkId.put(networkId, oldVmForwardingPortList);
 				}
 				else {
-					List<VmForwardingPort> newVmForwardingPortList = new ArrayList<VmForwardingPort>();
+					List<OcsVmForwardingPort> newVmForwardingPortList = new ArrayList<OcsVmForwardingPort>();
 					newVmForwardingPortList.add(vmForwardingPort);
 					vmForwardingPortMapByNetworkId.put(networkId, newVmForwardingPortList);
 				}
@@ -96,19 +96,19 @@ public class VmForwardingPortCache {
 		}
 	}
 	
-	private void loadVmForwardingPortMapByCityIdFromDB(List<VmForwardingPort> vmForwardingPortList) {
+	private void loadVmForwardingPortMapByCityIdFromDB(List<OcsVmForwardingPort> vmForwardingPortList) {
 		if (vmForwardingPortList != null) {
-			vmForwardingPortMapByCityId = new TreeMap<Integer, List<VmForwardingPort>>();
+			vmForwardingPortMapByCityId = new TreeMap<Integer, List<OcsVmForwardingPort>>();
 			Map<String, Integer> networkIdCityIdMap = cityNetworkService.getNetworkIdCityIdMap();
-			for (VmForwardingPort vmForwardingPort : vmForwardingPortList) {
+			for (OcsVmForwardingPort vmForwardingPort : vmForwardingPortList) {
 				Integer cityId = networkIdCityIdMap.get(vmForwardingPort.getNetworkId());
 				if (vmForwardingPortMapByCityId.containsKey(cityId)) {
-					List<VmForwardingPort> oldVmForwardingPortList = vmForwardingPortMapByCityId.get(cityId);
+					List<OcsVmForwardingPort> oldVmForwardingPortList = vmForwardingPortMapByCityId.get(cityId);
 					oldVmForwardingPortList.add(vmForwardingPort);
 					vmForwardingPortMapByCityId.put(cityId, oldVmForwardingPortList);
 				}
 				else {
-					List<VmForwardingPort> newVmForwardingPortList = new ArrayList<VmForwardingPort>();
+					List<OcsVmForwardingPort> newVmForwardingPortList = new ArrayList<OcsVmForwardingPort>();
 					newVmForwardingPortList.add(vmForwardingPort);
 					vmForwardingPortMapByCityId.put(cityId, newVmForwardingPortList);
 				}

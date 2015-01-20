@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
-import com.cloud.ocs.portal.core.monitor.dto.VmDetail;
-import com.cloud.ocs.portal.core.monitor.service.VmMonitorService;
+import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
+import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 
 /**
  * 用户VM监控模块Controller
@@ -24,14 +24,14 @@ import com.cloud.ocs.portal.core.monitor.service.VmMonitorService;
  */
 @Controller
 @RequestMapping(value="/monitor/vm")
-public class VmMonitorController {
+public class OcsVmMonitorController {
 	
 	@Resource
-	private VmMonitorService vmMonitorService;
+	private OcsVmMonitorService vmMonitorService;
 	
 	@RequestMapping(value="/listVmDetail", method=RequestMethod.GET)
 	@ResponseBody
-	public List<VmDetail> listVmDetail(@RequestParam("hostId") String hostId) {
+	public List<OcsVmDetail> listVmDetail(@RequestParam("hostId") String hostId) {
 		return vmMonitorService.getVmDetailList(hostId);
 	}
 	

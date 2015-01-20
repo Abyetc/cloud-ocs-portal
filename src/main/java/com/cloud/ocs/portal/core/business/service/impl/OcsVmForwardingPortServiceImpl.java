@@ -1,5 +1,6 @@
 package com.cloud.ocs.portal.core.business.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cloud.ocs.portal.core.business.bean.VmForwardingPort;
-import com.cloud.ocs.portal.core.business.cache.VmForwardingPortCache;
-import com.cloud.ocs.portal.core.business.dao.VmForwardingPortDao;
-import com.cloud.ocs.portal.core.business.service.VmForwardingPortService;
+import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
+import com.cloud.ocs.portal.core.business.cache.OcsVmForwardingPortCache;
+import com.cloud.ocs.portal.core.business.dao.OcsVmForwardingPortDao;
+import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.utils.RandomNumUtil;
 
 /**
@@ -25,20 +26,20 @@ import com.cloud.ocs.portal.utils.RandomNumUtil;
  */
 @Transactional
 @Service
-public class VmForwardingPortServiceImpl implements VmForwardingPortService {
+public class OcsVmForwardingPortServiceImpl implements OcsVmForwardingPortService {
 	
 	private static final Integer MIN_PORT = 1024;
 	private static final Integer MAX_PORT = 65535;
 	
 	@Resource
-	private VmForwardingPortDao vmForwardingPortDao;
+	private OcsVmForwardingPortDao vmForwardingPortDao;
 	
 	@Autowired
-	private VmForwardingPortCache vmForwardingPortCache;
+	private OcsVmForwardingPortCache vmForwardingPortCache;
 
 	@Override
 	public Integer generateUniquePublicPort(String networkId) {
-		List<Integer> usedPublicPorts = vmForwardingPortDao.findAllPublicPortInNetwork(networkId);
+		List<Integer> usedPublicPorts = this.getAllPublicPortInNetwork(networkId);
 		
 		Integer randomPort = RandomNumUtil.randInt(MIN_PORT, MAX_PORT);
 		while (checkPortUsed(randomPort, usedPublicPorts)) {
@@ -46,6 +47,16 @@ public class VmForwardingPortServiceImpl implements VmForwardingPortService {
 		}
 		
 		return randomPort;
+	}
+	
+	private List<Integer> getAllPublicPortInNetwork(String networkId) {
+		List<Integer> result = new ArrayList<Integer>();
+		
+		result.addAll(vmForwardingPortDao.findAllMonitorPublicPortInNetwork(networkId));
+		result.addAll(vmForwardingPortDao.findAllSshPublicPortInNetwork(networkId));
+		
+		return result;
+		
 	}
 	
 	private boolean checkPortUsed(Integer port, List<Integer> usedPublicPorts) {
@@ -64,23 +75,26 @@ public class VmForwardingPortServiceImpl implements VmForwardingPortService {
 	@Override
 	public void saveForwardingPort(String networkId, String publicIp,
 			String publicIpId, String vmId,
-			Integer publicPort, Integer privatePort) {
-		VmForwardingPort model = new VmForwardingPort();
+			Integer monitorPublicPort,
+			Integer monitorPrivatePort, Integer sshPublicPort, Integer sshPrivatePort) {
+		OcsVmForwardingPort model = new OcsVmForwardingPort();
 		model.setNetworkId(networkId);
 		model.setPublicIp(publicIp);
 		model.setPublicIpId(publicIpId);
 		model.setVmId(vmId);
-		model.setPublicPort(publicPort);
-		model.setPrivatePort(privatePort);
+		model.setMonitorPublicPort(monitorPublicPort);
+		model.setMonitorPrivatePort(monitorPrivatePort);
+		model.setSshPublicPort(sshPublicPort);
+		model.setSshPrivatePort(sshPrivatePort);
 		
 		vmForwardingPortDao.persist(model);
 	}
 
 	@Override
-	public VmForwardingPort getVmForwardingPortByVmId(String vmId) {
-		VmForwardingPort result = null;
+	public OcsVmForwardingPort getVmForwardingPortByVmId(String vmId) {
+		OcsVmForwardingPort result = null;
 
-		Map<String, VmForwardingPort> vmForwardingPortMapByVmId = vmForwardingPortCache
+		Map<String, OcsVmForwardingPort> vmForwardingPortMapByVmId = vmForwardingPortCache
 				.getVmForwardingPortMapByVmId();
 		if (vmForwardingPortMapByVmId != null) {
 			result = vmForwardingPortMapByVmId.get(vmId);
@@ -90,10 +104,10 @@ public class VmForwardingPortServiceImpl implements VmForwardingPortService {
 	}
 
 	@Override
-	public List<VmForwardingPort> getVmForwardingPortListByCityId(Integer cityId) {
-		List<VmForwardingPort> result = null;
+	public List<OcsVmForwardingPort> getVmForwardingPortListByCityId(Integer cityId) {
+		List<OcsVmForwardingPort> result = null;
 
-		Map<Integer, List<VmForwardingPort>> vmForwardingPortMapByCityId = vmForwardingPortCache
+		Map<Integer, List<OcsVmForwardingPort>> vmForwardingPortMapByCityId = vmForwardingPortCache
 				.getVmForwardingPortMapByCityId();
 		if (vmForwardingPortMapByCityId != null) {
 			result = vmForwardingPortMapByCityId.get(cityId);
@@ -103,11 +117,11 @@ public class VmForwardingPortServiceImpl implements VmForwardingPortService {
 	}
 
 	@Override
-	public List<VmForwardingPort> getVmForwardingPortListByNetworkId(
+	public List<OcsVmForwardingPort> getVmForwardingPortListByNetworkId(
 			String networkId) {
-		List<VmForwardingPort> result = null;
+		List<OcsVmForwardingPort> result = null;
 		
-		Map<String, List<VmForwardingPort>> vmForwardingPortMapByNetworkId = vmForwardingPortCache.getVmForwardingPortMapByNetworkId();
+		Map<String, List<OcsVmForwardingPort>> vmForwardingPortMapByNetworkId = vmForwardingPortCache.getVmForwardingPortMapByNetworkId();
 		if (vmForwardingPortMapByNetworkId != null) {
 			result = vmForwardingPortMapByNetworkId.get(networkId);
 		}

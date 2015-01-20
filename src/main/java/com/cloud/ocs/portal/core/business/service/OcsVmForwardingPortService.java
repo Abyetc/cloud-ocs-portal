@@ -2,7 +2,8 @@ package com.cloud.ocs.portal.core.business.service;
 
 import java.util.List;
 
-import com.cloud.ocs.portal.core.business.bean.VmForwardingPort;
+import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
+
 
 /**
  * 虚拟机转发端口service接口
@@ -12,7 +13,7 @@ import com.cloud.ocs.portal.core.business.bean.VmForwardingPort;
  * @date 2015-1-13 下午2:50:12
  *
  */
-public interface VmForwardingPortService {
+public interface OcsVmForwardingPortService {
 
 	/**
 	 * 得到该网络中一个还未被使用的公共端口用于端口转发
@@ -27,31 +28,33 @@ public interface VmForwardingPortService {
 	 * @param publicIp
 	 * @param publicIpId
 	 * @param vmId
-	 * @param publicPort
-	 * @param privatePort
+	 * @param monitorPublicPort
+	 * @param monitorPrivatePort
+	 * @param sshPublicPort
+	 * @param sshPrivatePort
 	 */
 	public void saveForwardingPort(String networkId, String publicIp,
-			String publicIpId, String vmId, Integer publicPort,
-			Integer privatePort);
+			String publicIpId, String vmId, Integer monitorPublicPort,
+			Integer monitorPrivatePort, Integer sshPublicPort, Integer sshPrivatePort);
 	
 	/**
 	 * 得到虚拟机的端口转发规则
 	 * @param vmId
 	 * @return
 	 */
-	public VmForwardingPort getVmForwardingPortByVmId(String vmId);
+	public OcsVmForwardingPort getVmForwardingPortByVmId(String vmId);
 	
 	/**
 	 * 得到某一城市下所有虚拟机的端口转发规则
 	 * @param cityId
 	 * @return
 	 */
-	public List<VmForwardingPort> getVmForwardingPortListByCityId(Integer cityId);
+	public List<OcsVmForwardingPort> getVmForwardingPortListByCityId(Integer cityId);
 	
 	/**
 	 * 的到某一城市的某一网络下所有虚拟机的端口转发规则
 	 * @param networkId
 	 * @return
 	 */
-	public List<VmForwardingPort> getVmForwardingPortListByNetworkId(String networkId);
+	public List<OcsVmForwardingPort> getVmForwardingPortListByNetworkId(String networkId);
 }

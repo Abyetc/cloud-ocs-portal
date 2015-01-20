@@ -134,16 +134,33 @@
 		<!-- 每1分钟运行一次 -->
 		<property name="cronExpression" value="0 */1 * * * ?" />
 	</bean>
-
-<!-- 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
-<!-- 		<property name="triggers"> -->
-<!--  			<list>  -->
-<!--    				<ref bean="syncCityNetworkStateJobTrigger" /> -->
-<!--  			</list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
 	
-	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.core.business.cache.VmForwardingPortCache">
+	<!-- 配置检查Ocs VM上的计费引擎程序状态的定时Job -->
+	<bean id="checkAndUpdateOcsEngineStateOnAllVmsJob" class="com.cloud.ocs.portal.core.monitor.service.impl.OcsEngineMonitorServiceImpl"></bean>
+	<bean id="checkAndUpdateOcsEngineStateOnAllVmsJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 指定任务类 -->
+		<property name="targetObject" ref="checkAndUpdateOcsEngineStateOnAllVmsJob" />
+		<!-- 指定任务执行的方法 -->
+		<property name="targetMethod" value="checkAndUpdateOcsEngineStateOnAllVms" />
+	</bean>
+	<bean id="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="checkAndUpdateOcsEngineStateOnAllVmsJobDetail" />
+		<!-- 每1分钟运行一次 -->
+		<property name="cronExpression" value="0 */1 * * * ?" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+ 			<list> 
+   				<ref bean="syncCityNetworkStateJobTrigger" />
+   				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" />
+ 			</list>
+		</property>
+	</bean>
+	
+	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.core.business.cache.OcsVmForwardingPortCache">
 	</bean>
 
 </beans>

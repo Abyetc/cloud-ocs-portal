@@ -7,7 +7,14 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
-
+/**
+ * 调用CloudStack Api的常量Properties
+ * 
+ * @author Wang Chao
+ *
+ * @date 2015-1-19 下午10:15:51
+ *
+ */
 public class CloudStackApiProperties {
 	
 	private static Properties cloudStackAPISecretProperties;

@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
-import com.cloud.ocs.portal.core.business.constant.CloudOcsServicePort;
 import com.cloud.ocs.portal.core.business.dto.LoadBalancerRuleDto;
 import com.cloud.ocs.portal.core.business.service.PublicIpService;
+import com.cloud.ocs.portal.properties.OcsVmProperties;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 
@@ -49,8 +49,8 @@ public class PublicIpServiceImpl implements PublicIpService {
 					LoadBalancerRuleDto loadBalancerRuleDto = new LoadBalancerRuleDto();
 					loadBalancerRuleDto.setLoadBalancerRuleId(jsonObj.getString("id"));
 					loadBalancerRuleDto.setLoadBalancerRuleName(jsonObj.getString("name"));
-					loadBalancerRuleDto.setPrivatePort(CloudOcsServicePort.PUBLIC_SERVICE_PORT.toString());
-					loadBalancerRuleDto.setPublicPort(CloudOcsServicePort.PUBLIC_SERVICE_PORT.toString());
+					loadBalancerRuleDto.setPrivatePort(OcsVmProperties.getOcsVmEngineServicePort().toString());
+					loadBalancerRuleDto.setPublicPort(OcsVmProperties.getOcsVmEngineServicePort().toString());
 					loadBalancerRuleDto.setAlgorithm(jsonObj.getString("algorithm"));
 					loadBalancerRuleDto.setState(jsonObj.getString("state"));
 					result.add(loadBalancerRuleDto);

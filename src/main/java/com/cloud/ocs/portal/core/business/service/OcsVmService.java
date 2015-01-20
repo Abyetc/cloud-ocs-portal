@@ -15,18 +15,38 @@ import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
  * 
  */
 public interface OcsVmService {
+	
+	/**
+	 * 得到属于该network下的所有ocs虚拟机的数量
+	 * @param networkId
+	 * @return
+	 */
+	public Integer getOcsVmsNum(String networkId);
 
+	/**
+	 * 获得属于该network下的所有ocs虚拟机列表
+	 * @param networkId
+	 * @return
+	 */
 	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId);
 	
 	/**
-	 * 
+	 * 得到以network name为key，该network中的Vm List为value的map
 	 * @param cityId
-	 * @return 返回以network name为key，该network中的Vm List为value的map
+	 * @return 
 	 */
 	public Map<String, List<OcsVmDto>> getOcsVmsListByCityId(Integer cityId);
 
-	public Integer getOcsVmsNum(String networkId);
-
+	/**
+	 * 添加新的ocs虚拟机
+	 * @param vmName
+	 * @param networkId
+	 * @param zoneId
+	 * @param serviceOfferingId
+	 * @param templateId
+	 * @return
+	 */
 	public AddOcsVmDto addOcsVm(String vmName, String networkId, String zoneId,
 			String serviceOfferingId, String templateId);
+
 }

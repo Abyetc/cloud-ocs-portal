@@ -9,37 +9,44 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * VmForwardingPort entity. @author MyEclipse Persistence Tools
+ * OcsVmForwardingPort entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "vm_forwarding_port", catalog = "cloud_ocs_portal")
-public class VmForwardingPort implements java.io.Serializable {
+@Table(name = "ocs_vm_forwarding_port", catalog = "cloud_ocs_portal")
+public class OcsVmForwardingPort implements java.io.Serializable {
 
 	// Fields
+
 	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private String vmId;
 	private String networkId;
 	private String publicIpId;
 	private String publicIp;
-	private Integer publicPort;
-	private Integer privatePort;
+	private Integer monitorPublicPort;
+	private Integer monitorPrivatePort;
+	private Integer sshPublicPort;
+	private Integer sshPrivatePort;
 
 	// Constructors
 
 	/** default constructor */
-	public VmForwardingPort() {
+	public OcsVmForwardingPort() {
 	}
 
 	/** full constructor */
-	public VmForwardingPort(String vmId, String networkId, String publicIpId,
-			String publicIp, Integer publicPort, Integer privatePort) {
+	public OcsVmForwardingPort(String vmId, String networkId,
+			String publicIpId, String publicIp, Integer monitorPublicPort,
+			Integer monitorPrivatePort, Integer sshPublicPort,
+			Integer sshPrivatePort) {
 		this.vmId = vmId;
 		this.networkId = networkId;
 		this.publicIpId = publicIpId;
 		this.publicIp = publicIp;
-		this.publicPort = publicPort;
-		this.privatePort = privatePort;
+		this.monitorPublicPort = monitorPublicPort;
+		this.monitorPrivatePort = monitorPrivatePort;
+		this.sshPublicPort = sshPublicPort;
+		this.sshPrivatePort = sshPrivatePort;
 	}
 
 	// Property accessors
@@ -90,22 +97,40 @@ public class VmForwardingPort implements java.io.Serializable {
 		this.publicIp = publicIp;
 	}
 
-	@Column(name = "public_port", nullable = false)
-	public Integer getPublicPort() {
-		return this.publicPort;
+	@Column(name = "monitor_public_port", nullable = false)
+	public Integer getMonitorPublicPort() {
+		return this.monitorPublicPort;
 	}
 
-	public void setPublicPort(Integer publicPort) {
-		this.publicPort = publicPort;
+	public void setMonitorPublicPort(Integer monitorPublicPort) {
+		this.monitorPublicPort = monitorPublicPort;
 	}
 
-	@Column(name = "private_port", nullable = false)
-	public Integer getPrivatePort() {
-		return this.privatePort;
+	@Column(name = "monitor_private_port", nullable = false)
+	public Integer getMonitorPrivatePort() {
+		return this.monitorPrivatePort;
 	}
 
-	public void setPrivatePort(Integer privatePort) {
-		this.privatePort = privatePort;
+	public void setMonitorPrivatePort(Integer monitorPrivatePort) {
+		this.monitorPrivatePort = monitorPrivatePort;
+	}
+
+	@Column(name = "ssh_public_port", nullable = false)
+	public Integer getSshPublicPort() {
+		return this.sshPublicPort;
+	}
+
+	public void setSshPublicPort(Integer sshPublicPort) {
+		this.sshPublicPort = sshPublicPort;
+	}
+
+	@Column(name = "ssh_private_port", nullable = false)
+	public Integer getSshPrivatePort() {
+		return this.sshPrivatePort;
+	}
+
+	public void setSshPrivatePort(Integer sshPrivatePort) {
+		this.sshPrivatePort = sshPrivatePort;
 	}
 
 }

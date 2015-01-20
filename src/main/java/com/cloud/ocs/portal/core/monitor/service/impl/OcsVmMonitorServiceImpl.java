@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
-import com.cloud.ocs.portal.core.business.bean.VmForwardingPort;
-import com.cloud.ocs.portal.core.business.service.VmForwardingPortService;
+import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
+import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
-import com.cloud.ocs.portal.core.monitor.dto.VmDetail;
-import com.cloud.ocs.portal.core.monitor.service.VmMonitorService;
+import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
+import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 import com.cloud.ocs.portal.utils.UnitUtil;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
@@ -33,10 +33,10 @@ import com.google.gson.Gson;
  */
 @Transactional
 @Service
-public class VmMonitorServiceImpl implements VmMonitorService {
+public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	
 	@Resource
-	private VmForwardingPortService vmForwardingPortService;
+	private OcsVmForwardingPortService vmForwardingPortService;
 
 	@Override
 	public int getVmNumOnHost(String hostId) {
@@ -65,7 +65,7 @@ public class VmMonitorServiceImpl implements VmMonitorService {
 	}
 
 	@Override
-	public List<VmDetail> getVmDetailList(String hostId) {
+	public List<OcsVmDetail> getVmDetailList(String hostId) {
 		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_VM_DETAIL);
 		request.addRequestParams("hostid", hostId);
 		request.addRequestParams("listall", "true");
@@ -73,7 +73,7 @@ public class VmMonitorServiceImpl implements VmMonitorService {
 		String requestUrl = request.generateRequestURL();
 		String response = HttpRequestSender.sendGetRequest(requestUrl);
 		
-		List<VmDetail> result = new ArrayList<VmDetail>();
+		List<OcsVmDetail> result = new ArrayList<OcsVmDetail>();
 		
 		if (response != null) {
 			JSONObject responseJsonObj = new JSONObject(response);
@@ -82,7 +82,7 @@ public class VmMonitorServiceImpl implements VmMonitorService {
 				JSONArray vmsJsonArrayObj = vmsListJsonObj.getJSONArray("virtualmachine");
 				if (vmsJsonArrayObj != null) {
 					for (int i = 0; i < vmsJsonArrayObj.length(); i++) {
-						VmDetail vmDetail = new VmDetail();
+						OcsVmDetail vmDetail = new OcsVmDetail();
 						JSONObject jsonObject = (JSONObject)vmsJsonArrayObj.get(i);
 						vmDetail.setZoneId(jsonObject.getString("zoneid"));
 						vmDetail.setZoneName(jsonObject.getString("zonename"));
@@ -148,14 +148,14 @@ public class VmMonitorServiceImpl implements VmMonitorService {
 
 	@Override
 	public RxbpsTxbpsDto getVmRxbpsTxbps(String vmId, String interfaceName) {
-		VmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
+		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
 		
 		if (vmForwardingPort == null) {
 			return null;
 		}
 		
 		StringBuffer url = new StringBuffer();
-		url.append("http://" + vmForwardingPort.getPublicIp() + ":" + vmForwardingPort.getPublicPort());
+		url.append("http://" + vmForwardingPort.getPublicIp() + ":" + vmForwardingPort.getMonitorPublicPort());
 		url.append("/cloud-ocs-monitor-data-gatherer/gatherer/network/getRxbpsTxbps");
 		url.append("?interfaceName=" + interfaceName);
 		
@@ -173,14 +173,14 @@ public class VmMonitorServiceImpl implements VmMonitorService {
 	public Long getVmConcurrencyRequestNum(String vmId) {
 		Long result = 0L;
 		
-		VmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
+		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
 		
 		if (vmForwardingPort == null) {
 			return 0L;
 		}
 		
 		StringBuffer url = new StringBuffer();
-		url.append("http://" + vmForwardingPort.getPublicIp() + ":" + vmForwardingPort.getPublicPort());
+		url.append("http://" + vmForwardingPort.getPublicIp() + ":" + vmForwardingPort.getMonitorPublicPort());
 		url.append("/cloud-ocs-monitor-data-gatherer/gatherer/network/getRequestNum");
 		
 		String json = RestfulClient.sendGetRequest(url.toString());

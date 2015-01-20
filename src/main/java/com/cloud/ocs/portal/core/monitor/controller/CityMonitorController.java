@@ -38,17 +38,4 @@ public class CityMonitorController {
 	public Long getCityConcurrencyRequestNum(@RequestParam("cityId") Integer cityId) {
 		return cityMonitorService.getCityConcurrencyRequestNum(cityId);
 	}
-	
-	@RequestMapping(value="/getCityNetworkRxbpsTxbps", method=RequestMethod.GET)
-	@ResponseBody
-	public RxbpsTxbpsDto getCityNetworkRxbpsTxbps(@RequestParam("cityNetworkId") String cityNetworkId,
-			@RequestParam("interfaceName") String interfaceName) {
-		return cityMonitorService.getCityNetworkRxbpsTxbps(cityNetworkId, interfaceName);
-	}
-	
-	@RequestMapping(value="/getCityNetworkConcurrencyRequestNum", method=RequestMethod.GET)
-	@ResponseBody
-	public Long getCityNetworkConcurrencyRequestNum(@RequestParam("cityNetworkId") String cityNetworkId) {
-		return cityMonitorService.getCityNetworkConcurrencyRequestNum(cityNetworkId);
-	}
 }

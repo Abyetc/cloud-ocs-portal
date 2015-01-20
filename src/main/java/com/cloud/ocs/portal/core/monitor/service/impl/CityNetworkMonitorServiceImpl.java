@@ -16,19 +16,11 @@ import org.springframework.stereotype.Service;
 import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
-import com.cloud.ocs.portal.core.monitor.service.CityMonitorService;
+import com.cloud.ocs.portal.core.monitor.service.CityNetworkMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 
-/**
- * 监控城市Service实现类
- * 
- * @author Wang Chao
- *
- * @date 2015-1-15 上午10:43:37
- *
- */
 @Service
-public class CityMonitorServiceImpl implements CityMonitorService {
+public class CityNetworkMonitorServiceImpl implements CityNetworkMonitorService {
 	
 	@Resource
 	private OcsVmForwardingPortService vmForwardingPortService;
@@ -37,10 +29,10 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 	private OcsVmMonitorService vmMonitorService;
 
 	@Override
-	public RxbpsTxbpsDto getCityRxbpsTxbps(Integer cityId, final String interfaceName) {
+	public RxbpsTxbpsDto getCityNetworkRxbpsTxbps(String networkId, final String interfaceName) {
 		RxbpsTxbpsDto result = new RxbpsTxbpsDto();
 		
-		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByCityId(cityId);
+		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByNetworkId(networkId);
 		
 		if (vmForwardingPorts == null) {
 			return result;
@@ -80,10 +72,10 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 	}
 
 	@Override
-	public Long getCityConcurrencyRequestNum(Integer cityId) {
+	public Long getCityNetworkConcurrencyRequestNum(String networkId) {
 		Long result = 0L;
 		
-		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByCityId(cityId);
+		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByNetworkId(networkId);
 		
 		if (vmForwardingPorts == null) {
 			return result;
@@ -120,5 +112,4 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 		
 		return result;
 	}
-
 }

@@ -3,7 +3,7 @@ package com.cloud.ocs.portal.core.monitor.service;
 import java.util.List;
 
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
-import com.cloud.ocs.portal.core.monitor.dto.VmDetail;
+import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 
 /**
  * 监控VM service接口
@@ -13,7 +13,7 @@ import com.cloud.ocs.portal.core.monitor.dto.VmDetail;
  * @date 2014-12-26 下午10:06:16
  *
  */
-public interface VmMonitorService {
+public interface OcsVmMonitorService {
 	
 	/**
 	 * 某台主机上用于虚拟机的数量
@@ -27,7 +27,7 @@ public interface VmMonitorService {
 	 * @param hostId
 	 * @return
 	 */
-	public List<VmDetail> getVmDetailList(String hostId);
+	public List<OcsVmDetail> getVmDetailList(String hostId);
 	
 	/**
 	 * 某个虚拟机的CPU的使用率

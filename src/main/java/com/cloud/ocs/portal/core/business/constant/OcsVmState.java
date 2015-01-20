@@ -8,7 +8,7 @@ package com.cloud.ocs.portal.core.business.constant;
  * @date 2014-12-30 下午9:28:01
  *
  */
-public enum VmState {
+public enum OcsVmState {
 
 	SRARTING("Starting", 0), 
 	RUNNING("Running", 1), 
@@ -24,7 +24,7 @@ public enum VmState {
 	private String description;
 	private int code;
 
-	private VmState(String description, int code) {
+	private OcsVmState(String description, int code) {
 		this.description = description;
 		this.code = code;
 	}
@@ -36,7 +36,7 @@ public enum VmState {
 	 * @return
 	 */
 	public static String getDescription(int code) {
-		for (VmState status : VmState.values()) {
+		for (OcsVmState status : OcsVmState.values()) {
 			if (status.getCode() == code) {
 				return status.getDescription();
 			}
@@ -51,7 +51,7 @@ public enum VmState {
 	 * @return
 	 */
 	public static Integer getCode(String description) {
-		for (VmState status : VmState.values()) {
+		for (OcsVmState status : OcsVmState.values()) {
 			if (status.getDescription().equals(description)) {
 				return status.getCode();
 			}
