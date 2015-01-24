@@ -24,7 +24,7 @@ import com.cloud.ocs.portal.utils.ssh.SSHClient;
  * @date 2015-1-19 下午9:42:19
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class OcsEngineServiceImpl implements OcsEngineService {
 	

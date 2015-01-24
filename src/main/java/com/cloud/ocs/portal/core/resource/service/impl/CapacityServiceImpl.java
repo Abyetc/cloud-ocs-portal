@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.resource.constant.ResourceApiName;
@@ -24,7 +23,6 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2014-12-11 下午2:39:34
  *
  */
-@Transactional
 @Service
 public class CapacityServiceImpl implements CapacityService {
 

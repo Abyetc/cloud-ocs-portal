@@ -13,8 +13,15 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.cloud.ocs.monitor.constant.MessageType;
+import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
+import com.cloud.ocs.monitor.service.MessageRecordService;
+import com.cloud.ocs.monitor.service.SessionRecordService;
+import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
+import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
+import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.service.CityNetworkMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
@@ -23,10 +30,83 @@ import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 public class CityNetworkMonitorServiceImpl implements CityNetworkMonitorService {
 	
 	@Resource
+	private SessionRecordService sessionRecordService;
+	
+	@Resource
+	private MessageRecordService messageRecordService;
+	
+	@Resource
+	private CityNetworkService cityNetworkService;
+	
+	@Resource
 	private OcsVmForwardingPortService vmForwardingPortService;
 	
 	@Resource
 	private OcsVmMonitorService vmMonitorService;
+	
+	@Override
+	public Long getRealtimeSessionNum(String networkId) {
+		CityNetwork cityNetwork = cityNetworkService.getCityNetworkByNetworkId(networkId);
+		
+		if (cityNetwork == null) {
+			return null;
+		}
+		
+		return sessionRecordService.getNetworkCurSessionNum(cityNetwork.getPublicIp());
+	}
+
+	@Override
+	public MessageProcessTimeDto getMessageProcessTime(String networkId) {
+		CityNetwork cityNetwork = cityNetworkService.getCityNetworkByNetworkId(networkId);
+		
+		if (cityNetwork == null) {
+			return null;
+		}
+		final String networkIp = cityNetwork.getPublicIp();
+		MessageProcessTimeDto result = new MessageProcessTimeDto();
+		
+		ExecutorService executor = Executors.newCachedThreadPool();
+		CompletionService<MessageAverageProcessTimeWrapper> comp = new ExecutorCompletionService<MessageAverageProcessTimeWrapper>(executor);
+		List<MessageType> threeMessageType = MessageType.getThreeMessageType();
+		for (final MessageType messageType : threeMessageType) {
+			comp.submit(new Callable<MessageAverageProcessTimeWrapper>() {
+				public MessageAverageProcessTimeWrapper call() throws Exception {
+					return messageRecordService.getMessageAverageProcessTimeOfNetwork(networkIp, messageType);
+				}
+			});
+		}
+		executor.shutdown();
+		int count = 0;
+		while (count < threeMessageType.size()) {
+			Future<MessageAverageProcessTimeWrapper> future = comp.poll();
+			if (future == null) {
+				continue;
+			}
+			else {
+				try {
+					MessageAverageProcessTimeWrapper messageProcessTimeWrapper = future.get();
+					MessageType messageType = messageProcessTimeWrapper.getMessageType();
+					if (messageType.equals(MessageType.INITIAL)) {
+						result.setMessageIProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.UPDATE)) {
+						result.setMessageUProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.TERMINAL)) {
+						result.setMessageTProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					count++;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		result.sumAllMessageProcessTime();
+		
+		return result;
+	}
 
 	@Override
 	public RxbpsTxbpsDto getCityNetworkRxbpsTxbps(String networkId, final String interfaceName) {
@@ -112,4 +192,5 @@ public class CityNetworkMonitorServiceImpl implements CityNetworkMonitorService 
 		
 		return result;
 	}
+
 }

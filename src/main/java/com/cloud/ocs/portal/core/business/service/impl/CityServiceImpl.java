@@ -23,7 +23,7 @@ import com.cloud.ocs.portal.core.business.service.CityService;
  * @date 2014-12-29 下午7:28:49
  * 
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class CityServiceImpl implements CityService {
 

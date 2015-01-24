@@ -4,10 +4,10 @@
 */
 
 //用于City Network监控图表的全局变量
-var cityNetworkRequestNumMonitorChart;
-var cityNetworkRequestNumMonitorChartCurrSeries = 0;
-var cityNetworkRxbpsTxbpsMonitorChart;
-var cityNetworkRxbpsTxbpsMonitorChartCurrSeries = 0;
+var cityNetworkRealtimeSessionNumMonitorChart;
+var cityNetworkRealtimeSessionNumMonitorChartCurrSeries = 0;
+var cityNetworkMessageProcessTimeMonitorChart;
+var cityNetworkMessageProcessTimeMonitorChartCurrSeries = 0;
 
 function monitorCityNetworks(cityId, networkId, networkName) {
 	//先处理breadcrumb
@@ -88,22 +88,22 @@ function monitorCityNetworks(cityId, networkId, networkName) {
 	window.curMonitorCityNetworkId = networkId;
 
 	//city vm并发请求数实时监控区域
-  $("#content-area").append("<div id='city-network-request-num-monitor-area' style='margin-top:100px;'>"
+  $("#content-area").append("<div id='city-network-realtime-session-num-monitor-area' style='margin-top:100px;'>"
     +   "<div>"
-    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-network-request-num-monitor-btn'>点击开始监控并发请求数</button>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-network-realtime-session-num-monitor-btn'>点击开始监控实时会话数</button>"
     +   "</div>"
-    +   "<div id='city-network-request-num-monitor-chart'></div>"
+    +   "<div id='city-network-realtime-session-num-monitor-chart'></div>"
     + "</div>");
-  cityNetworkRequestNumMonitorChart = new Highcharts.Chart({
+  cityNetworkRealtimeSessionNumMonitorChart = new Highcharts.Chart({
     chart: {
-      renderTo: 'city-network-request-num-monitor-chart',
+      renderTo: 'city-network-realtime-session-num-monitor-chart',
       type: 'line', //原来是：spline
       animation: Highcharts.svg, // don't animate in old IE
       marginRight: 10,
       plotBorderWidth: 1
     },
     title: {
-      text: networkName + " 正在处理的并发请求连接数"
+      text: networkName + " 实时会话数"
     },
     xAxis: {
       type: 'datetime',
@@ -115,7 +115,7 @@ function monitorCityNetworks(cityId, networkId, networkName) {
       min: 0,
       max: 100,
       title: {
-        text: '计费请求数量(个)'
+        text: '实时会话数(个)'
       },
       plotLines: [{
         value: 0,
@@ -127,7 +127,7 @@ function monitorCityNetworks(cityId, networkId, networkName) {
       formatter: function() {
         return '<b>' + this.series.name + '</b><br/>' +
           Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-          Highcharts.numberFormat(this.y, 2);
+          Highcharts.numberFormat(this.y, 0);
       }
     },
     legend: {
@@ -141,37 +141,40 @@ function monitorCityNetworks(cityId, networkId, networkName) {
     },
     series: []
   });
-  cityNetworkRequestNumMonitorChartCurrSeries = 0;
+  cityNetworkRealtimeSessionNumMonitorChartCurrSeries = 0;
 
-  //city network数据吞吐率实时监控区域
-  $("#content-area").append("<div id='city-network-rxbps-txbps-monitor-area' style='margin-top:100px;'>"
+  //city network包处理平均时长实时监控区域
+  $("#content-area").append("<div id='city-network-message-process-time-monitor-area' style='margin-top:100px;'>"
     +   "<div>"
-    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-network-rxbps-txbps-monitor-btn'>点击开始监控数据吞吐率</button>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-network-message-process-time-monitor-btn'>点击开始监控包处理平均时长</button>"
     +   "</div>"
-    +   "<div id='city-network-rxbps-txbps-monitor-chart'></div>"
+    +   "<div id='city-network-message-process-time-monitor-chart'></div>"
     + "</div>");
-  cityNetworkRxbpsTxbpsMonitorChart = new Highcharts.Chart({
+  cityNetworkMessageProcessTimeMonitorChart = new Highcharts.Chart({
     chart: {
-      renderTo: 'city-network-rxbps-txbps-monitor-chart',
+      renderTo: 'city-network-message-process-time-monitor-chart',
       type: 'line', //原来是：spline
       animation: Highcharts.svg, // don't animate in old IE
       marginRight: 10,
       plotBorderWidth: 1
     },
     title: {
-      text: networkName + " 接收/发送 数据吞吐率"
+      text: networkName + " 包处理平均时长"
     },
     xAxis: {
       type: 'datetime',
       // tickPixelInterval: 5,
       // tickLength: 20,
       tickInterval: 10 * 1000, //十秒钟一个间隔
+      dateTimeLabelFormats: { 
+        day: '%H:%M'
+      }
     },
     yAxis: {
       min: 0,
-      max: 1500,
+      max: 5000,
       title: {
-        text: '接收/发送数据吞吐率(KBps)'
+        text: '时长(ms)'
       },
       plotLines: [{
         value: 0,
@@ -187,7 +190,7 @@ function monitorCityNetworks(cityId, networkId, networkName) {
       }
     },
     legend: {
-      enabled: false
+      enabled: true
     },
     exporting: {
       enabled: false
@@ -197,5 +200,5 @@ function monitorCityNetworks(cityId, networkId, networkName) {
     },
     series: []
   });
-  cityNetworkRxbpsTxbpsMonitorChartCurrSeries = 0;
+  cityNetworkMessageProcessTimeMonitorChartCurrSeries = 0;
 }

@@ -14,7 +14,8 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 	<!-- 导入properties文件 -->
-	<context:property-placeholder location="classpath:properties/jdbc.properties" ignore-unresolvable="true"/>
+	<context:property-placeholder location="classpath:properties/portal-jdbc.properties" ignore-unresolvable="true"/>
+	<context:property-placeholder location="classpath:properties/monitor-jdbc.properties" ignore-unresolvable="true"/>
 	
 	<!-- 静态资源不经过springmvc拦截 -->
 	<mvc:annotation-driven/>
@@ -47,10 +48,11 @@
     
     <!-- 对包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
     <context:annotation-config /> 
-	<context:component-scan base-package="com.cloud.ocs.portal" />
+	<context:component-scan base-package="com.cloud.ocs" />
 	
+	<!-- ====================================开始配置portal数据库的数据源============================================= -->
 	<!-- 配置数据源 -->
-	<bean id="dataSource"
+	<bean id="portalDataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${com.cloud.ocs.portal.jdbc.driverClassName}" />
 		<property name="url" value="${com.cloud.ocs.portal.jdbc.url}" />
@@ -59,10 +61,11 @@
 	</bean>
 	
 	<!-- 配置entityManagerFactory -->
-	<bean id="entityManagerFactory"
+	<bean id="portalEntityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="portalDataSource" />
 		<property name="packagesToScan" value="com.cloud.ocs.portal" />
+		<property name="persistenceUnitName" value="portal_db" />
 		<property name="loadTimeWeaver">
 			<bean
 				class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
@@ -80,11 +83,12 @@
 		</property>
 	</bean>
 
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	<bean id="portalTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="portalEntityManagerFactory" />
+		<qualifier value="portal_em" />
 	</bean>
 	<!-- 定义使用事务的方法 -->
-	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+	<tx:advice id="portalTxAdvice" transaction-manager="portalTransactionManager">
 		<tx:attributes>
 			<tx:method name="find*" propagation="SUPPORTS" isolation="READ_COMMITTED" read-only="true"/>
 			<tx:method name="get*" propagation="SUPPORTS" isolation="READ_COMMITTED" read-only="true"/>
@@ -95,11 +99,48 @@
 	<!-- 定义切入点-->
 	<aop:config >
 		 <!-- 第一个*:通配任意返回值类型; 最后一个*:通配任意方法; 括号中的..:通配方法可以有0个或多个参数 -->
-         <aop:pointcut id="pointcut" expression="execution(* com.cloud.ocs..*.service.impl.*.*(..))" />   
-         <aop:advisor advice-ref = "txAdvice"  pointcut-ref="pointcut" />   
-     </aop:config >
+         <aop:pointcut id="portalPointcut" expression="execution(* com.cloud.ocs..*.service.impl.*.*(..))" />   
+         <aop:advisor advice-ref = "portalTxAdvice"  pointcut-ref="portalPointcut" />   
+    </aop:config >
+    <!-- ====================================结束配置portal数据库的数据源============================================= -->
      
-     <tx:annotation-driven />
+     
+    <!-- ====================================开始配置monitor数据库的数据源============================================= -->
+    <!-- 配置数据源 -->
+	<bean id="monitorDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${com.cloud.ocs.monitor.jdbc.driverClassName}" />
+		<property name="url" value="${com.cloud.ocs.monitor.jdbc.url}" />
+		<property name="username" value="${com.cloud.ocs.monitor.jdbc.username}" />
+		<property name="password" value="${com.cloud.ocs.monitor.jdbc.password}" />
+	</bean>
+	
+	<!-- 配置entityManagerFactory -->
+	<bean id="monitorEntityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="monitorDataSource" />
+		<property name="packagesToScan" value="com.cloud.ocs.monitor" />
+		<property name="persistenceUnitName" value="monitor_db" />
+		<property name="loadTimeWeaver">
+			<bean
+				class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+		</property>
+		<property name="persistenceProvider">
+			<bean class="org.hibernate.ejb.HibernatePersistence"></bean>
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+<!-- 				<prop key="hibernate.format_sql">true</prop> -->
+			</props>
+		</property>
+	</bean>
+    <!-- ====================================结束配置monitor数据库的数据源============================================= -->
+    
+    
+    <tx:annotation-driven />
 
 	<bean id="persistenceExceptionTranslationPostProcessor"
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
@@ -116,6 +157,9 @@
 
 	<bean id="handlerMapping"
 		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	</bean>
+	
+	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.core.business.cache.OcsVmForwardingPortCache">
 	</bean>
 	
 	
@@ -151,16 +195,13 @@
 		<property name="cronExpression" value="0 */1 * * * ?" />
 	</bean>
 
-	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-		<property name="triggers">
- 			<list> 
-   				<ref bean="syncCityNetworkStateJobTrigger" />
-   				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" />
- 			</list>
-		</property>
-	</bean>
+<!-- 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
+<!-- 		<property name="triggers"> -->
+<!--  			<list>  -->
+<!--    				<ref bean="syncCityNetworkStateJobTrigger" /> -->
+<!--    				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" /> -->
+<!--  			</list> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
 	
-	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.core.business.cache.OcsVmForwardingPortCache">
-	</bean>
-
 </beans>

@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
@@ -27,7 +26,6 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2014-12-21 下午4:09:42
  *
  */
-@Transactional
 @Service
 public class HostMonitorServiceImpl implements HostMonitorService {
 	

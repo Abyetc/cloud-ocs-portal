@@ -115,10 +115,10 @@ function listServiceMonitorCities() {
 }
 
 //用于City监控图表的全局变量
-var cityRequestNumMonitorChart;
-var cityRequestNumMonitorChartCurrSeries = 0;
-var cityRxbpsTxbpsMonitorChart;
-var cityRxbpsTxbpsMonitorChartCurrSeries = 0;
+var cityRealtimeSessionNumMonitorChart;
+var cityRealtimeSessionNumMonitorChartCurrSeries = 0;
+var cityMessageProcessTimeChart;
+var cityMessageProcessTimeChartCurrSeries = 0;
 
 function monitorCity(cityId, cityName) {
   var secondLevelTitle = $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text();
@@ -187,23 +187,23 @@ function monitorCity(cityId, cityName) {
   //将当前city Id设置为全局变量
   window.curMonitorCityId = cityId;
 
-  //city并发请求数实时监控区域
-  $("#content-area").append("<div id='city-request-num-monitor-area' style='margin-top:100px;'>"
+  //city实时会话数监控区域
+  $("#content-area").append("<div id='city-realtime-session-num-monitor-area' style='margin-top:100px;'>"
     +   "<div>"
-    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-request-num-monitor-btn'>点击开始监控并发请求数</button>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-realtime-session-num-monitor-btn'>点击开始监控实时会话数</button>"
     +   "</div>"
-    +   "<div id='city-request-num-monitor-chart'></div>"
+    +   "<div id='city-realtime-session-num-monitor-chart'></div>"
     + "</div>");
-  cityRequestNumMonitorChart = new Highcharts.Chart({
+  cityRealtimeSessionNumMonitorChart = new Highcharts.Chart({
     chart: {
-      renderTo: 'city-request-num-monitor-chart',
+      renderTo: 'city-realtime-session-num-monitor-chart',
       type: 'line', //原来是：spline
       animation: Highcharts.svg, // don't animate in old IE
       marginRight: 10,
       plotBorderWidth: 1
     },
     title: {
-      text: cityName + " 正在处理的并发请求连接数"
+      text: cityName + " 实时会话数"
     },
     xAxis: {
       type: 'datetime',
@@ -215,7 +215,7 @@ function monitorCity(cityId, cityName) {
       min: 0,
       max: 100,
       title: {
-        text: '计费请求数量(个)'
+        text: '实时会话数(个)'
       },
       plotLines: [{
         value: 0,
@@ -241,25 +241,25 @@ function monitorCity(cityId, cityName) {
     },
     series: []
   });
-  cityRequestNumMonitorChartCurrSeries = 0;
+  cityRealtimeSessionNumMonitorChartCurrSeries = 0;
 
   //city Rxbps实时监控区域
-  $("#content-area").append("<div id='city-rxbps-txbps-monitor-area' style='margin-top:100px;'>"
+  $("#content-area").append("<div id='city-message-process-time-monitor-area' style='margin-top:100px;'>"
     +   "<div>"
-    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-rxbps-txbps-monitor-btn'>点击开始监控数据吞吐率</button>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-message-process-time-monitor-btn'>点击开始监控包处理平均时长</button>"
     +   "</div>"
-    +   "<div id='city-rxbps-txbps-monitor-chart'></div>"
+    +   "<div id='city-message-process-time-monitor-chart'></div>"
     + "</div>");
-  cityRxbpsTxbpsMonitorChart = new Highcharts.Chart({
+  cityMessageProcessTimeChart = new Highcharts.Chart({
     chart: {
-      renderTo: 'city-rxbps-txbps-monitor-chart',
+      renderTo: 'city-message-process-time-monitor-chart',
       type: 'line', //原来是：spline
       animation: Highcharts.svg, // don't animate in old IE
       marginRight: 10,
       plotBorderWidth: 1
     },
     title: {
-      text: cityName + " 接收/发送 数据吞吐率"
+      text: cityName + " 包处理平均时长"
     },
     xAxis: {
       type: 'datetime',
@@ -269,9 +269,9 @@ function monitorCity(cityId, cityName) {
     },
     yAxis: {
       min: 0,
-      max: 2000,
+      max: 5000,
       title: {
-        text: '接收/发送数据吞吐率(KBps)'
+        text: '时长(ms)'
       },
       plotLines: [{
         value: 0,
@@ -287,7 +287,7 @@ function monitorCity(cityId, cityName) {
       }
     },
     legend: {
-      enabled: false
+      enabled: true
     },
     exporting: {
       enabled: false
@@ -297,5 +297,5 @@ function monitorCity(cityId, cityName) {
     },
     series: []
   });
-  cityRxbpsTxbpsMonitorChartCurrSeries = 0;
+  cityMessageProcessTimeChartCurrSeries = 0;
 }

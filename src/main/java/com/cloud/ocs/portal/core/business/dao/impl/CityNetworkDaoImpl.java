@@ -48,4 +48,12 @@ public class CityNetworkDaoImpl extends GenericDaoImpl<CityNetwork> implements C
 		return query.getResultList();
 	}
 
+	@Override
+	public List<String> findAllPublicIpsOfCity(Integer cityId) {
+		Query query = em.createQuery("select DISTINCT model.publicIp from CityNetwork model "
+				+ "where model.cityId=" + cityId);
+		
+		return query.getResultList();
+	}
+
 }

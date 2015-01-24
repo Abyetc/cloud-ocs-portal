@@ -2,6 +2,13 @@ package com.cloud.ocs.portal.core.monitor.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 
@@ -10,10 +17,16 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cloud.ocs.monitor.constant.MessageType;
+import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
+import com.cloud.ocs.monitor.service.MessageRecordService;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
+import com.cloud.ocs.portal.core.business.bean.OcsVm;
 import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
+import com.cloud.ocs.portal.core.business.service.OcsVmService;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
+import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
@@ -31,12 +44,18 @@ import com.google.gson.Gson;
  * @date 2014-12-26 下午10:07:41
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	
 	@Resource
 	private OcsVmForwardingPortService vmForwardingPortService;
+	
+	@Resource
+	private MessageRecordService messageRecordService;
+	
+	@Resource
+	private OcsVmService ocsVmService;
 
 	@Override
 	public int getVmNumOnHost(String hostId) {
@@ -122,7 +141,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	}
 
 	@Override
-	public double getCurVmCpuUsagePercentage(String vmId) {
+	public double getCurVmCpuUsagePercentageFromCs(String vmId) {
 		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_VM_DETAIL);
 		request.addRequestParams("id", vmId);
 		CloudStackApiSignatureUtil.generateSignature(request);
@@ -141,6 +160,50 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 					result = Double.parseDouble(resultStr.substring(0, resultStr.indexOf('%')));
 				}
 			}
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public Double getCurVmCpuUsagePercentage(String vmId) {
+		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
+		
+		if (vmForwardingPort == null) {
+			return null;
+		}
+		
+		StringBuffer url = new StringBuffer();
+		url.append("http://" + vmForwardingPort.getPublicIp() + ":" + vmForwardingPort.getMonitorPublicPort());
+		url.append("/cloud-ocs-monitor-data-gatherer/gatherer/cpu/getCpuUsage");
+		
+		String json = RestfulClient.sendGetRequest(url.toString());
+		Gson gson = new Gson();
+		Double result = gson.fromJson(json, Double.class);
+		if (result == null) {
+			result = new Double(0.0);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public Double getCurMemoryUsagePercentage(String vmId) {
+		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
+		
+		if (vmForwardingPort == null) {
+			return null;
+		}
+		
+		StringBuffer url = new StringBuffer();
+		url.append("http://" + vmForwardingPort.getPublicIp() + ":" + vmForwardingPort.getMonitorPublicPort());
+		url.append("/cloud-ocs-monitor-data-gatherer/gatherer/memory/getMemoryUsage");
+		
+		String json = RestfulClient.sendGetRequest(url.toString());
+		Gson gson = new Gson();
+		Double result = gson.fromJson(json, Double.class);
+		if (result == null) {
+			result = new Double(0.0);
 		}
 		
 		return result;
@@ -189,6 +252,59 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		if (result == null) {
 			return 0L;
 		}
+		
+		return result;
+	}
+
+	@Override
+	public MessageProcessTimeDto getCityVmMessageProcessTime(String vmId) {
+		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
+		if (ocsVm == null) {
+			return null;
+		}
+		final String networkIp = ocsVm.getPublicIp();
+		final String vmIp = ocsVm.getPrivateIp();
+		MessageProcessTimeDto result = new MessageProcessTimeDto();
+		
+		ExecutorService executor = Executors.newCachedThreadPool();
+		CompletionService<MessageAverageProcessTimeWrapper> comp = new ExecutorCompletionService<MessageAverageProcessTimeWrapper>(executor);
+		List<MessageType> threeMessageType = MessageType.getThreeMessageType();
+		for (final MessageType messageType : threeMessageType) {
+			comp.submit(new Callable<MessageAverageProcessTimeWrapper>() {
+				public MessageAverageProcessTimeWrapper call() throws Exception {
+					return messageRecordService.getMessageAverageProcessTimeOfVm(networkIp, vmIp, messageType);
+				}
+			});
+		}
+		executor.shutdown();
+		int count = 0;
+		while (count < threeMessageType.size()) {
+			Future<MessageAverageProcessTimeWrapper> future = comp.poll();
+			if (future == null) {
+				continue;
+			}
+			else {
+				try {
+					MessageAverageProcessTimeWrapper messageProcessTimeWrapper = future.get();
+					MessageType messageType = messageProcessTimeWrapper.getMessageType();
+					if (messageType.equals(MessageType.INITIAL)) {
+						result.setMessageIProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.UPDATE)) {
+						result.setMessageUProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.TERMINAL)) {
+						result.setMessageTProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					count++;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		result.sumAllMessageProcessTime();
 		
 		return result;
 	}

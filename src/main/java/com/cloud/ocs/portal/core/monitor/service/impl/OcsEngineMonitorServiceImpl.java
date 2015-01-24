@@ -22,7 +22,7 @@ import com.cloud.ocs.portal.core.monitor.service.OcsEngineMonitorService;
  * @date 2015-1-20 下午6:35:41
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 	
 	private final static Logger LOGGER = Logger.getLogger(OcsEngineMonitorServiceImpl.class.getName());
@@ -45,7 +45,10 @@ public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 				continue;
 			}
 			if (ocsEngine.getOcsEngineState().equals(ocsEngineState.getCode())) {
-				continue;
+				if (ocsEngineState.equals(OcsEngineState.STOPPED)) {
+					ocsEngineService.startOcsEngineService(ocsEngine.getVmId());
+					continue;
+				}
 			}
 			else {
 				ocsEngine.setOcsEngineState(ocsEngineState.getCode());

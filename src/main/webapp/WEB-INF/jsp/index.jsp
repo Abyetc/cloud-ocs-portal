@@ -109,17 +109,17 @@
 	<script src="front/js/service/cloud-ocs-service-network.js"></script>
 	<script src="front/js/service/cloud-ocs-service-vm.js"></script>
 	
-	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-host.js"></script>
-	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-host-dynamic-chart.js"></script>
-	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-vm.js"></script>
-	<script src="front/js/monitor/resource/cloud-ocs-monitor-res-vm-dynamic-chart.js"></script>
+	<script src="front/js/monitor/physics/physics-monitor-host.js"></script>
+	<script src="front/js/monitor/physics/physics-monitor-host-dynamic-chart.js"></script>
+	<script src="front/js/monitor/physics/physics-monitor-vm.js"></script>
+	<script src="front/js/monitor/physics/physics-monitor-vm-dynamic-chart.js"></script>
 	
-	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city.js"></script>
-	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-dynamic-chart.js"></script>
-	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-vm.js"></script>
-	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-vm-dynamic-chart.js"></script>
-	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-network.js"></script>
-	<script src="front/js/monitor/service/cloud-ocs-monitor-service-city-network-dynamic-chart.js"></script>
+	<script src="front/js/monitor/service/service-monitor-city.js"></script>
+	<script src="front/js/monitor/service/service-monitor-city-dynamic-chart.js"></script>
+	<script src="front/js/monitor/service/service-monitor-network.js"></script>
+	<script src="front/js/monitor/service/service-monitor-network-dynamic-chart.js"></script>
+	<script src="front/js/monitor/service/service-monitor-vm.js"></script>
+	<script src="front/js/monitor/service/service-monitor-vm-dynamic-chart.js"></script>
 	
 	<script src="front/js/utils.js"></script>
 	<script src="front/js/common.js"></script>

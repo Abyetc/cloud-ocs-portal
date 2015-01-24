@@ -21,7 +21,7 @@ import com.cloud.ocs.portal.core.user.service.UserService;
  * @date 2014-12-10 下午7:38:55
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class UserServiceImpl implements UserService {
 	

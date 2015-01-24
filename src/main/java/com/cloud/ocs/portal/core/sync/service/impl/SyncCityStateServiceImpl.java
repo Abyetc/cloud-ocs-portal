@@ -23,7 +23,7 @@ import com.cloud.ocs.portal.core.sync.service.SyncCityStateService;
  * @date 2015-1-7 下午4:01:31
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class SyncCityStateServiceImpl implements SyncCityStateService {
 	

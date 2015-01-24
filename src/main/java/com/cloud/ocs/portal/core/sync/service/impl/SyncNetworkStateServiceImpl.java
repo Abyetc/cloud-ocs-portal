@@ -29,7 +29,7 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2015-1-5 下午9:28:43
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class SyncNetworkStateServiceImpl implements SyncNetworkStateService{
 	

@@ -6,8 +6,8 @@
 //用于City Vm监控图表的全局变量
 var cityVmRequestNumMonitorChart;
 var cityVmRequestNumMonitorChartCurrSeries = 0;
-var cityVmRxbpsTxbpsMonitorChart;
-var cityVmRxbpsTxbpsMonitorChartCurrSeries = 0;
+var cityVmMessageProcessTimeChart;
+var cityVmMessageProcessTimeChartCurrSeries = 0;
 
 function monitorVM(cityId, networkId, VMId, VMName) {
   var thirdLevelTitle = $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text();
@@ -76,35 +76,38 @@ function monitorVM(cityId, networkId, VMId, VMName) {
   });
   cityVmRequestNumMonitorChartCurrSeries = 0;
 
-  //city vm Rxbps实时监控区域
-  $("#content-area").append("<div id='city-vm-rxbps-txbps-monitor-area' style='margin-top:100px;'>"
+   //city vm包处理平均时长实时监控区域
+  $("#content-area").append("<div id='city-vm-message-process-time-monitor-area' style='margin-top:100px;'>"
     +   "<div>"
-    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-vm-rxbps-txbps-monitor-btn'>点击开始监控数据吞吐率</button>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-vm-message-process-time-monitor-btn'>点击开始监控包处理平均时长</button>"
     +   "</div>"
-    +   "<div id='city-vm-rxbps-txbps-monitor-chart'></div>"
+    +   "<div id='city-vm-message-process-time-monitor-chart'></div>"
     + "</div>");
-  cityVmRxbpsTxbpsMonitorChart = new Highcharts.Chart({
+  cityVmMessageProcessTimeChart = new Highcharts.Chart({
     chart: {
-      renderTo: 'city-vm-rxbps-txbps-monitor-chart',
+      renderTo: 'city-vm-message-process-time-monitor-chart',
       type: 'line', //原来是：spline
       animation: Highcharts.svg, // don't animate in old IE
       marginRight: 10,
       plotBorderWidth: 1
     },
     title: {
-      text: VMName + " 接收/发送 数据吞吐率"
+      text: VMName + " 包处理平均时长"
     },
     xAxis: {
       type: 'datetime',
       // tickPixelInterval: 5,
       // tickLength: 20,
       tickInterval: 10 * 1000, //十秒钟一个间隔
+      dateTimeLabelFormats: { 
+        day: '%H:%M'
+      }
     },
     yAxis: {
       min: 0,
-      max: 1000,
+      max: 5000,
       title: {
-        text: '接收/发送数据吞吐率(KBps)'
+        text: '时长(ms)'
       },
       plotLines: [{
         value: 0,
@@ -120,7 +123,7 @@ function monitorVM(cityId, networkId, VMId, VMName) {
       }
     },
     legend: {
-      enabled: false
+      enabled: true
     },
     exporting: {
       enabled: false
@@ -130,5 +133,6 @@ function monitorVM(cityId, networkId, VMId, VMName) {
     },
     series: []
   });
-  cityVmRxbpsTxbpsMonitorChartCurrSeries = 0;
+  cityVmMessageProcessTimeChartCurrSeries = 0;
+
 }

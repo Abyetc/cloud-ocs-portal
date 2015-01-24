@@ -1,5 +1,6 @@
 package com.cloud.ocs.portal.core.monitor.service;
 
+import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 
 /**
@@ -11,6 +12,19 @@ import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
  *
  */
 public interface CityNetworkMonitorService {
+	
+	/**
+	 * 网络的实时会话数
+	 * @param networkId
+	 * @return
+	 */
+	public Long getRealtimeSessionNum(String networkId);
+	
+	/**
+	 * 网络包处理平均时长
+	 * @param networkId
+	 */
+	public MessageProcessTimeDto getMessageProcessTime(String networkId);
 
 	/**
 	 * 某个城市的网络在某个网卡上的数据吞吐率数据汇总

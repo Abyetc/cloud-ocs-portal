@@ -24,7 +24,7 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2015-1-6 下午4:05:00
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class PublicIpServiceImpl implements PublicIpService {
 

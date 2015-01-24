@@ -59,6 +59,10 @@ function listVMsOnHost(zoneId, hostId, hostName, hostIpAddress) {
 //用于VM监控图表的全局变量
 var vmCpuUsageMonitorChart;
 var vmCpuUsageMonitorChartCurrSeries = 0;
+var vmMemoryUsageMonitorChart;
+var vmMemoryUsageMonitorChartCurrSeries = 0;
+var cityVmRxbpsTxbpsMonitorChart;
+var cityVmRxbpsTxbpsMonitorChartCurrSeries = 0;
 
 function monitorVmDetail(event) {
 	var vmDetail = event.data.vmDetail;
@@ -96,6 +100,7 @@ function monitorVmDetail(event) {
   //将当前vm Id设置为全局变量
   window.curMonitorVmId = vmDetail.vmId;
 
+  //Vm CPU使用率实时使用曲线区域
   $("#content-area").append("<div id='vm-cpu-usage-monitor-area' style='margin-top:100px;'>"
 	+   "<div>"
 	+     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-cpu-usage-monitor-btn'>点击开始监控CPU使用情况</button>"
@@ -150,4 +155,116 @@ function monitorVmDetail(event) {
 		series: []
 	});
 	vmCpuUsageMonitorChartCurrSeries = 0;
+
+	//Vm Memory实时使用曲线
+	$("#content-area").append("<div id='vm-memory-usage-monitor-area' style='margin-top:100px;'>"
+	+   "<div>"
+	+     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-memory-usage-monitor-btn'>点击开始监控内存使用情况</button>"
+	+   "</div>"
+	+   "<div id='vm-memory-usage-monitor-chart'></div>"
+	+ "</div>");
+	vmMemoryUsageMonitorChart = new Highcharts.Chart({
+		chart: {
+			renderTo: 'vm-memory-usage-monitor-chart',
+			type: 'line', //原来是：spline
+			animation: Highcharts.svg, // don't animate in old IE
+			marginRight: 10,
+			plotBorderWidth: 1
+		},
+		title: {
+			text: "VM " + vmDetail.vmName + $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text() + " 内存使用率实时曲线"
+		},
+		xAxis: {
+			type: 'datetime',
+			// tickPixelInterval: 5,
+			// tickLength: 20,
+			tickInterval: 10 * 1000, //十秒钟一个间隔
+		},
+		yAxis: {
+			min: 0,
+			max: 100,
+			title: {
+				text: '内存使用率(%)'
+			},
+			plotLines: [{
+				value: 0,
+				width: 1,
+				color: '#808080'
+			}]
+		},
+		tooltip: { //鼠标指在线上出现的框
+			formatter: function() {
+				return '<b>' + this.series.name + '</b><br/>' +
+					Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+					Highcharts.numberFormat(this.y, 2);
+			}
+		},
+		legend: {
+			enabled: false
+		},
+		exporting: {
+			enabled: false
+		},
+		credits: {
+			enabled: false
+		},
+		series: []
+	});
+	vmMemoryUsageMonitorChartCurrSeries = 0;
+
+	//city vm Rxbps实时监控区域
+  $("#content-area").append("<div id='city-vm-rxbps-txbps-monitor-area' style='margin-top:100px;'>"
+    +   "<div>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-vm-rxbps-txbps-monitor-btn'>点击开始监控数据吞吐率</button>"
+    +   "</div>"
+    +   "<div id='city-vm-rxbps-txbps-monitor-chart'></div>"
+    + "</div>");
+	cityVmRxbpsTxbpsMonitorChart = new Highcharts.Chart({
+		chart: {
+			renderTo: 'city-vm-rxbps-txbps-monitor-chart',
+			type: 'line', //原来是：spline
+			animation: Highcharts.svg, // don't animate in old IE
+			marginRight: 10,
+			plotBorderWidth: 1
+		},
+		title: {
+			text: "VM " + vmDetail.vmName + $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text() + "网卡eth0 接收/发送 数据吞吐率"
+		},
+		xAxis: {
+			type: 'datetime',
+			// tickPixelInterval: 5,
+			// tickLength: 20,
+			tickInterval: 10 * 1000, //十秒钟一个间隔
+		},
+		yAxis: {
+			min: 0,
+			max: 1000,
+			title: {
+				text: '接收/发送数据吞吐率(KBps)'
+			},
+			plotLines: [{
+				value: 0,
+				width: 1,
+				color: '#808080'
+			}]
+		},
+		tooltip: { //鼠标指在线上出现的框
+			formatter: function() {
+				return '<b>' + this.series.name + '</b><br/>' +
+					Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+					Highcharts.numberFormat(this.y, 2);
+			}
+		},
+		legend: {
+			enabled: false
+		},
+		exporting: {
+			enabled: false
+		},
+		credits: {
+			enabled: false
+		},
+		series: []
+	});
+	cityVmRxbpsTxbpsMonitorChartCurrSeries = 0;
 }

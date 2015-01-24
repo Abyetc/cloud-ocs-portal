@@ -21,10 +21,12 @@ import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
 import com.cloud.ocs.portal.common.cs.asyncjob.service.QueryAsyncJobResultService;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.bean.OcsEngine;
+import com.cloud.ocs.portal.core.business.bean.OcsVm;
 import com.cloud.ocs.portal.core.business.cache.OcsVmForwardingPortCache;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
 import com.cloud.ocs.portal.core.business.constant.OcsEngineState;
 import com.cloud.ocs.portal.core.business.constant.OcsVmState;
+import com.cloud.ocs.portal.core.business.dao.OcsVmDao;
 import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;
 import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
 import com.cloud.ocs.portal.core.business.dto.LoadBalancerRuleDto;
@@ -37,6 +39,7 @@ import com.cloud.ocs.portal.core.business.service.PublicIpService;
 import com.cloud.ocs.portal.core.sync.service.SyncCityStateService;
 import com.cloud.ocs.portal.core.sync.service.SyncNetworkStateService;
 import com.cloud.ocs.portal.properties.OcsVmProperties;
+import com.cloud.ocs.portal.utils.DateUtil;
 import com.cloud.ocs.portal.utils.UnitUtil;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
@@ -49,11 +52,14 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2015-1-3 下午9:07:59
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class OcsVmServiceImpl implements OcsVmService {
 	
 	private static final String VM_ASYNC_JOB_RESULT_NAME = "virtualmachine";
+	
+	@Resource
+	private OcsVmDao ocsVmDao;
 	
 	@Resource
 	private PublicIpService publicIpService;
@@ -75,6 +81,11 @@ public class OcsVmServiceImpl implements OcsVmService {
 	
 	@Autowired
 	private OcsVmForwardingPortCache vmForwardingPortCache;
+	
+	@Override
+	public OcsVm getOcsVmByVmId(String vmId) {
+		return ocsVmDao.findByVmId(vmId);
+	}
 
 	@Override
 	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId) {	
@@ -108,7 +119,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 						ocsVmDto.setCpuSpeed(UnitUtil.formatSizeFromHzToGHz(jsonObj.getLong("cpuspeed")));
 						ocsVmDto.setMemory(UnitUtil.formatSizeUnit(jsonObj.getLong("memory")*1024*1024));
 						ocsVmDto.setVmState(OcsVmState.getCode(jsonObj.getString("state")));
-						ocsVmDto.setCreated(jsonObj.getString("created"));
+						String created = jsonObj.getString("created").replace('T', ' ');
+						ocsVmDto.setCreated(created.substring(0, created.indexOf('+')));
 						result.add(ocsVmDto);
 					}
 				}
@@ -203,7 +215,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 				ocsVmDto.setServiceOfferingId(serviceOfferingId);
 				ocsVmDto.setTemplateId(templateId);
 				ocsVmDto.setVmState(OcsVmState.getCode(jsonObj.getString("state")));
-				ocsVmDto.setCreated(jsonObj.getString("created"));
+				String created = jsonObj.getString("created").replace('T', ' ');
+				ocsVmDto.setCreated(created.substring(0, created.indexOf('+')));
 				result.setOcsVmDto(ocsVmDto);
 				result.setIndex(this.getOcsVmsNum(networkId));
 				
@@ -218,21 +231,29 @@ public class OcsVmServiceImpl implements OcsVmService {
 				String publicIp = cityNetwork.getPublicIp();
 				String networkName = cityNetwork.getNetworkName();
 				
+				OcsVm ocsVm = new OcsVm();
+				ocsVm.setVmId(jsonObj.getString("id"));
+				ocsVm.setNetworkId(networkId);
+				ocsVm.setPublicIpId(publicIpId);
+				ocsVm.setPublicIp(publicIp);
+				JSONObject nicJsonObj = (JSONObject)jsonObj.getJSONArray("nic").get(0);
+				ocsVm.setPrivateIp(nicJsonObj.getString("ipaddress"));
+				ocsVm.setCreated(DateUtil.convertCsDateToTimestamp(jsonObj.getString("created")));
+				ocsVmDao.persist(ocsVm);
+				
 				//检查网络防火墙是否配置，若无则异步添加防火墙规则
 				this.checkAndAddNetworkFirewallRule(publicIpId);
 				
 				//检查负载均衡是否配置，若无则异步添加负载均衡规则，并将新增的VM添加到负载均衡的规则中
 				this.checkAndAddVmToLoadBalancerRule(publicIpId, ocsVmDto.getVmId(), ocsVmDto.getNetworkId(), networkName);
 				
-				//用于monitor和ssh的两条端口转发规则
+				//添加用于monitor和ssh的两条端口转发规则并记录入库
 				this.addPortForwardingRule(networkId, publicIpId, publicIp, ocsVmDto.getVmId());
 				//更新端口转发规则数据缓存
 				vmForwardingPortCache.reloadDataFromDB();
 				
 				//使用SSH远程启动vm上的ocs引擎程序，并将记录入库
 				this.startOcsEngineOnOcsVm(ocsVmDto.getVmId());
-				
-				return result;
 			}
 		}
 		

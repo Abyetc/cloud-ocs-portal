@@ -32,6 +32,13 @@ public interface CityNetworkService {
 	public List<CityNetworkListDto> getCityNetworksList(Integer cityId);
 	
 	/**
+	 * 得到city的所有公共IP(虚拟路由器IP)
+	 * @param cityId
+	 * @return
+	 */
+	public List<String> getAllPublicIpsOfCity(Integer cityId);
+	
+	/**
 	 * 添加cityNetwork
 	 * @param cityNetwork
 	 * @return

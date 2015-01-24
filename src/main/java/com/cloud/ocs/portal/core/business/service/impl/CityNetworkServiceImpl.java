@@ -34,7 +34,7 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2014-12-31 下午12:04:50
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class CityNetworkServiceImpl implements CityNetworkService {
 	
@@ -73,6 +73,11 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 		
 		return result;
 	}
+	
+	@Override
+	public List<String> getAllPublicIpsOfCity(Integer cityId) {
+		return cityNetworkDao.findAllPublicIpsOfCity(cityId);
+	}
 
 	@Override
 	public AddCityNetworkDto addCityNetwork(CityNetwork cityNetwork) {
@@ -102,6 +107,20 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 			sendCreatingEgressFirewallRuleAsyncRequestToCs(cityNetwork.getNetworkId());
 		}
 		
+		return result;
+	}
+	
+	@Override
+	public Map<String, Integer> getNetworkIdCityIdMap() {
+		List<CityNetwork> cityNetworkList = cityNetworkDao.findAll();
+		Map<String, Integer> result = null;
+		
+		if (cityNetworkList != null) {
+			result = new TreeMap<String, Integer>();
+			for (CityNetwork cityNetwork : cityNetworkList) {
+				result.put(cityNetwork.getNetworkId(), cityNetwork.getCityId());
+			}
+		}
 		return result;
 	}
 
@@ -152,20 +171,6 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 			}
 		}
 		
-		return result;
-	}
-
-	@Override
-	public Map<String, Integer> getNetworkIdCityIdMap() {
-		List<CityNetwork> cityNetworkList = cityNetworkDao.findAll();
-		Map<String, Integer> result = null;
-		
-		if (cityNetworkList != null) {
-			result = new TreeMap<String, Integer>();
-			for (CityNetwork cityNetwork : cityNetworkList) {
-				result.put(cityNetwork.getNetworkId(), cityNetwork.getCityId());
-			}
-		}
 		return result;
 	}
 

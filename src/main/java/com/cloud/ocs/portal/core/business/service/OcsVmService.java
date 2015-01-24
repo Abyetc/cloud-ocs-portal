@@ -3,6 +3,7 @@ package com.cloud.ocs.portal.core.business.service;
 import java.util.List;
 import java.util.Map;
 
+import com.cloud.ocs.portal.core.business.bean.OcsVm;
 import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;
 import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
 
@@ -48,5 +49,12 @@ public interface OcsVmService {
 	 */
 	public AddOcsVmDto addOcsVm(String vmName, String networkId, String zoneId,
 			String serviceOfferingId, String templateId);
+	
+	/**
+	 * 通过vm id找到OcsVm实体
+	 * @param vmId
+	 * @return
+	 */
+	public OcsVm getOcsVmByVmId(String vmId);
 
 }

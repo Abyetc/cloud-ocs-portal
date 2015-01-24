@@ -13,8 +13,13 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.cloud.ocs.monitor.constant.MessageType;
+import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
+import com.cloud.ocs.monitor.service.MessageRecordService;
+import com.cloud.ocs.monitor.service.SessionRecordService;
 import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
+import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.service.CityMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
@@ -31,10 +36,69 @@ import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 public class CityMonitorServiceImpl implements CityMonitorService {
 	
 	@Resource
+	private SessionRecordService sessionRecordService;
+	
+	@Resource
+	private MessageRecordService messageRecordService;
+	
+	@Resource
 	private OcsVmForwardingPortService vmForwardingPortService;
 	
 	@Resource
 	private OcsVmMonitorService vmMonitorService;
+	
+	@Override
+	public Long getRealtimeSessionNum(Integer cityId) {
+		
+		return sessionRecordService.getCityCurSessionNum(cityId);
+	}
+	
+	@Override
+	public MessageProcessTimeDto getMessageProcessTime(final Integer cityId) {
+		MessageProcessTimeDto result = new MessageProcessTimeDto();
+		
+		ExecutorService executor = Executors.newCachedThreadPool();
+		CompletionService<MessageAverageProcessTimeWrapper> comp = new ExecutorCompletionService<MessageAverageProcessTimeWrapper>(executor);
+		List<MessageType> threeMessageType = MessageType.getThreeMessageType();
+		for (final MessageType messageType : threeMessageType) {
+			comp.submit(new Callable<MessageAverageProcessTimeWrapper>() {
+				public MessageAverageProcessTimeWrapper call() throws Exception {
+					return messageRecordService.getMessageAverageProcessTimeOfCity(cityId, messageType);
+				}
+			});
+		}
+		executor.shutdown();
+		int count = 0;
+		while (count < threeMessageType.size()) {
+			Future<MessageAverageProcessTimeWrapper> future = comp.poll();
+			if (future == null) {
+				continue;
+			}
+			else {
+				try {
+					MessageAverageProcessTimeWrapper messageProcessTimeWrapper = future.get();
+					MessageType messageType = messageProcessTimeWrapper.getMessageType();
+					if (messageType.equals(MessageType.INITIAL)) {
+						result.setMessageIProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.UPDATE)) {
+						result.setMessageUProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.TERMINAL)) {
+						result.setMessageTProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					count++;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		result.sumAllMessageProcessTime();
+		
+		return result;
+	}
 
 	@Override
 	public RxbpsTxbpsDto getCityRxbpsTxbps(Integer cityId, final String interfaceName) {

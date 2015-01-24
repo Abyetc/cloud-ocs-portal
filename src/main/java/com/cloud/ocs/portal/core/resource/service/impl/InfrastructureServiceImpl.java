@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.resource.constant.ResourceApiName;
@@ -33,7 +32,6 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2014-12-11 下午2:36:59
  *
  */
-@Transactional
 @Service
 public class InfrastructureServiceImpl implements InfrastructureService {
 	
@@ -150,7 +148,8 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 						systemVmDto.setSystemVmName(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("name"));
 						systemVmDto.setSystemVmType(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("systemvmtype"));
 						systemVmDto.setHostName(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("hostname"));
-						systemVmDto.setCreatedDate(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("created"));
+						String created = ((JSONObject)systemVmsJsonArrayObj.get(i)).getString("created").replace('T', ' ');
+						systemVmDto.setCreatedDate(created.substring(0, created.indexOf('+')));
 						systemVmDto.setState(((JSONObject)systemVmsJsonArrayObj.get(i)).getString("state"));
 						result.add(systemVmDto);
 					}
@@ -248,7 +247,8 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 						hostDto.setIpAddress(((JSONObject)hostsJsonArrayObj.get(i)).getString("ipaddress"));
 						hostDto.setState(((JSONObject)hostsJsonArrayObj.get(i)).getString("state"));
 						hostDto.setType(((JSONObject)hostsJsonArrayObj.get(i)).getString("type"));
-						hostDto.setCreatedDate(((JSONObject)hostsJsonArrayObj.get(i)).getString("created"));
+						String created = ((JSONObject)hostsJsonArrayObj.get(i)).getString("created").replace('T', ' ');
+						hostDto.setCreatedDate(created.substring(0, created.indexOf('+')));
 						result.add(hostDto);
 					}
 				}
@@ -294,7 +294,8 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 				hostDto.setIpAddress(((JSONObject)hostsJsonArrayObj.get(0)).getString("ipaddress"));
 				hostDto.setState(((JSONObject)hostsJsonArrayObj.get(0)).getString("state"));
 				hostDto.setType(((JSONObject)hostsJsonArrayObj.get(0)).getString("type"));
-				hostDto.setCreatedDate(((JSONObject)hostsJsonArrayObj.get(0)).getString("created"));
+				String created = ((JSONObject)hostsJsonArrayObj.get(0)).getString("created").replace('T', ' ');
+				hostDto.setCreatedDate(created.substring(0, created.indexOf('+')));
 				result.setHostDto(hostDto);
 				result.setIndex(this.getHostsList(clusterId).size());
 			}

@@ -2,6 +2,7 @@ package com.cloud.ocs.portal.core.monitor.service;
 
 import java.util.List;
 
+import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 
@@ -30,11 +31,25 @@ public interface OcsVmMonitorService {
 	public List<OcsVmDetail> getVmDetailList(String hostId);
 	
 	/**
-	 * 某个虚拟机的CPU的使用率
+	 * 从CloudStack的API获取某个虚拟机的CPU的使用率
 	 * @param vmId
 	 * @return
 	 */
-	public double getCurVmCpuUsagePercentage(String vmId);
+	public double getCurVmCpuUsagePercentageFromCs(String vmId);
+	
+	/**
+	 * 通过自己写的Restful接口获取CPU使用率数据
+	 * @param vmId
+	 * @return
+	 */
+	public Double getCurVmCpuUsagePercentage(String vmId);
+	
+	/**
+	 * 通过自己写的Restful接口获取内存使用率数据
+	 * @param vmId
+	 * @return
+	 */
+	public Double getCurMemoryUsagePercentage(String vmId);
 	
 	/**
 	 * 某个虚拟机在某个网卡上的数据吞吐率数据
@@ -50,4 +65,11 @@ public interface OcsVmMonitorService {
 	 * @return
 	 */
 	public Long getVmConcurrencyRequestNum(String vmId);
+	
+	/**
+	 * 虚拟机包处理平均时长
+	 * @param vmId
+	 * @return
+	 */
+	public MessageProcessTimeDto getCityVmMessageProcessTime(String vmId);
 }

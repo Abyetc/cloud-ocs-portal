@@ -25,7 +25,7 @@ public class OcsVmDto {
 	private String memory;
 	private Integer vmState;
 	private String created;
-
+	
 	public String getVmId() {
 		return vmId;
 	}

@@ -32,6 +32,7 @@ public class HttpRequestSender {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setConnectTimeout(10*1000);
 			connection.setRequestProperty("Content-Type", "application/json");
 
 			// connection.setRequestProperty("Content-Length", "" +

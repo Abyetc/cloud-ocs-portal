@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
@@ -41,6 +42,12 @@ public class OcsVmMonitorController {
 		return vmMonitorService.getCurVmCpuUsagePercentage(vmId);
 	}
 	
+	@RequestMapping(value="/getCurVmMemoryUsagePercentage", method=RequestMethod.GET)
+	@ResponseBody
+	public double getCurVmMemoryUsagePercentage(@RequestParam("vmId") String vmId) {
+		return vmMonitorService.getCurMemoryUsagePercentage(vmId);
+	}
+	
 	@RequestMapping(value="/getRxbpsTxbps", method=RequestMethod.GET)
 	@ResponseBody
 	public RxbpsTxbpsDto getRxbpsTxbps(@RequestParam("cityVmId") String cityVmId,
@@ -52,6 +59,12 @@ public class OcsVmMonitorController {
 	@ResponseBody
 	public Long getConcurrencyRequestNum(@RequestParam("cityVmId") String cityVmId) {
 		return vmMonitorService.getVmConcurrencyRequestNum(cityVmId);
+	}
+	
+	@RequestMapping(value="/getCityVmMessageProcessTime", method=RequestMethod.GET)
+	@ResponseBody
+	public MessageProcessTimeDto getCityVmMessageProcessTime(@RequestParam("cityVmId") String cityVmId) {
+		return vmMonitorService.getCityVmMessageProcessTime(cityVmId);
 	}
 
 }

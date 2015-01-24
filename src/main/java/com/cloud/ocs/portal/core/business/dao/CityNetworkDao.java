@@ -17,5 +17,6 @@ public interface CityNetworkDao extends GenericDao<CityNetwork> {
 
 	public List<CityNetwork> findAll();
 	public List<CityNetwork> findCityNetworksByCityId(Integer cityId);
+	public List<String> findAllPublicIpsOfCity(Integer cityId);
 	public CityNetwork findCityNetworkByNetworkId(String networkId);
 }

@@ -16,7 +16,7 @@ import com.cloud.ocs.portal.common.dao.GenericDao;
  */
 public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="portal_db")
 	protected EntityManager em;
 
 	@Override

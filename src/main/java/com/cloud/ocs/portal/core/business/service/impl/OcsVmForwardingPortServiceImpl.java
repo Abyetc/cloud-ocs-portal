@@ -24,7 +24,7 @@ import com.cloud.ocs.portal.utils.RandomNumUtil;
  * @date 2015-1-13 下午2:51:17
  *
  */
-@Transactional
+@Transactional(value="portal_em")
 @Service
 public class OcsVmForwardingPortServiceImpl implements OcsVmForwardingPortService {
 	
