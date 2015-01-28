@@ -19,6 +19,7 @@ import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
 import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
 import com.cloud.ocs.portal.common.cs.asyncjob.service.QueryAsyncJobResultService;
+import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.bean.OcsEngine;
 import com.cloud.ocs.portal.core.business.bean.OcsVm;
@@ -86,11 +87,33 @@ public class OcsVmServiceImpl implements OcsVmService {
 	public OcsVm getOcsVmByVmId(String vmId) {
 		return ocsVmDao.findByVmId(vmId);
 	}
+	
+	@Override
+	public Integer getOcsVmsNum(String networkId) {
+		int result = 0;
+		
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_LIST_OCS_VM);
+		request.addRequestParams("networkid", networkId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listvirtualmachinesresponse");
+			if (vmsListJsonObj.has("count")) {
+				result = vmsListJsonObj.getInt("count");
+			}
+		}
+		
+		return result;
+	}
 
 	@Override
 	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId) {	
 		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_LIST_OCS_VM);
 		request.addRequestParams("networkid", networkId);
+		request.addRequestParams("listall", "true");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
 		String response = HttpRequestSender.sendGetRequest(requestUrl);
@@ -110,8 +133,12 @@ public class OcsVmServiceImpl implements OcsVmService {
 						ocsVmDto.setVmName(jsonObj.getString("name"));
 						ocsVmDto.setZoneId(jsonObj.getString("zoneid"));
 						ocsVmDto.setZoneName(jsonObj.getString("zonename"));
-						ocsVmDto.setHostId(jsonObj.getString("hostid"));
-						ocsVmDto.setHostName(jsonObj.getString("hostname"));
+						if (jsonObj.has("hostid")) {
+							ocsVmDto.setHostId(jsonObj.getString("hostid"));
+						}
+						if (jsonObj.has("hostname")) {
+							ocsVmDto.setHostName(jsonObj.getString("hostname"));
+						}
 						ocsVmDto.setNetworkId(networkId);
 						ocsVmDto.setServiceOfferingId(jsonObj.getString("serviceofferingid"));
 						ocsVmDto.setTemplateId(jsonObj.getString("templateid"));
@@ -139,27 +166,6 @@ public class OcsVmServiceImpl implements OcsVmService {
 		if (cityNetworks != null) {
 			for (CityNetworkListDto cityNetwork : cityNetworks) {
 				result.put(cityNetwork.getNetworkName(), this.getOcsVmsListByNetworkId(cityNetwork.getNetworkId()));
-			}
-		}
-		
-		return result;
-	}
-
-	@Override
-	public Integer getOcsVmsNum(String networkId) {
-		int result = 0;
-		
-		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_LIST_OCS_VM);
-		request.addRequestParams("networkid", networkId);
-		CloudStackApiSignatureUtil.generateSignature(request);
-		String requestUrl = request.generateRequestURL();
-		String response = HttpRequestSender.sendGetRequest(requestUrl);
-		
-		if (response != null) {
-			JSONObject responseJsonObj = new JSONObject(response);
-			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listvirtualmachinesresponse");
-			if (vmsListJsonObj.has("count")) {
-				result = vmsListJsonObj.getInt("count");
 			}
 		}
 		
@@ -238,6 +244,9 @@ public class OcsVmServiceImpl implements OcsVmService {
 				ocsVm.setPublicIp(publicIp);
 				JSONObject nicJsonObj = (JSONObject)jsonObj.getJSONArray("nic").get(0);
 				ocsVm.setPrivateIp(nicJsonObj.getString("ipaddress"));
+				ocsVm.setHostName(jsonObj.getString("hostname"));
+				ocsVm.setHsotId(jsonObj.getString("hostid"));
+				ocsVm.setState(OcsVmState.getCode(jsonObj.getString("state")));
 				ocsVm.setCreated(DateUtil.convertCsDateToTimestamp(jsonObj.getString("created")));
 				ocsVmDao.persist(ocsVm);
 				
@@ -260,8 +269,188 @@ public class OcsVmServiceImpl implements OcsVmService {
 		return result;
 	}
 	
+	@Override
+	public OperateObjectDto removeOcsVm(String vmId) {
+		OperateObjectDto result = new OperateObjectDto();
+		result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR); //初始化为默认不成功
+		
+		String jobId = this.sendRemoveVmRequestToCs(vmId);
+		
+		if (jobId == null) {
+			result.setMessage("Send Removing Vm Request to Cloudstack Error.");
+			return result;
+		}
+		
+		AsynJobResultDto asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "null");
+		//每隔3秒发送一次请求，查询Job状态
+		while (asyncJobResult != null && asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.PENDING.getCode()) {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "null");
+		}
+		
+		//Job执行失败
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.FAILED
+						.getCode()) {
+			if (asyncJobResult.getJobResultType().equals("text")) {
+				result.setMessage((String) asyncJobResult.getJobResult());
+			}
+			return result;
+		}
+		
+		//Job执行成功
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.SUCCESS
+						.getCode()) {
+			result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+			result.setMessage("Removing Vm Success.");
+			
+			//将记录从数据库中删除
+			ocsVmDao.deleteByVmId(vmId);
+			
+			//执行一次更新本地数据库中的城市、网络状态(包括public ip等等字段)
+			//同步网络状态
+			syncNetworkStateService.syncNetworkState();
+			//同步城市状态
+			syncCityStateService.syncCityState();
+			
+			//更新端口转发规则数据缓存
+			vmForwardingPortCache.reloadDataFromDB();
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public OperateObjectDto stopOcsVm(String vmId) {
+		OperateObjectDto result = new OperateObjectDto();
+		result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR); //初始化为默认不成功
+		
+		String jobId = this.sendStopVmRequestToCs(vmId);
+		
+		if (jobId == null) {
+			result.setMessage("Send Stoping Vm Request to Cloudstack Error.");
+			return result;
+		}
+		
+		AsynJobResultDto asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, VM_ASYNC_JOB_RESULT_NAME);
+		//每隔3秒发送一次请求，查询Job状态
+		while (asyncJobResult != null && asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.PENDING.getCode()) {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, VM_ASYNC_JOB_RESULT_NAME);
+		}
+		
+		//Job执行失败
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.FAILED
+						.getCode()) {
+			if (asyncJobResult.getJobResultType().equals("text")) {
+				result.setMessage((String) asyncJobResult.getJobResult());
+			}
+			return result;
+		}
+		
+		//Job执行成功
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.SUCCESS
+						.getCode()) {
+			result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+			result.setMessage("Stoping Vm Success.");
+			
+			//更新数据库中记录
+			OcsVm ocsVm = ocsVmDao.findByVmId(vmId);
+			ocsVm.setHsotId(null);
+			ocsVm.setHostName(null);
+			ocsVm.setState(OcsVmState.STOPPED.getCode());
+			ocsVmDao.update(ocsVm);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public OperateObjectDto startOcsVm(String vmId) {
+		OperateObjectDto result = new OperateObjectDto();
+		result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR); //初始化为默认不成功
+		
+		String jobId = this.sendStartVmRequestToCs(vmId);
+		
+		if (jobId == null) {
+			result.setMessage("Send Starting Vm Request to Cloudstack Error.");
+			return result;
+		}
+		
+		AsynJobResultDto asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, VM_ASYNC_JOB_RESULT_NAME);
+		//每隔3秒发送一次请求，查询Job状态
+		while (asyncJobResult != null && asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.PENDING.getCode()) {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, VM_ASYNC_JOB_RESULT_NAME);
+		}
+		
+		//Job执行失败
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.FAILED
+						.getCode()) {
+			if (asyncJobResult.getJobResultType().equals("text")) {
+				result.setMessage((String) asyncJobResult.getJobResult());
+			}
+			return result;
+		}
+		
+		//Job执行成功
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.SUCCESS
+						.getCode()) {
+			result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+			result.setMessage("Starting Vm Success.");
+			JSONObject jsonObj = (JSONObject)asyncJobResult.getJobResult();
+			result.setOperatedObject(jsonObj.getString("hostname"));
+			
+			//更新数据库中记录
+			OcsVm ocsVm = ocsVmDao.findByVmId(vmId);
+			ocsVm.setHsotId(jsonObj.getString("hostid"));
+			ocsVm.setHostName(jsonObj.getString("hostname"));
+			ocsVm.setState(OcsVmState.getCode(jsonObj.getString("state")));
+			ocsVmDao.update(ocsVm);
+		}
+		
+		return result;
+	}
+	
+	public void startOcsEngineOnOcsVm(String vmId) {
+		OcsEngine ocsEngine = new OcsEngine();
+		ocsEngine.setVmId(vmId);
+		ocsEngine.setOcsEngineState(OcsEngineState.STOPPED.getCode()); //初始默认为程序停止
+		if (ocsEngineService.startOcsEngineService(vmId)) {
+			//引擎启动成功
+			ocsEngine.setOcsEngineState(OcsEngineState.RUNNING.getCode());
+			Date startDate = new Date();
+			ocsEngine.setLastStartDate(new Timestamp(startDate.getTime()));
+		}
+		ocsEngineService.save(ocsEngine);
+	}
+	
+	@Override
+	public Integer getOcsVmstate(String vmId) {
+		
+		return ocsVmDao.findOcsVmStateByVmId(vmId);
+	}
+
+	
 	/**
-	 * 发送部署Vm请求到CloudStack
+	 * 发送部署Vm请求到CloudStack(异步请求)
 	 * @param vmName
 	 * @param networkId
 	 * @param zoneId
@@ -287,6 +476,83 @@ public class OcsVmServiceImpl implements OcsVmService {
 		if (response != null) {
 			JSONObject responseJsonObj = new JSONObject(response);
 			JSONObject resultJsonObj = responseJsonObj.getJSONObject("deployvirtualmachineresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 发送删除(彻底销毁)Vm的请求到CloudStack(异步请求)
+	 * @param vmId
+	 * @return
+	 */
+	private String sendRemoveVmRequestToCs(String vmId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_REMOVE_OCS_VM);
+		request.addRequestParams("id", vmId);
+		request.addRequestParams("expunge", "true"); //直接销毁
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("destroyvirtualmachineresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 发送停止Vm的请求到CloudStack(异步请求)
+	 * @param vmId
+	 * @return
+	 */
+	private String sendStopVmRequestToCs(String vmId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_STOP_OCS_VM);
+		request.addRequestParams("id", vmId);
+		request.addRequestParams("forced", "false"); //直接销毁
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("stopvirtualmachineresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 发送开启Vm的请求到CloudStack(异步请求)
+	 * @param vmId
+	 * @return
+	 */
+	private String sendStartVmRequestToCs(String vmId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_START_OCS_VM);
+		request.addRequestParams("id", vmId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("startvirtualmachineresponse");
 			if (resultJsonObj.has("jobid")) {
 				result = resultJsonObj.getString("jobid");
 			}
@@ -405,23 +671,6 @@ public class OcsVmServiceImpl implements OcsVmService {
 		}
 		
 		return result;
-	}
-	
-	/**
-	 * 使用SSH远程启动vm上的ocs引擎程序，并将记录入库
-	 * @param vmId
-	 */
-	private void startOcsEngineOnOcsVm(String vmId) {
-		OcsEngine ocsEngine = new OcsEngine();
-		ocsEngine.setVmId(vmId);
-		ocsEngine.setOcsEngineState(OcsEngineState.STOPPED.getCode()); //初始默认为程序停止
-		if (ocsEngineService.startOcsEngineService(vmId)) {
-			//引擎启动成功
-			ocsEngine.setOcsEngineState(OcsEngineState.RUNNING.getCode());
-			Date startDate = new Date();
-			ocsEngine.setLastStartDate(new Timestamp(startDate.getTime()));
-		}
-		ocsEngineService.save(ocsEngine);
 	}
 
 }

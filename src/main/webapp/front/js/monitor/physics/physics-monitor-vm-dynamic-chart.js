@@ -161,7 +161,7 @@ function startMonitoringCityVmRxbpsTxbps() {
 		url: "monitor/vm/getRxbpsTxbps",
 		dataType: "json",
 		data: {
-			cityVmId: window.curMonitorCityVmId,
+			cityVmId: window.curMonitorVmId,
 			interfaceName: "eth0"
 		},
 		success: function(data) {

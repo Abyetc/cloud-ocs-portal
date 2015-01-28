@@ -15,11 +15,6 @@ public class MessageProcessTimeDto {
 	private double messageUProcessTime;
 	private double messageTProcessTime;
 
-	public void sumAllMessageProcessTime() {
-		this.allMessageProcessTime = this.messageIProcessTime
-				+ this.messageUProcessTime + this.messageTProcessTime;
-	}
-
 	public double getAllMessageProcessTime() {
 		return allMessageProcessTime;
 	}

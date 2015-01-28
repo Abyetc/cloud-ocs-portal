@@ -19,4 +19,25 @@ public interface OcsVmDao extends GenericDao<OcsVm> {
 	 * @return
 	 */
 	public OcsVm findByVmId(String vmId);
+	
+	/**
+	 * 根据vmId删除数据库中的实体
+	 * @param vmId
+	 * @return
+	 */
+	public int deleteByVmId(String vmId);
+	
+	/**
+	 * 更新记录
+	 * @param ocsVm
+	 * @return
+	 */
+	public OcsVm update(OcsVm ocsVm);
+	
+	/**
+	 * 根据Vm Id得到Vm的状态
+	 * @param vmId
+	 * @return
+	 */
+	public Integer findOcsVmStateByVmId(String vmId);
 }

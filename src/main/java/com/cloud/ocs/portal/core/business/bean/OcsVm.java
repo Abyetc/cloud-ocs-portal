@@ -25,6 +25,9 @@ public class OcsVm implements java.io.Serializable {
 	private String publicIpId;
 	private String publicIp;
 	private String privateIp;
+	private String hsotId;
+	private String hostName;
+	private Integer state;
 	private Timestamp created;
 
 	// Constructors
@@ -35,22 +38,27 @@ public class OcsVm implements java.io.Serializable {
 
 	/** minimal constructor */
 	public OcsVm(String vmId, String networkId, String publicIpId,
-			String publicIp, String privateIp) {
+			String publicIp, String privateIp, Integer state) {
 		this.vmId = vmId;
 		this.networkId = networkId;
 		this.publicIpId = publicIpId;
 		this.publicIp = publicIp;
 		this.privateIp = privateIp;
+		this.state = state;
 	}
 
 	/** full constructor */
 	public OcsVm(String vmId, String networkId, String publicIpId,
-			String publicIp, String privateIp, Timestamp created) {
+			String publicIp, String privateIp, String hsotId, String hostName,
+			Integer state, Timestamp created) {
 		this.vmId = vmId;
 		this.networkId = networkId;
 		this.publicIpId = publicIpId;
 		this.publicIp = publicIp;
 		this.privateIp = privateIp;
+		this.hsotId = hsotId;
+		this.hostName = hostName;
+		this.state = state;
 		this.created = created;
 	}
 
@@ -109,6 +117,33 @@ public class OcsVm implements java.io.Serializable {
 
 	public void setPrivateIp(String privateIp) {
 		this.privateIp = privateIp;
+	}
+
+	@Column(name = "hsot_id", length = 40)
+	public String getHsotId() {
+		return this.hsotId;
+	}
+
+	public void setHsotId(String hsotId) {
+		this.hsotId = hsotId;
+	}
+
+	@Column(name = "host_name", length = 100)
+	public String getHostName() {
+		return this.hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+	}
+
+	@Column(name = "state", nullable = false)
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 	@Column(name = "created", length = 19)

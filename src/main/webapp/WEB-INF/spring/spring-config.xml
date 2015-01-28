@@ -191,17 +191,17 @@
 	<bean id="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="checkAndUpdateOcsEngineStateOnAllVmsJobDetail" />
-		<!-- 每1分钟运行一次 -->
-		<property name="cronExpression" value="0 */1 * * * ?" />
+		<!-- 每30秒运行一次 -->
+		<property name="cronExpression" value="0/30 * * * * ?" />
 	</bean>
 
-<!-- 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
-<!-- 		<property name="triggers"> -->
-<!--  			<list>  -->
-<!--    				<ref bean="syncCityNetworkStateJobTrigger" /> -->
-<!--    				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" /> -->
-<!--  			</list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+ 			<list> 
+   				<ref bean="syncCityNetworkStateJobTrigger" />
+   				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" />
+ 			</list>
+		</property>
+	</bean>
 	
 </beans>

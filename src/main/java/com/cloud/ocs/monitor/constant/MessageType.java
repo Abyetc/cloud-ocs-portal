@@ -57,9 +57,10 @@ public enum MessageType {
 		return null;
 	}
 	
-	public static List<MessageType> getThreeMessageType() {
+	public static List<MessageType> getAllMessageType() {
 		List<MessageType> result = new ArrayList<MessageType>();
 		
+		result.add(ALL);
 		result.add(INITIAL);
 		result.add(UPDATE);
 		result.add(TERMINAL);

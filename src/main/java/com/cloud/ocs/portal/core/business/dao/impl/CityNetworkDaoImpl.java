@@ -56,4 +56,13 @@ public class CityNetworkDaoImpl extends GenericDaoImpl<CityNetwork> implements C
 		return query.getResultList();
 	}
 
+	@Override
+	public int removeByNetworkId(String networkId) {
+		Query query = em.createQuery("delete from CityNetwork model where model.networkId='" + networkId + "'");
+		
+		return query.executeUpdate();
+	}
+	
+	
+
 }

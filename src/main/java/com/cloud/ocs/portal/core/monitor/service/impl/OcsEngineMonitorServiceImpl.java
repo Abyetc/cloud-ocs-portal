@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.core.business.bean.OcsEngine;
 import com.cloud.ocs.portal.core.business.constant.OcsEngineState;
+import com.cloud.ocs.portal.core.business.constant.OcsVmState;
 import com.cloud.ocs.portal.core.business.service.OcsEngineService;
+import com.cloud.ocs.portal.core.business.service.OcsVmService;
 import com.cloud.ocs.portal.core.monitor.service.OcsEngineMonitorService;
 
 /**
@@ -29,6 +31,9 @@ public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 	
 	@Resource
 	private OcsEngineService ocsEngineService;
+	
+	@Resource
+	private OcsVmService ocsVmService;
 
 	@Override
 	public void checkAndUpdateOcsEngineStateOnAllVms() {
@@ -40,6 +45,10 @@ public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 		}
 		
 		for (OcsEngine ocsEngine : allOcsEngines) {
+			if (ocsVmService.getOcsVmstate(ocsEngine.getVmId()) != OcsVmState.RUNNING.getCode()) {
+				continue;
+			}
+			
 			OcsEngineState ocsEngineState = ocsEngineService.checkOcsEngineServiceRunningState(ocsEngine.getVmId());
 			if (ocsEngineState == null) {
 				continue;

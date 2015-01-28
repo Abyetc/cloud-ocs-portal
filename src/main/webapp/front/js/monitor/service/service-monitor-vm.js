@@ -105,7 +105,7 @@ function monitorVM(cityId, networkId, VMId, VMName) {
     },
     yAxis: {
       min: 0,
-      max: 5000,
+      max: 1000,
       title: {
         text: '时长(ms)'
       },

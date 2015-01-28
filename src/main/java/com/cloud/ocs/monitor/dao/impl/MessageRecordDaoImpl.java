@@ -45,11 +45,11 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		Date dNow = new Date();
 		Timestamp oneMinAgoTimestamp = DateUtil.transferDateInSecondField(dNow, -60);
 		
-		Query query =  em.createQuery("select avg(record.processTime) from MessageRecord record where " +
+		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
 				"record.routeIp = '" + networkIp + "' and " +
 				"record.vmip = '" + vmIp + "' " +
 				messageTypeQueryCondition +
-				" and record.startTime >= '" + oneMinAgoTimestamp + "'");
+				" and record.receivedTime >= '" + oneMinAgoTimestamp + "'");
 		
 		return (Double)query.getSingleResult();
 	}
@@ -63,10 +63,10 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		Date dNow = new Date();
 		Timestamp oneMinAgoTimestamp = DateUtil.transferDateInSecondField(dNow, -60);
 		
-		Query query =  em.createQuery("select avg(record.processTime) from MessageRecord record where " +
+		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
 				"record.routeIp = '" + networkIp + "' " +
 				messageTypeQueryCondition +
-				" and record.startTime >= '" + oneMinAgoTimestamp + "'");
+				" and record.receivedTime >= '" + oneMinAgoTimestamp + "'");
 		
 		return (Double)query.getSingleResult();
 	}
@@ -93,10 +93,10 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		Date dNow = new Date();
 		Timestamp oneMinAgoTimestamp = DateUtil.transferDateInSecondField(dNow, -60);
 		
-		Query query =  em.createQuery("select avg(record.processTime) from MessageRecord record where " +
+		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
 				"(" + networkIpQueryCondition.toString() + ") " +
 				messageTypeQueryCondition +
-				" and record.startTime >= '" + oneMinAgoTimestamp + "'");
+				" and record.receivedTime >= '" + oneMinAgoTimestamp + "'");
 		
 		return (Double)query.getSingleResult();
 	}

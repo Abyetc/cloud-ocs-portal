@@ -3,6 +3,7 @@ package com.cloud.ocs.portal.core.business.service;
 import java.util.List;
 import java.util.Map;
 
+import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.business.bean.OcsVm;
 import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;
 import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
@@ -16,6 +17,13 @@ import com.cloud.ocs.portal.core.business.dto.OcsVmDto;
  * 
  */
 public interface OcsVmService {
+	
+	/**
+	 * 通过vm id找到OcsVm实体
+	 * @param vmId
+	 * @return
+	 */
+	public OcsVm getOcsVmByVmId(String vmId);
 	
 	/**
 	 * 得到属于该network下的所有ocs虚拟机的数量
@@ -51,10 +59,37 @@ public interface OcsVmService {
 			String serviceOfferingId, String templateId);
 	
 	/**
-	 * 通过vm id找到OcsVm实体
+	 * 删除ocs虚拟机
 	 * @param vmId
 	 * @return
 	 */
-	public OcsVm getOcsVmByVmId(String vmId);
-
+	public OperateObjectDto removeOcsVm(String vmId);
+	
+	/**
+	 * 停止Ocs Vm的运行
+	 * @param vmId
+	 * @return
+	 */
+	public OperateObjectDto stopOcsVm(String vmId);
+	
+	/**
+	 * 开启Ocs Vm
+	 * @param vmId
+	 * @return
+	 */
+	public OperateObjectDto startOcsVm(String vmId);
+	
+	/**
+	 * 使用SSH远程启动vm上的ocs引擎程序，并将记录入库
+	 * @param vmId
+	 */
+	public void startOcsEngineOnOcsVm(String vmId);
+	
+	/**
+	 * 得到Ocs Vm的状态
+	 * @param vmId
+	 * @return
+	 */
+	public Integer getOcsVmstate(String vmId);
+	
 }

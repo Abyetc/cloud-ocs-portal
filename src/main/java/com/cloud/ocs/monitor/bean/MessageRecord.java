@@ -25,9 +25,12 @@ public class MessageRecord implements java.io.Serializable {
 	private Integer requestNum;
 	private String routeIp;
 	private String vmip;
-	private Timestamp startTime;
+	private Timestamp receivedTime;
+	private Timestamp cfstartTime;
 	private Timestamp endTime;
-	private Integer processTime;
+	private Integer waitingTime;
+	private Integer cfprocessTime;
+	private Integer totalProcessTime;
 
 	// Constructors
 
@@ -38,15 +41,19 @@ public class MessageRecord implements java.io.Serializable {
 	/** full constructor */
 	public MessageRecord(String sessionId, Integer requestType,
 			Integer requestNum, String routeIp, String vmip,
-			Timestamp startTime, Timestamp endTime, Integer processTime) {
+			Timestamp receivedTime, Timestamp cfstartTime, Timestamp endTime,
+			Integer waitingTime, Integer cfprocessTime, Integer totalProcessTime) {
 		this.sessionId = sessionId;
 		this.requestType = requestType;
 		this.requestNum = requestNum;
 		this.routeIp = routeIp;
 		this.vmip = vmip;
-		this.startTime = startTime;
+		this.receivedTime = receivedTime;
+		this.cfstartTime = cfstartTime;
 		this.endTime = endTime;
-		this.processTime = processTime;
+		this.waitingTime = waitingTime;
+		this.cfprocessTime = cfprocessTime;
+		this.totalProcessTime = totalProcessTime;
 	}
 
 	// Property accessors
@@ -106,13 +113,22 @@ public class MessageRecord implements java.io.Serializable {
 		this.vmip = vmip;
 	}
 
-	@Column(name = "StartTime", length = 19)
-	public Timestamp getStartTime() {
-		return this.startTime;
+	@Column(name = "ReceivedTime", length = 19)
+	public Timestamp getReceivedTime() {
+		return this.receivedTime;
 	}
 
-	public void setStartTime(Timestamp startTime) {
-		this.startTime = startTime;
+	public void setReceivedTime(Timestamp receivedTime) {
+		this.receivedTime = receivedTime;
+	}
+
+	@Column(name = "CFStartTime", length = 19)
+	public Timestamp getCfstartTime() {
+		return this.cfstartTime;
+	}
+
+	public void setCfstartTime(Timestamp cfstartTime) {
+		this.cfstartTime = cfstartTime;
 	}
 
 	@Column(name = "EndTime", length = 19)
@@ -124,13 +140,30 @@ public class MessageRecord implements java.io.Serializable {
 		this.endTime = endTime;
 	}
 
-	@Column(name = "ProcessTime")
-	public Integer getProcessTime() {
-		return this.processTime;
+	@Column(name = "WaitingTime")
+	public Integer getWaitingTime() {
+		return this.waitingTime;
 	}
 
-	public void setProcessTime(Integer processTime) {
-		this.processTime = processTime;
+	public void setWaitingTime(Integer waitingTime) {
+		this.waitingTime = waitingTime;
 	}
 
+	@Column(name = "CFProcessTime")
+	public Integer getCfprocessTime() {
+		return this.cfprocessTime;
+	}
+
+	public void setCfprocessTime(Integer cfprocessTime) {
+		this.cfprocessTime = cfprocessTime;
+	}
+
+	@Column(name = "TotalProcessTime")
+	public Integer getTotalProcessTime() {
+		return this.totalProcessTime;
+	}
+
+	public void setTotalProcessTime(Integer totalProcessTime) {
+		this.totalProcessTime = totalProcessTime;
+	}
 }
