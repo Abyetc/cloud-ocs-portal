@@ -11,9 +11,13 @@ package com.cloud.ocs.portal.core.business.constant;
 public class BusinessApiName {
 
 	public static final String BUSINESS_API_ADD_NETWORK    				 =    "createNetwork";
+	public static final String BUSINESS_API_REMOVE_NETWORK				 =	  "deleteNetwork";
 	
 	public static final String BUSINESS_API_LIST_OCS_VM   				 = 	  "listVirtualMachines";
 	public static final String BUSINESS_API_DEPLOY_OCS_VM 				 =	  "deployVirtualMachine";
+	public static final String BUSINESS_API_REMOVE_OCS_VM 				 =	  "destroyVirtualMachine";
+	public static final String BUSINESS_API_STOP_OCS_VM					 =	  "stopVirtualMachine";
+	public static final String BUSINESS_API_START_OCS_VM				 =	  "startVirtualMachine";
 	
 	public static final String BUSINESS_API_CREATE_EGRESS_FIREWALL_RULE  =	  "createEgressFirewallRule";
 	

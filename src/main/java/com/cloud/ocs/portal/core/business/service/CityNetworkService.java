@@ -3,6 +3,7 @@ package com.cloud.ocs.portal.core.business.service;
 import java.util.List;
 import java.util.Map;
 
+import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
 import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
@@ -44,6 +45,13 @@ public interface CityNetworkService {
 	 * @return
 	 */
 	public AddCityNetworkDto addCityNetwork(CityNetwork cityNetwork);
+	
+	/**
+	 * 删除cityNetwork
+	 * @param networkId
+	 * @return
+	 */
+	public OperateObjectDto removeCityNetwork(String networkId);
 	
 	/**
 	 * 得到以network id为key, city id为value的map

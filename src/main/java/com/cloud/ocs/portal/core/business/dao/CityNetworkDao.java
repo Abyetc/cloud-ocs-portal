@@ -19,4 +19,10 @@ public interface CityNetworkDao extends GenericDao<CityNetwork> {
 	public List<CityNetwork> findCityNetworksByCityId(Integer cityId);
 	public List<String> findAllPublicIpsOfCity(Integer cityId);
 	public CityNetwork findCityNetworkByNetworkId(String networkId);
+	
+	/**
+	 * 根据network id从数据库中删除记录
+	 * @param networkId
+	 */
+	public int removeByNetworkId(String networkId);
 }

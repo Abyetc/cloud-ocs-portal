@@ -89,6 +89,23 @@ function listNetworks(event) {
                      +  "</div>"
                      + "</div>");
 
+  //删除City network的模态框
+  $("#add-city-network-btn").after("<div class='modal fade' id='remove-city-network-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+                     +  "<div class='modal-dialog modal-dialog-center'>"
+                     +    "<div class='modal-content'>"
+                     +      "<div class='modal-header'>"
+                     +        "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+                     +        "<h4 class='modal-title'>删除云计费系统服务网络</h4>"
+                     +      "</div>"
+                     +      "<div class='modal-body'>"
+                     +        "<h3 class='text-center text-info'>确认删除？删除后将无法恢复！</h3>"
+                     +      "</div>"
+                     +      "<div class='modal-footer'>"
+                     +      "</div>"
+                     +    "</div>"
+                     +  "</div>"
+                     + "</div>");
+
   //已有的服务城市网络列表
   var cityNetworksTable = $("<table class='table table-bordered text-center' id='city-network-table'>"
     + "<caption><strong>服务网络列表</strong></caption>"
@@ -129,7 +146,7 @@ function listNetworks(event) {
             break;
         }
         var publicIp = (!data[i].publicIp ? '-' : data[i].publicIp);
-        $("#city-network-table").append("<tr>" 
+        $("#city-network-table").append("<tr id='" + data[i].networkId + "'>"
           + "<td>" + (i+1) + "</td>"
           + "<td>" + data[i].networkName + "</td>"
           + "<td>" + publicIp + "</td>"
@@ -137,7 +154,7 @@ function listNetworks(event) {
           + "<td>" + created.Format("yyyy-MM-dd hh:mm:ss") + "</td>"
           + state
           + "<td><button type='button' class='btn btn-xs btn-link network-vm-btn-" + (i+1) + "'>" + data[i].vmNum + "</button></td>"
-          + "<td>" + "<button type='button' class='btn btn-xs btn-danger'>删除</button>" + "</td>"
+          + "<td>" + "<button type='button' class='btn btn-xs btn-danger' onclick='removeCityNetwork(\"" + data[i].networkId + "\")'>删除</button>" + "</td>"
           + "</tr>");
         $("#city-network-table tbody button.btn.btn-xs.btn-link.network-vm-btn-" + (i+1)).on("click", {networkId: data[i].networkId, networkName: data[i].networkName}, listNetworkVms);
       }
@@ -149,6 +166,7 @@ function listNetworks(event) {
   });
 }
 
+//=======================================================================
 //对“新增服务网络”按钮进行监听(弹出模态框)
 $("body").on("click", '#add-city-network-btn', function() {
   $('#add-city-network-modal').modal({
@@ -243,7 +261,7 @@ function addCityNetwork(cityId) {
             break;
         }
         var publicIp = (!data.cityNetwork.publicIp ? '-' : data.cityNetwork.publicIp);
-        $("#city-network-table").append("<tr>" 
+        $("#city-network-table").append("<tr id='" + data.cityNetwork.networkId + "'>"
           + "<td>" + data.index  + "</td>"
           + "<td>" + data.cityNetwork.networkName + "</td>"
           + "<td>" + publicIp + "</td>"
@@ -251,7 +269,7 @@ function addCityNetwork(cityId) {
           + "<td>" + created.Format("yyyy-MM-dd hh:mm:ss") + "</td>"
           + state
           + "<td><button type='button' class='btn btn-xs btn-link network-vm-btn-" + data.index + "'>" + data.vmNum + "</button></td>"
-          + "<td>" + "<button type='button' class='btn btn-xs btn-danger'>删除</button>" + "</td>"
+          + "<td>" + "<button type='button' class='btn btn-xs btn-danger' onclick='removeCityNetwork(\"" + data.cityNetwork.networkId + "\")'>删除</button>" + "</td>"
           + "</tr>");
         $("#city-network-table tbody button.btn.btn-xs.btn-link.network-vm-btn-" + data.index).on("click", {networkId: data.cityNetwork.networkId, networkName: data.cityNetwork.networkName}, listNetworkVms);
       }
@@ -265,6 +283,55 @@ function addCityNetwork(cityId) {
       $("#add-city-network-modal div.loader").shCircleLoader('destroy');
       $("#add-city-network-modal div.loader").remove();
       $("#add-city-network-modal span.text-primary.pull-right").remove();
+      alert(status);
+    }
+  });
+}
+//=======================================================================
+
+//=======================================================================
+//弹出删除网络模态框
+function removeCityNetwork(networkId) {
+  $('#remove-city-network-modal').modal({
+    keyboard: true
+  });
+  $("#remove-city-network-modal div.modal-footer").empty();
+  $("#remove-city-network-modal div.modal-footer").append("<button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>");
+  $("#remove-city-network-modal div.modal-footer").append("<button type='button' class='btn btn-primary' onclick=\"removeCityNetworkSubmit('" + networkId + "')\">" + "确认</button>");
+}
+
+function removeCityNetworkSubmit(networkId) {
+  //添加转菊花
+  $("#remove-city-network-modal div.modal-body").append("<div class='loader'></div>");
+  $("#remove-city-network-modal div.modal-body").append("<span class='text-primary pull-right'>正在删除，过程稍长，请耐心等待...</span>");
+  $("div.loader").shCircleLoader({
+    duration: 0.75
+  });
+
+  $.ajax({
+    type: "GET",
+    url: "business/removeCityNetwork",
+    dataType: "json",
+    data: {
+      cityNetworkId: networkId
+    },
+    success: function(data) {
+      $("#remove-city-network-modal div.loader").shCircleLoader('destroy');
+      $("#remove-city-network-modal div.loader").remove();
+      $("#remove-city-network-modal span.text-primary.pull-right").remove();
+      if (data.code == 20000000) { //删除成功
+        alert("服务网络删除成功！");
+        $('#remove-city-network-modal').modal('hide');
+        $('#' + networkId + '').remove();
+      }
+      else {
+        alert("服务网络删除失败！Msg:" + data.message);
+      }
+    },
+    error: function(xhr, status) {
+      $("#remove-city-network-modal div.loader").shCircleLoader('destroy');
+      $("#remove-city-network-modal div.loader").remove();
+      $("#remove-city-network-modal span.text-primary.pull-right").remove();
       alert(status);
     }
   });

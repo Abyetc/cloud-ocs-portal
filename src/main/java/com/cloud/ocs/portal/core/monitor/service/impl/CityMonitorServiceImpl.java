@@ -59,7 +59,7 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 		
 		ExecutorService executor = Executors.newCachedThreadPool();
 		CompletionService<MessageAverageProcessTimeWrapper> comp = new ExecutorCompletionService<MessageAverageProcessTimeWrapper>(executor);
-		List<MessageType> threeMessageType = MessageType.getThreeMessageType();
+		List<MessageType> threeMessageType = MessageType.getAllMessageType();
 		for (final MessageType messageType : threeMessageType) {
 			comp.submit(new Callable<MessageAverageProcessTimeWrapper>() {
 				public MessageAverageProcessTimeWrapper call() throws Exception {
@@ -78,6 +78,9 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 				try {
 					MessageAverageProcessTimeWrapper messageProcessTimeWrapper = future.get();
 					MessageType messageType = messageProcessTimeWrapper.getMessageType();
+					if (messageType.equals(MessageType.ALL)) {
+						result.setAllMessageProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
 					if (messageType.equals(MessageType.INITIAL)) {
 						result.setMessageIProcessTime(messageProcessTimeWrapper.getProcessTime());
 					}
@@ -95,7 +98,6 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 				}
 			}
 		}
-		result.sumAllMessageProcessTime();
 		
 		return result;
 	}

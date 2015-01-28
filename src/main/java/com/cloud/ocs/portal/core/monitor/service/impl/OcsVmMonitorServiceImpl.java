@@ -87,7 +87,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	public List<OcsVmDetail> getVmDetailList(String hostId) {
 		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_VM_DETAIL);
 		request.addRequestParams("hostid", hostId);
-		request.addRequestParams("listall", "true");
+//		request.addRequestParams("listall", "true");
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
 		String response = HttpRequestSender.sendGetRequest(requestUrl);
@@ -184,7 +184,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 			result = new Double(0.0);
 		}
 		
-		return result;
+		return result*100.0;
 	}
 
 	@Override
@@ -268,7 +268,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		
 		ExecutorService executor = Executors.newCachedThreadPool();
 		CompletionService<MessageAverageProcessTimeWrapper> comp = new ExecutorCompletionService<MessageAverageProcessTimeWrapper>(executor);
-		List<MessageType> threeMessageType = MessageType.getThreeMessageType();
+		List<MessageType> threeMessageType = MessageType.getAllMessageType();
 		for (final MessageType messageType : threeMessageType) {
 			comp.submit(new Callable<MessageAverageProcessTimeWrapper>() {
 				public MessageAverageProcessTimeWrapper call() throws Exception {
@@ -287,6 +287,9 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 				try {
 					MessageAverageProcessTimeWrapper messageProcessTimeWrapper = future.get();
 					MessageType messageType = messageProcessTimeWrapper.getMessageType();
+					if (messageType.equals(MessageType.ALL)) {
+						result.setAllMessageProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
 					if (messageType.equals(MessageType.INITIAL)) {
 						result.setMessageIProcessTime(messageProcessTimeWrapper.getProcessTime());
 					}
@@ -304,7 +307,6 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 				}
 			}
 		}
-		result.sumAllMessageProcessTime();
 		
 		return result;
 	}

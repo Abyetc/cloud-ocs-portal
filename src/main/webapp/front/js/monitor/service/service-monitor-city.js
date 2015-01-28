@@ -213,7 +213,7 @@ function monitorCity(cityId, cityName) {
     },
     yAxis: {
       min: 0,
-      max: 100,
+      max: 200,
       title: {
         text: '实时会话数(个)'
       },
@@ -269,7 +269,7 @@ function monitorCity(cityId, cityName) {
     },
     yAxis: {
       min: 0,
-      max: 5000,
+      max: 1000,
       title: {
         text: '时长(ms)'
       },

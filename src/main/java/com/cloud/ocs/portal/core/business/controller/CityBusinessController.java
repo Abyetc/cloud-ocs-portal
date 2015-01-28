@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.business.bean.City;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.dto.AddCityDto;
@@ -82,6 +83,12 @@ public class CityBusinessController {
 		return cityNetworkService.addCityNetwork(cityNetwork);
 	}
 	
+	@RequestMapping(value="/removeCityNetwork", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removeCityNetwork(@RequestParam("cityNetworkId") String cityNetworkId) {
+		return cityNetworkService.removeCityNetwork(cityNetworkId);
+	}
+	
 	@RequestMapping(value="/listOcsVmsByNetwork", method=RequestMethod.GET)
 	@ResponseBody
 	public List<OcsVmDto> listOcsVmsByNetwork(@RequestParam("networkId") String networkId) {
@@ -103,5 +110,23 @@ public class CityBusinessController {
 			@RequestParam("templateId") String templateId) {
 		return ocsVmService.addOcsVm(vmName, networkId, zoneId,
 				serviceOfferingId, templateId);
+	}
+	
+	@RequestMapping(value="/removeOcsVm", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removeOcsVm(@RequestParam("vmId") String vmId) {
+		return ocsVmService.removeOcsVm(vmId);
+	}
+	
+	@RequestMapping(value="/stopOcsVm", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto stopOcsVm(@RequestParam("vmId") String vmId) {
+		return ocsVmService.stopOcsVm(vmId);
+	}
+	
+	@RequestMapping(value="/startOcsVm", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto startOcsVm(@RequestParam("vmId") String vmId) {
+		return ocsVmService.startOcsVm(vmId);
 	}
 }

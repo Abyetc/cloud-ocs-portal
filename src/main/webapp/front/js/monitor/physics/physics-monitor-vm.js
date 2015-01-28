@@ -256,7 +256,7 @@ function monitorVmDetail(event) {
 			}
 		},
 		legend: {
-			enabled: false
+			enabled: true
 		},
 		exporting: {
 			enabled: false

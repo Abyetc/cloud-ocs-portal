@@ -34,4 +34,29 @@ public class OcsVmDaoImpl extends GenericDaoImpl<OcsVm> implements OcsVmDao {
 		return null;
 	}
 
+	@Override
+	public int deleteByVmId(String vmId) {
+		Query query = em.createQuery("delete from OcsVm model where model.vmId='" + vmId + "'");
+		
+		return query.executeUpdate();
+	}
+
+	@Override
+	public OcsVm update(OcsVm ocsVm) {
+		
+		return em.merge(ocsVm);
+	}
+
+	@Override
+	public Integer findOcsVmStateByVmId(String vmId) {
+		Query query = em.createQuery("select model.state from OcsVm model where model.vmId='" + vmId + "'");
+		List result = query.getResultList();
+		Iterator iterator = result.iterator();
+		while( iterator.hasNext() ) {
+			return (Integer)iterator.next();
+		}
+		
+		return null;
+	}
+
 }
