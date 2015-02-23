@@ -14,7 +14,7 @@ public class UnitUtil {
 	
 	private static DecimalFormat dec = new DecimalFormat("0.00");
 	
-	private static final long GHz = 1000;
+	private static final double GHz = 1000.0;
 
 	/**
 	 * 根据传入的数值大小，将Byte装换为合适的单位（KB/MB/GB/TB）

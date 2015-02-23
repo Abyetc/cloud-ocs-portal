@@ -65,10 +65,11 @@ function monitorCityNetworks(cityId, networkId, networkName) {
 					default:
 						break;
 				}
+				var hostName = (!data[i].hostName ? '-' : data[i].hostName);
 				$(".table tbody").append("<tr>"
 					+ "<td>" + (i+1) + "</td>"
 					+ "<td>" + data[i].zoneName + "</td>"
-					+ "<td>" + data[i].hostName + "</td>"
+					+ "<td>" + hostName + "</td>"
 					+ "<td>" + data[i].vmName + "</td>"					
 					+ "<td>" + data[i].cpuNum + "*" + data[i].cpuSpeed + "</td>"
 					+ "<td>" + data[i].memory + "</td>"
