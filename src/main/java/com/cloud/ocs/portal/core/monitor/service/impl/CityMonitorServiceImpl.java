@@ -17,9 +17,11 @@ import com.cloud.ocs.monitor.constant.MessageType;
 import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
 import com.cloud.ocs.monitor.service.MessageRecordService;
 import com.cloud.ocs.monitor.service.SessionRecordService;
+import com.cloud.ocs.monitor.service.ThroughputRecordService;
 import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
+import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.service.CityMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
@@ -42,6 +44,9 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 	private MessageRecordService messageRecordService;
 	
 	@Resource
+	private ThroughputRecordService throughputRecordService;
+	
+	@Resource
 	private OcsVmForwardingPortService vmForwardingPortService;
 	
 	@Resource
@@ -51,6 +56,11 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 	public Long getRealtimeSessionNum(Integer cityId) {
 		
 		return sessionRecordService.getCityCurSessionNum(cityId);
+	}
+	
+	@Override
+	public MessageThroughputDto getMessageThroughput(Integer cityId) {
+		return throughputRecordService.getMessageThroughputOfCity(cityId);
 	}
 	
 	@Override

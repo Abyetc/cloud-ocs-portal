@@ -117,6 +117,8 @@ function listServiceMonitorCities() {
 //用于City监控图表的全局变量
 var cityRealtimeSessionNumMonitorChart;
 var cityRealtimeSessionNumMonitorChartCurrSeries = 0;
+var cityMessageThroughputChart;
+var cityMessageThroughputChartCurrSeries = 0;
 var cityMessageProcessTimeChart;
 var cityMessageProcessTimeChartCurrSeries = 0;
 
@@ -183,12 +185,14 @@ function monitorCity(cityId, cityName) {
       $("div.loader").remove();
     }
   });
+  
+  $("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;实时数据监控</strong></span></div>");
 
   //将当前city Id设置为全局变量
   window.curMonitorCityId = cityId;
 
   //city实时会话数监控区域
-  $("#content-area").append("<div id='city-realtime-session-num-monitor-area' style='margin-top:100px;'>"
+  $("#content-area").append("<div id='city-realtime-session-num-monitor-area' style=''>"
     +   "<div>"
     +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-realtime-session-num-monitor-btn'>点击开始监控实时会话数</button>"
     +   "</div>"
@@ -242,8 +246,64 @@ function monitorCity(cityId, cityName) {
     series: []
   });
   cityRealtimeSessionNumMonitorChartCurrSeries = 0;
+  
+  //city 包吞吐量实时监控区域
+  $("#content-area").append("<div id='city-message-throughput-monitor-area' style='margin-top:100px;'>"
+    +   "<div>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-message-throughput-monitor-btn'>点击开始监控包吞吐量</button>"
+    +   "</div>"
+    +   "<div id='city-message-throughput-monitor-chart'></div>"
+    + "</div>");
+  cityMessageThroughputChart = new Highcharts.Chart({
+    chart: {
+      renderTo: 'city-message-throughput-monitor-chart',
+      type: 'line', //原来是：spline
+      animation: Highcharts.svg, // don't animate in old IE
+      marginRight: 10,
+      plotBorderWidth: 1
+    },
+    title: {
+      text: cityName + " 包吞吐量"
+    },
+    xAxis: {
+      type: 'datetime',
+      // tickPixelInterval: 5,
+      // tickLength: 20,
+      tickInterval: 10 * 1000, //十秒钟一个间隔
+    },
+    yAxis: {
+      min: 0,
+      max: 200,
+      title: {
+        text: '包数量(个)'
+      },
+      plotLines: [{
+        value: 0,
+        width: 1,
+        color: '#808080'
+      }]
+    },
+    tooltip: { //鼠标指在线上出现的框
+      formatter: function() {
+        return '<b>' + this.series.name + '</b><br/>' +
+          Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+          Highcharts.numberFormat(this.y, 0);
+      }
+    },
+    legend: {
+      enabled: true
+    },
+    exporting: {
+      enabled: false
+    },
+    credits: {
+      enabled: false
+    },
+    series: []
+  });
+  cityMessageThroughputChartCurrSeries = 0;
 
-  //city Rxbps实时监控区域
+  //city 包处理时长实时监控区域
   $("#content-area").append("<div id='city-message-process-time-monitor-area' style='margin-top:100px;'>"
     +   "<div>"
     +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-message-process-time-monitor-btn'>点击开始监控包处理平均时长</button>"

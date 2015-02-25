@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
+import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.service.CityNetworkMonitorService;
 
@@ -32,6 +33,12 @@ public class CityNetworkMonitorController {
 	public Long getCityNetworkRealtimeSessionNum(
 			@RequestParam("cityNetworkId") String cityNetworkId) {
 		return cityNetworkMonitorService.getRealtimeSessionNum(cityNetworkId);
+	}
+	
+	@RequestMapping(value = "/getCityNetworkMessageThroughput", method = RequestMethod.GET)
+	@ResponseBody
+	public MessageThroughputDto getCityNetworkMessageThroughput(@RequestParam("cityNetworkId") String cityNetworkId) {
+		return cityNetworkMonitorService.getMessageThroughput(cityNetworkId);
 	}
 
 	@RequestMapping(value = "/getCityNetworkMessageProcessTime", method = RequestMethod.GET)

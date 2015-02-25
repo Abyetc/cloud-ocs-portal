@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cloud.ocs.monitor.constant.MessageType;
 import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
 import com.cloud.ocs.monitor.service.MessageRecordService;
+import com.cloud.ocs.monitor.service.ThroughputRecordService;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.core.business.bean.OcsVm;
 import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
@@ -27,6 +28,7 @@ import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.core.business.service.OcsVmService;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
+import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
@@ -53,6 +55,9 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	
 	@Resource
 	private MessageRecordService messageRecordService;
+	
+	@Resource
+	private ThroughputRecordService throughputRecordService;
 	
 	@Resource
 	private OcsVmService ocsVmService;
@@ -254,6 +259,18 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public MessageThroughputDto getMessageThroughput(String vmId) {
+		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
+		if (ocsVm == null) {
+			return null;
+		}
+		String networkIp = ocsVm.getPublicIp();
+		String vmIp = ocsVm.getPrivateIp();
+		
+		return throughputRecordService.getMessageThroughputOfVm(networkIp, vmIp);
 	}
 
 	@Override

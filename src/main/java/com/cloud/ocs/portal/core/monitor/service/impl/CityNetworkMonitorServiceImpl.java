@@ -17,11 +17,13 @@ import com.cloud.ocs.monitor.constant.MessageType;
 import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
 import com.cloud.ocs.monitor.service.MessageRecordService;
 import com.cloud.ocs.monitor.service.SessionRecordService;
+import com.cloud.ocs.monitor.service.ThroughputRecordService;
 import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
+import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.service.CityNetworkMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
@@ -34,6 +36,9 @@ public class CityNetworkMonitorServiceImpl implements CityNetworkMonitorService 
 	
 	@Resource
 	private MessageRecordService messageRecordService;
+	
+	@Resource
+	private ThroughputRecordService throughputRecordService;
 	
 	@Resource
 	private CityNetworkService cityNetworkService;
@@ -53,6 +58,17 @@ public class CityNetworkMonitorServiceImpl implements CityNetworkMonitorService 
 		}
 		
 		return sessionRecordService.getNetworkCurSessionNum(cityNetwork.getPublicIp());
+	}
+	
+	@Override
+	public MessageThroughputDto getMessageThroughput(String networkId) {
+		CityNetwork cityNetwork = cityNetworkService.getCityNetworkByNetworkId(networkId);
+		
+		if (cityNetwork == null) {
+			return null;
+		}
+		
+		return throughputRecordService.getMessageThroughputOfNetwork(cityNetwork.getPublicIp());
 	}
 
 	@Override

@@ -62,6 +62,73 @@ function stopMonitoringCityNetworkRealtimeSessionNum() {
 	window.cityNetworkRealtimeSessionNumMonitorTimer = null;
 }
 
+//===============================================================================
+
+$("body").on("click", "#city-network-message-throughput-monitor-btn", function() {
+	console.log("click btn");
+	$el = $(this);
+	$el.toggleClass("reading");
+
+	if ($el.hasClass("reading")) {
+		//设置button文字
+		$(this).text("点击暂停监控包吞吐量");
+		cityNetworkMessageThroughputChart.addSeries({
+			name: "接收的包数量",
+			data: []
+		});
+		cityNetworkMessageThroughputChartCurrSeries++;
+		cityNetworkMessageThroughputChart.addSeries({
+			name: "处理完成的包数量",
+			data: []
+		});
+		cityNetworkMessageThroughputChartCurrSeries++;
+		window.cityNetworkMessageThroughputMonitorTimer = setTimeout(startMonitoringCityNetworkMessageThroughput, 0);
+	} else {
+		//设置button文字
+		$(this).text("点击开始监控包吞吐量");
+		stopMonitoringCityNetworkMessageThroughput();
+	}
+});
+
+function startMonitoringCityNetworkMessageThroughput() {
+	var x = (new Date()).getTime();
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/network/getCityNetworkMessageThroughput",
+		dataType: "json",
+		data: {
+			cityNetworkId: window.curMonitorCityNetworkId
+		},
+		success: function(data) {
+			console.log("startMonitoringCityNetworkMessageThroughput:" + data);
+			var shiftFlag = cityNetworkMessageThroughputChart.series[cityNetworkMessageThroughputChartCurrSeries - 1].data.length > 100;
+			var receivedMessageNumPoint = [x, data.receivedMessageNum];
+			var finishedMessageNumPoint = [x, data.finishedMessageNum];
+
+			cityNetworkMessageThroughputChart.series[cityNetworkMessageThroughputChartCurrSeries - 2].addPoint(receivedMessageNumPoint, false, shiftFlag);
+			cityNetworkMessageThroughputChart.series[cityNetworkMessageThroughputChartCurrSeries - 1].addPoint(finishedMessageNumPoint, false, shiftFlag);
+
+			cityNetworkMessageThroughputChart.xAxis[0].setExtremes(x - 200 * 1000, x, false); //100个点 
+			cityNetworkMessageThroughputChart.redraw();
+			if (window.cityNetworkMessageThroughputMonitorTimer != null) {
+				window.cityNetworkMessageThroughputMonitorTimer = setTimeout(startMonitoringCityNetworkMessageThroughput, 1000);
+			}
+		},
+		error: function(xhr, status) {
+			clearTimeout(window.cityNetworkMessageThroughputMonitorTimer);
+			window.cityNetworkMessageThroughputMonitorTimer = null;
+			alert(status);
+		}
+	});
+}
+
+function stopMonitoringCityNetworkMessageThroughput() {
+	console.log("stop timer");
+	clearTimeout(window.cityNetworkMessageThroughputMonitorTimer);
+	window.cityNetworkMessageThroughputMonitorTimer = null;
+}
+
 //==========================================================================================
 
 $("body").on("click", "#city-network-message-process-time-monitor-btn", function() {

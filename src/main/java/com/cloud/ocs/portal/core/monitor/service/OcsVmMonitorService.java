@@ -3,6 +3,7 @@ package com.cloud.ocs.portal.core.monitor.service;
 import java.util.List;
 
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
+import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 
@@ -65,6 +66,13 @@ public interface OcsVmMonitorService {
 	 * @return
 	 */
 	public Long getVmConcurrencyRequestNum(String vmId);
+	
+	/**
+	 * 虚拟机包吞吐量
+	 * @param vmId
+	 * @return
+	 */
+	public MessageThroughputDto getMessageThroughput(String vmId);
 	
 	/**
 	 * 虚拟机包处理平均时长

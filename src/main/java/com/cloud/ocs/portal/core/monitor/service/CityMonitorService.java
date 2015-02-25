@@ -1,6 +1,7 @@
 package com.cloud.ocs.portal.core.monitor.service;
 
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
+import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 
 /**
@@ -19,6 +20,13 @@ public interface CityMonitorService {
 	 * @return
 	 */
 	public Long getRealtimeSessionNum(Integer cityId);
+	
+	/**
+	 * 城市包吞吐量
+	 * @param cityId
+	 * @return
+	 */
+	public MessageThroughputDto getMessageThroughput(Integer cityId);
 	
 	/**
 	 * 城市包处理平均时长

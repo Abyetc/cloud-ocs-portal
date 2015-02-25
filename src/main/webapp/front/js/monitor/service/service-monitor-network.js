@@ -6,6 +6,8 @@
 //用于City Network监控图表的全局变量
 var cityNetworkRealtimeSessionNumMonitorChart;
 var cityNetworkRealtimeSessionNumMonitorChartCurrSeries = 0;
+var cityNetworkMessageThroughputMonitorChart;
+var cityNetworkMessageThroughputMonitorChartCurrSeries = 0;
 var cityNetworkMessageProcessTimeMonitorChart;
 var cityNetworkMessageProcessTimeMonitorChartCurrSeries = 0;
 
@@ -66,6 +68,10 @@ function monitorCityNetworks(cityId, networkId, networkName) {
 						break;
 				}
 				var hostName = (!data[i].hostName ? '-' : data[i].hostName);
+				var monitorBtnDisable = "";
+		        if (data[i].vmState != 1) {
+		          monitorBtnDisable = "disabled";
+		        }
 				$(".table tbody").append("<tr>"
 					+ "<td>" + (i+1) + "</td>"
 					+ "<td>" + data[i].zoneName + "</td>"
@@ -74,7 +80,7 @@ function monitorCityNetworks(cityId, networkId, networkName) {
 					+ "<td>" + data[i].cpuNum + "*" + data[i].cpuSpeed + "</td>"
 					+ "<td>" + data[i].memory + "</td>"
 					+ state
-					+ "<td>" + "<button type='button' class='btn btn-xs btn-primary' onclick=\"monitorVM(" + cityId + ",'" + data[i].networkId + "','" + data[i].vmId + "','" + data[i].vmName + "');\">" + "监控</button>" + "</td>"
+					+ "<td>" + "<button type='button' class='btn btn-xs btn-primary " + monitorBtnDisable + "'" + " onclick=\"monitorVM(" + cityId + ",'" + data[i].networkId + "','" + data[i].vmId + "','" + data[i].vmName + "');\">" + "监控</button>" + "</td>"
 					+ "</tr>");
 			}
 		},
@@ -84,12 +90,14 @@ function monitorCityNetworks(cityId, networkId, networkName) {
 				alert(status);
 		}
 	});
+	
+	$("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;实时数据监控</strong></span></div>");
 
 	//将当前city network Id设置为全局变量
 	window.curMonitorCityNetworkId = networkId;
 
-	//city vm并发请求数实时监控区域
-  $("#content-area").append("<div id='city-network-realtime-session-num-monitor-area' style='margin-top:100px;'>"
+  //city network并发请求数实时监控区域
+  $("#content-area").append("<div id='city-network-realtime-session-num-monitor-area' style=''>"
     +   "<div>"
     +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-network-realtime-session-num-monitor-btn'>点击开始监控实时会话数</button>"
     +   "</div>"
@@ -143,6 +151,62 @@ function monitorCityNetworks(cityId, networkId, networkName) {
     series: []
   });
   cityNetworkRealtimeSessionNumMonitorChartCurrSeries = 0;
+  
+//city Network包吞吐量实时监控区域
+  $("#content-area").append("<div id='city-network-message-throughput-monitor-area' style='margin-top:100px;'>"
+    +   "<div>"
+    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-network-message-throughput-monitor-btn'>点击开始监控包吞吐量</button>"
+    +   "</div>"
+    +   "<div id='city-network-message-throughput-monitor-chart'></div>"
+    + "</div>");
+  cityNetworkMessageThroughputChart = new Highcharts.Chart({
+    chart: {
+      renderTo: 'city-network-message-throughput-monitor-chart',
+      type: 'line', //原来是：spline
+      animation: Highcharts.svg, // don't animate in old IE
+      marginRight: 10,
+      plotBorderWidth: 1
+    },
+    title: {
+      text: networkName + " 包吞吐量"
+    },
+    xAxis: {
+      type: 'datetime',
+      // tickPixelInterval: 5,
+      // tickLength: 20,
+      tickInterval: 10 * 1000, //十秒钟一个间隔
+    },
+    yAxis: {
+      min: 0,
+      max: 200,
+      title: {
+        text: '包数量(个)'
+      },
+      plotLines: [{
+        value: 0,
+        width: 1,
+        color: '#808080'
+      }]
+    },
+    tooltip: { //鼠标指在线上出现的框
+      formatter: function() {
+        return '<b>' + this.series.name + '</b><br/>' +
+          Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+          Highcharts.numberFormat(this.y, 0);
+      }
+    },
+    legend: {
+      enabled: true
+    },
+    exporting: {
+      enabled: false
+    },
+    credits: {
+      enabled: false
+    },
+    series: []
+  });
+  cityNetworkMessageThroughputChartCurrSeries = 0;
 
   //city network包处理平均时长实时监控区域
   $("#content-area").append("<div id='city-network-message-process-time-monitor-area' style='margin-top:100px;'>"
