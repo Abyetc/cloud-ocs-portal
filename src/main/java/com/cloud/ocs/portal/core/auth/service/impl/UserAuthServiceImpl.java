@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.user.service.impl;
+package com.cloud.ocs.portal.core.auth.service.impl;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.bean.User;
 import com.cloud.ocs.portal.common.dao.UserDao;
-import com.cloud.ocs.portal.core.user.constant.LoginStatus;
-import com.cloud.ocs.portal.core.user.service.UserService;
+import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
+import com.cloud.ocs.portal.core.auth.service.UserAuthService;
 
 /**
  * 系统用户service实现类
@@ -23,7 +23,7 @@ import com.cloud.ocs.portal.core.user.service.UserService;
  */
 @Transactional(value="portal_em")
 @Service
-public class UserServiceImpl implements UserService {
+public class UserAuthServiceImpl implements UserAuthService {
 	
 	@Resource
 	private UserDao userDao;

@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.user.constant;
+package com.cloud.ocs.portal.core.auth.constant;
 
 public class LoginUserConstant {
 

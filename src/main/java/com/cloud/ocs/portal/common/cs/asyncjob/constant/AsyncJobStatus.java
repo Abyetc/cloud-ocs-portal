@@ -1,6 +1,6 @@
 package com.cloud.ocs.portal.common.cs.asyncjob.constant;
 
-import com.cloud.ocs.portal.core.user.constant.LoginStatus;
+import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
 
 /**
  * 用于表示查询CloudStack异步任务返回结果状态的枚举

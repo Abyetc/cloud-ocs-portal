@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.user.controller;
+package com.cloud.ocs.portal.core.auth.controller;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cloud.ocs.portal.common.bean.User;
-import com.cloud.ocs.portal.core.user.constant.LoginStatus;
-import com.cloud.ocs.portal.core.user.constant.LoginUserConstant;
-import com.cloud.ocs.portal.core.user.service.UserService;
+import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
+import com.cloud.ocs.portal.core.auth.constant.LoginUserConstant;
+import com.cloud.ocs.portal.core.auth.service.UserAuthService;
 
 /**
  * 系统用户行为Controller入口
@@ -23,10 +23,10 @@ import com.cloud.ocs.portal.core.user.service.UserService;
  *
  */
 @Controller
-public class UserController {
+public class UserAuthController {
 	
 	@Resource
-	private UserService userService;
+	private UserAuthService userService;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public String base(HttpSession session) {

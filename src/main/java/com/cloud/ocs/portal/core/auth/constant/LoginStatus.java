@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.user.constant;
+package com.cloud.ocs.portal.core.auth.constant;
 
 /**
  * 描述系统用户登陆时状态的枚举类
