@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.business.dao.impl;
+package com.cloud.ocs.portal.common.dao.impl;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,9 +7,8 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import com.cloud.ocs.portal.common.dao.impl.GenericDaoImpl;
-import com.cloud.ocs.portal.core.business.bean.CityNetwork;
-import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
+import com.cloud.ocs.portal.common.bean.CityNetwork;
+import com.cloud.ocs.portal.common.dao.CityNetworkDao;
 
 /**
  * 城市-网络Dao实现类

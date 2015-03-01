@@ -10,10 +10,10 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cloud.ocs.portal.common.bean.CityNetwork;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
-import com.cloud.ocs.portal.core.business.bean.CityNetwork;
+import com.cloud.ocs.portal.common.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
-import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.dto.PublicIpDto;
 import com.cloud.ocs.portal.core.sync.constant.SyncApiName;
 import com.cloud.ocs.portal.core.sync.service.SyncNetworkStateService;

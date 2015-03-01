@@ -1,7 +1,6 @@
-package com.cloud.ocs.portal.core.user.dao;
+package com.cloud.ocs.portal.common.dao;
 
-import com.cloud.ocs.portal.common.dao.GenericDao;
-import com.cloud.ocs.portal.core.user.bean.User;
+import com.cloud.ocs.portal.common.bean.User;
 
 /**
  * 系统用户Dao接口

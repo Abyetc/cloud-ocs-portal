@@ -102,6 +102,19 @@ function startMonitoringCityNetworkMessageThroughput() {
 		},
 		success: function(data) {
 			console.log("startMonitoringCityNetworkMessageThroughput:" + data);
+			if (data.receivedMessageNum == window.cityNetworkMessageThroughputLastReceived && data.finishedMessageNum == window.cityNetworkMessageThroughputLastFinished) {
+				window.cityNetworkMessageThroughputCounter++;
+			}
+			else {
+				window.cityNetworkMessageThroughputCounter = 0;
+			}
+			
+			window.cityNetworkMessageThroughputLastReceived = data.receivedMessageNum;
+			window.cityNetworkMessageThroughputLastFinished = data.finishedMessageNum;
+			if (window.cityNetworkMessageThroughputCounter >= 3) {
+				data.receivedMessageNum = 0;
+				data.finishedMessageNum = 0;
+			}
 			var shiftFlag = cityNetworkMessageThroughputChart.series[cityNetworkMessageThroughputChartCurrSeries - 1].data.length > 100;
 			var receivedMessageNumPoint = [x, data.receivedMessageNum];
 			var finishedMessageNumPoint = [x, data.finishedMessageNum];

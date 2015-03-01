@@ -1,9 +1,8 @@
-package com.cloud.ocs.portal.core.business.dao;
+package com.cloud.ocs.portal.common.dao;
 
 import java.util.List;
 
-import com.cloud.ocs.portal.common.dao.GenericDao;
-import com.cloud.ocs.portal.core.business.bean.OcsEngine;
+import com.cloud.ocs.portal.common.bean.OcsEngine;
 
 /**
  * Ocs引擎程序Dao接口

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.common.bean.City;
+import com.cloud.ocs.portal.common.bean.CityNetwork;
 import com.cloud.ocs.portal.common.dto.OperateObjectDto;
-import com.cloud.ocs.portal.core.business.bean.City;
-import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.dto.AddCityDto;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
 import com.cloud.ocs.portal.core.business.dto.AddOcsVmDto;

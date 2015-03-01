@@ -95,6 +95,9 @@ function monitorCityNetworks(cityId, networkId, networkName) {
 
 	//将当前city network Id设置为全局变量
 	window.curMonitorCityNetworkId = networkId;
+	window.cityNetworkMessageThroughputCounter = 0;
+	window.cityNetworkMessageThroughputLastReceived = 0;
+	window.cityNetworkMessageThroughputLastFinished = 0;
 
   //city network并发请求数实时监控区域
   $("#content-area").append("<div id='city-network-realtime-session-num-monitor-area' style=''>"

@@ -103,8 +103,19 @@ function startMonitoringCityVmMessageThroughput() {
 		},
 		success: function(data) {
 			console.log("startMonitoringCityVmMessageThroughput:" + data);
-			console.log(data.receivedMessageNum);
-			console.log(data.finishedMessageNum);
+			if (data.receivedMessageNum == window.cityVmMessageThroughputLastReceived && data.finishedMessageNum == window.cityVmMessageThroughputLastFinished) {
+				window.cityVmMessageThroughputCounter++;
+			}
+			else {
+				window.cityVmMessageThroughputCounter = 0;
+			}
+			
+			window.cityVmMessageThroughputLastReceived = data.receivedMessageNum;
+			window.cityVmMessageThroughputLastFinished = data.finishedMessageNum;
+			if (window.cityVmMessageThroughputCounter >= 3) {
+				data.receivedMessageNum = 0;
+				data.finishedMessageNum = 0;
+			}
 			var shiftFlag = cityVmMessageThroughputMonitorChart.series[cityVmMessageThroughputMonitorChartCurrSeries - 1].data.length > 100;
 			var receivedMessageNumPoint = [x, data.receivedMessageNum];
 			var finishedMessageNumPoint = [x, data.finishedMessageNum];

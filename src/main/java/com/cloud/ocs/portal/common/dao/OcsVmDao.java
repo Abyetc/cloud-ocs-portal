@@ -1,7 +1,6 @@
-package com.cloud.ocs.portal.core.business.dao;
+package com.cloud.ocs.portal.common.dao;
 
-import com.cloud.ocs.portal.common.dao.GenericDao;
-import com.cloud.ocs.portal.core.business.bean.OcsVm;
+import com.cloud.ocs.portal.common.bean.OcsVm;
 
 /**
  * Ocs Vm Dao接口

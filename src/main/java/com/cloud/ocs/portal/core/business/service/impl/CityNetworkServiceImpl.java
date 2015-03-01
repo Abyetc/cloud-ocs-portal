@@ -13,15 +13,15 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cloud.ocs.portal.common.bean.CityNetwork;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
 import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
 import com.cloud.ocs.portal.common.cs.asyncjob.service.QueryAsyncJobResultService;
+import com.cloud.ocs.portal.common.dao.CityNetworkDao;
 import com.cloud.ocs.portal.common.dto.OperateObjectDto;
-import com.cloud.ocs.portal.core.business.bean.CityNetwork;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
-import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.dto.AddCityNetworkDto;
 import com.cloud.ocs.portal.core.business.dto.CityNetworkListDto;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;

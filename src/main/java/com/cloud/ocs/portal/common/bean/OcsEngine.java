@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.business.bean;
+package com.cloud.ocs.portal.common.bean;
 // default package
 
 import java.sql.Timestamp;

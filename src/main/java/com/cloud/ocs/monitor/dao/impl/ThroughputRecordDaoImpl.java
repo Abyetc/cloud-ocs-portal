@@ -14,6 +14,7 @@ import com.cloud.ocs.monitor.common.GenericDaoImpl;
 import com.cloud.ocs.monitor.dao.ThroughputRecordDao;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
+import com.cloud.ocs.portal.utils.DateUtil;
 
 /**
  * 用于访问吞吐量记录的Dao实现类
@@ -44,17 +45,19 @@ public class ThroughputRecordDaoImpl extends GenericDaoImpl<ThroughputRecord> im
 		}
 		networkIpQueryCondition.append("record.routeIp = '" + allNetworkIps.get(i) + "'");
 		
-		Date dNow = new Date();
-		Timestamp timestamp = new Timestamp(dNow.getTime());
 		Query query =  em.createQuery("select sum(record.receiveMsgCount), sum(record.finishedMsgCount) from ThroughputRecord record where "
 				+ "(" + networkIpQueryCondition.toString() + ") and " +
-				"record.recordTime = '" + timestamp + "'");
-		List<Object[]> queryResult = (List<Object[]>)query.getResultList();
+				"record.recordTime = (select max(record2.recordTime) from ThroughputRecord record2)");
+		Object[] queryResult = (Object[])query.getSingleResult();
 		if (queryResult != null) {
 			result = new MessageThroughputDto();
-			if (queryResult.size() != 0) {
-				result.setReceivedMessageNum((Long)queryResult.get(0)[0]);
-				result.setFinishedMessageNum((Long)queryResult.get(0)[1]);
+			if (queryResult.length != 0) {
+				if (queryResult[0] != null) {
+					result.setReceivedMessageNum((Long)queryResult[0]);
+				}
+				if (queryResult[1] != null) {
+					result.setFinishedMessageNum((Long)queryResult[1]);
+				}
 			}
 		}
 		
@@ -65,17 +68,19 @@ public class ThroughputRecordDaoImpl extends GenericDaoImpl<ThroughputRecord> im
 	public MessageThroughputDto getMessageThroughputOfNetwork(String networkIp) {
 		MessageThroughputDto result = null;
 		
-		Date dNow = new Date();
-		Timestamp timestamp = new Timestamp(dNow.getTime());
 		Query query =  em.createQuery("select sum(record.receiveMsgCount), sum(record.finishedMsgCount) from ThroughputRecord record where "
 				+ "record.routeIp = '" + networkIp + "' and " +
-				"record.recordTime = '" + timestamp + "'");
-		List<Object[]> queryResult = (List<Object[]>)query.getResultList();
+				"record.recordTime = (select max(record2.recordTime) from ThroughputRecord record2)");
+		Object[] queryResult = (Object[])query.getSingleResult();
 		if (queryResult != null) {
 			result = new MessageThroughputDto();
-			if (queryResult.size() != 0) {
-				result.setReceivedMessageNum((Long)queryResult.get(0)[0]);
-				result.setFinishedMessageNum((Long)queryResult.get(0)[1]);
+			if (queryResult.length != 0) {
+				if (queryResult[0] != null) {
+					result.setReceivedMessageNum((Long)queryResult[0]);
+				}
+				if (queryResult[1] != null) {
+					result.setFinishedMessageNum((Long)queryResult[1]);
+				}
 			}
 		}
 		
@@ -87,18 +92,20 @@ public class ThroughputRecordDaoImpl extends GenericDaoImpl<ThroughputRecord> im
 			String vmIp) {
 		MessageThroughputDto result = null;
 		
-		Date dNow = new Date();
-		Timestamp timestamp = new Timestamp(dNow.getTime());
-		Query query =  em.createQuery("select record.receiveMsgCount, record.finishedMsgCount from ThroughputRecord record where "
+		Query query =  em.createQuery("select sum(record.receiveMsgCount), sum(record.finishedMsgCount) from ThroughputRecord record where "
 				+ "record.routeIp = '" + networkIp + "' and " +
 				"record.vmip = '" + vmIp + "' and " +
-				"record.recordTime = '" + timestamp + "'");
-		List<Object[]> queryResult = (List<Object[]>)query.getResultList();
+				"record.recordTime = (select max(record2.recordTime) from ThroughputRecord record2)");
+		Object[] queryResult = (Object[])query.getSingleResult();
 		if (queryResult != null) {
 			result = new MessageThroughputDto();
-			if (queryResult.size() != 0) {
-				result.setReceivedMessageNum((Long)queryResult.get(0)[0]);
-				result.setFinishedMessageNum((Long)queryResult.get(0)[1]);
+			if (queryResult.length != 0) {
+				if (queryResult[0] != null) {
+					result.setReceivedMessageNum((Long)queryResult[0]);
+				}
+				if (queryResult[1] != null) {
+					result.setFinishedMessageNum((Long)queryResult[1]);
+				}
 			}
 		}
 		

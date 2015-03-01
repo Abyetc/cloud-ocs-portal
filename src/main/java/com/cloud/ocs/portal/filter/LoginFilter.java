@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.cloud.ocs.portal.core.user.bean.User;
+import com.cloud.ocs.portal.common.bean.User;
 import com.cloud.ocs.portal.core.user.constant.LoginUserConstant;
 
 public class LoginFilter extends OncePerRequestFilter{

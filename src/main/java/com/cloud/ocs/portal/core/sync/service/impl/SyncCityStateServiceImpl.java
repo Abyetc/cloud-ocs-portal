@@ -7,12 +7,12 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cloud.ocs.portal.core.business.bean.City;
-import com.cloud.ocs.portal.core.business.bean.CityNetwork;
+import com.cloud.ocs.portal.common.bean.City;
+import com.cloud.ocs.portal.common.bean.CityNetwork;
+import com.cloud.ocs.portal.common.dao.CityDao;
+import com.cloud.ocs.portal.common.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.business.constant.CityState;
 import com.cloud.ocs.portal.core.business.constant.NetworkState;
-import com.cloud.ocs.portal.core.business.dao.CityDao;
-import com.cloud.ocs.portal.core.business.dao.CityNetworkDao;
 import com.cloud.ocs.portal.core.sync.service.SyncCityStateService;
 
 /**

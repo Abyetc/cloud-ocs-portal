@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.business.bean;
+package com.cloud.ocs.portal.common.bean;
 
 import java.sql.Timestamp;
 import javax.persistence.Column;

@@ -1,6 +1,6 @@
 package com.cloud.ocs.portal.core.user.service;
 
-import com.cloud.ocs.portal.core.user.bean.User;
+import com.cloud.ocs.portal.common.bean.User;
 import com.cloud.ocs.portal.core.user.constant.LoginStatus;
 
 /**

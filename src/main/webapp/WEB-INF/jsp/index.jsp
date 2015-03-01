@@ -94,10 +94,10 @@
 	<!-- Bootstrap JavaScript 插件 -->
 	<script src="front/bootstrap/js/bootstrap.min.js"></script>
 	<!-- Highcharts 插件 -->
-	<script src="front/Highcharts/highcharts.js"></script>
+<!-- 	<script src="front/Highcharts/highcharts.js"></script> -->
+	<script src="front/Highcharts/Highstock/highstock.js"></script>
 	<script src="front/Highcharts/exporting.js"></script>
 	<!-- 		<script src="front/Highcharts/theme/grid-light.js"></script> -->
-	<!-- 		<script src="front/Highcharts/Highstock/highstock.js"></script> -->
 	<!-- JQuery用于loading效果的插件shCircleLoader -->
 	<script src="front/jQuery/shCircleLoader/jquery.shCircleLoader-min.js"></script>
 

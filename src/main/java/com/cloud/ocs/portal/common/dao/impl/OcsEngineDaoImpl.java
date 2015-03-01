@@ -1,4 +1,4 @@
-package com.cloud.ocs.portal.core.business.dao.impl;
+package com.cloud.ocs.portal.common.dao.impl;
 
 import java.util.List;
 
@@ -6,9 +6,8 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import com.cloud.ocs.portal.common.dao.impl.GenericDaoImpl;
-import com.cloud.ocs.portal.core.business.bean.OcsEngine;
-import com.cloud.ocs.portal.core.business.dao.OcsEngineDao;
+import com.cloud.ocs.portal.common.bean.OcsEngine;
+import com.cloud.ocs.portal.common.dao.OcsEngineDao;
 
 /**
  * Ocs引擎程序Dao实现类

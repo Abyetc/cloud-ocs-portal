@@ -30,7 +30,7 @@ public class DateUtil {
 	}
 	
 	/**
-	 * 将传入的date在minute上进行增或减
+	 * 将传入的date在second上进行增或减
 	 * @param date
 	 * @param amount 增减的数量
 	 * @return
@@ -40,6 +40,23 @@ public class DateUtil {
 		
 		calendar.setTime(date);
 		calendar.add(Calendar.SECOND, amount);
+		Date resultInDate = calendar.getTime();
+		Timestamp result = new Timestamp(resultInDate.getTime());
+		
+		return result;
+	}
+	
+	/**
+	 * 将传入的date在millisecond上进行增或减
+	 * @param date
+	 * @param amount 增减的数量
+	 * @return
+	 */
+	public static Timestamp transferDateInMilliSecondField(Date date, int amount) {
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(date);
+		calendar.add(Calendar.MILLISECOND, amount);
 		Date resultInDate = calendar.getTime();
 		Timestamp result = new Timestamp(resultInDate.getTime());
 		

@@ -9,8 +9,8 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
-import com.cloud.ocs.portal.core.business.dao.OcsVmForwardingPortDao;
+import com.cloud.ocs.portal.common.bean.OcsVmForwardingPort;
+import com.cloud.ocs.portal.common.dao.OcsVmForwardingPortDao;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
 
 /**

@@ -1,6 +1,6 @@
 package com.cloud.ocs.portal.core.business.dto;
 
-import com.cloud.ocs.portal.core.business.bean.City;
+import com.cloud.ocs.portal.common.bean.City;
 
 /**
  * 新增服务城市返回信息的Dto

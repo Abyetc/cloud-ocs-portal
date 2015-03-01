@@ -2,7 +2,7 @@ package com.cloud.ocs.portal.core.business.service;
 
 import java.util.List;
 
-import com.cloud.ocs.portal.core.business.bean.OcsEngine;
+import com.cloud.ocs.portal.common.bean.OcsEngine;
 import com.cloud.ocs.portal.core.business.constant.OcsEngineState;
 
 /**

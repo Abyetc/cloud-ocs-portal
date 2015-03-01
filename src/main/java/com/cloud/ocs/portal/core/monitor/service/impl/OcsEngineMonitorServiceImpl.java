@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cloud.ocs.portal.core.business.bean.OcsEngine;
+import com.cloud.ocs.portal.common.bean.OcsEngine;
 import com.cloud.ocs.portal.core.business.constant.OcsEngineState;
 import com.cloud.ocs.portal.core.business.constant.OcsVmState;
 import com.cloud.ocs.portal.core.business.service.OcsEngineService;

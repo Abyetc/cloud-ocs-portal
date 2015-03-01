@@ -23,6 +23,9 @@ function monitorVM(cityId, networkId, VMId, VMName) {
 
   //将当前city vm Id设置为全局变量
   window.curMonitorCityVmId = VMId;
+  window.cityVmMessageThroughputCounter = 0;
+  window.cityVmMessageThroughputLastReceived = 0;
+  window.cityVmMessageThroughputLastFinished = 0;
 
   //city vm并发请求数实时监控区域
   $("#content-area").append("<div id='city-vm-request-num-monitor-area' style=''>"
@@ -194,5 +197,61 @@ function monitorVM(cityId, networkId, VMId, VMName) {
     series: []
   });
   cityVmMessageProcessTimeChartCurrSeries = 0;
-
+  
+  //============================================================================================================
+  
+  var cityVmHistoryRequestNumMonitorChart;
+  var cityVmHistoryMessageThroughputMonitorChart;
+  
+  $("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;历史数据监控</strong></span></div>");
+  
+  //vm的历史并发请求数监控区域
+  $("#content-area").append("<div id='city-vm-history-request-num-monitor-area' style=''>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-vm-history-request-num-monitor-btn'>点击查询</button>"
+		    +   "</div>"
+		    +   "<div id='city-vm-history-request-num-monitor-chart'></div>"
+		    + "</div>");
+  cityVmHistoryRequestNumMonitorChart = new Highcharts.StockChart({
+	  chart: {
+	      renderTo: 'city-vm-history-request-num-monitor-chart',
+	      marginRight: 10,
+	      plotBorderWidth: 1
+	    },
+	    title: {
+	      text: VMName + " 历史并发请求连接数"
+	    },
+	    exporting: {
+	        enabled: false
+	      },
+	      credits: {
+	        enabled: false
+	    },
+	    series: []
+  });
+  
+  //vm的历史包吞吐量数据监控区域
+  $("#content-area").append("<div id='city-vm-history-message-throughput-monitor-area' style=''>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-vm-history-message-throughput-monitor-btn'>点击查询</button>"
+		    +   "</div>"
+		    +   "<div id='city-vm-history-message-throughput-monitor-chart'></div>"
+		    + "</div>");
+  cityVmHistoryMessageThroughputMonitorChart = new Highcharts.StockChart({
+	  chart: {
+	      renderTo: 'city-vm-history-message-throughput-monitor-chart',
+	      marginRight: 10,
+	      plotBorderWidth: 1
+	    },
+	    title: {
+	      text: VMName + " 历史包吞吐量"
+	    },
+	    exporting: {
+	        enabled: false
+	      },
+	      credits: {
+	        enabled: false
+	    },
+	    series: []
+  });
 }

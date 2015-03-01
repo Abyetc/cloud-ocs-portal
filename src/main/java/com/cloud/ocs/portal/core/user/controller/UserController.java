@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cloud.ocs.portal.core.user.bean.User;
+import com.cloud.ocs.portal.common.bean.User;
 import com.cloud.ocs.portal.core.user.constant.LoginStatus;
 import com.cloud.ocs.portal.core.user.constant.LoginUserConstant;
 import com.cloud.ocs.portal.core.user.service.UserService;

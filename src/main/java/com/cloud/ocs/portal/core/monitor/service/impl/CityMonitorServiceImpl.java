@@ -18,7 +18,7 @@ import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
 import com.cloud.ocs.monitor.service.MessageRecordService;
 import com.cloud.ocs.monitor.service.SessionRecordService;
 import com.cloud.ocs.monitor.service.ThroughputRecordService;
-import com.cloud.ocs.portal.core.business.bean.OcsVmForwardingPort;
+import com.cloud.ocs.portal.common.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;

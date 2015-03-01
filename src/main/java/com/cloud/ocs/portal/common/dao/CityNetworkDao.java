@@ -1,9 +1,8 @@
-package com.cloud.ocs.portal.core.business.dao;
+package com.cloud.ocs.portal.common.dao;
 
 import java.util.List;
 
-import com.cloud.ocs.portal.common.dao.GenericDao;
-import com.cloud.ocs.portal.core.business.bean.CityNetwork;
+import com.cloud.ocs.portal.common.bean.CityNetwork;
 
 /**
  * 城市-网络Dao接口

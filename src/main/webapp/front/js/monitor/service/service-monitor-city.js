@@ -190,6 +190,9 @@ function monitorCity(cityId, cityName) {
 
   //将当前city Id设置为全局变量
   window.curMonitorCityId = cityId;
+  window.cityMessageThroughputCounter = 0;
+  window.cityMessageThroughputLastReceived = 0;
+  window.cityMessageThroughputLastFinished = 0;
 
   //city实时会话数监控区域
   $("#content-area").append("<div id='city-realtime-session-num-monitor-area' style=''>"

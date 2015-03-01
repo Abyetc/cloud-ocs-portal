@@ -8,9 +8,9 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cloud.ocs.portal.core.user.bean.User;
+import com.cloud.ocs.portal.common.bean.User;
+import com.cloud.ocs.portal.common.dao.UserDao;
 import com.cloud.ocs.portal.core.user.constant.LoginStatus;
-import com.cloud.ocs.portal.core.user.dao.UserDao;
 import com.cloud.ocs.portal.core.user.service.UserService;
 
 /**
