@@ -151,6 +151,8 @@ var hostCpuUsageMonitorChart;
 var hostCpuUsageMonitorChartCurrSeries = 0;
 var hostMemoryUsageMonitorChart;
 var hostMemoryUsageMonitorChartCurrSeries = 0;
+var hostHistoryCpuUsagePercentageMonitorChart;
+var hostHistoryMemoryUsagePercentageMonitorChart;
 
 //获取主机详细信息
 function monitorHostDetail(event) {
@@ -199,9 +201,11 @@ function monitorHostDetail(event) {
 
   //将当前host Id设置为全局变量
   window.curMonitorHostId = hostDetail.hostId;
+  
+  $("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;实时数据监控</strong></span></div>");
 
   //主机CPU使用率实时监控区域
-  $("#content-area").append("<div id='host-cpu-usage-monitor-area' style='margin-top:100px;'>"
+  $("#content-area").append("<div id='host-cpu-usage-monitor-area' style=''>"
     +   "<div>"
     +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='host-cpu-usage-monitor-btn'>点击开始监控CPU使用情况</button>"
     +   "</div>"
@@ -240,7 +244,7 @@ function monitorHostDetail(event) {
       formatter: function() {
         return '<b>' + this.series.name + '</b><br/>' +
           Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-          Highcharts.numberFormat(this.y, 2);
+          Highcharts.numberFormat(this.y, 2) + '%';
       }
     },
     legend: {
@@ -281,9 +285,9 @@ function monitorHostDetail(event) {
     },
     yAxis: {
       min: 0,
-      max: parseFloat(hostDetail.memoryTotal.slice(0, hostDetail.memoryTotal.indexOf(' '))),
+      max: 100,
       title: {
-        text: '内存使用情况(GB)'
+        text: '内存使用率(%)'
       },
       plotLines: [{
         value: 0,
@@ -295,7 +299,7 @@ function monitorHostDetail(event) {
       formatter: function() {
         return '<b>' + this.series.name + '</b><br/>' +
           Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-          Highcharts.numberFormat(this.y, 6) + 'GB';
+          Highcharts.numberFormat(this.y, 2) + '%';
       }
     },
     legend: {
@@ -310,4 +314,40 @@ function monitorHostDetail(event) {
     series: []
   });
   hostMemoryUsageMonitorChartCurrSeries = 0;
+  
+  //============================================================================================================
+
+  $("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;历史数据监控</strong></span></div>");
+
+  var monthDaysOptions = "";
+  for (var i = 1; i <= 31; i++) {
+	  monthDaysOptions += "<option>" + i + "</option>";
+  }
+  
+  //host的历史CPU使用率监控区域
+  $("#content-area").append("<div id='host-history-cpu-usage-monitor-area' style=''>"
+		    +   "<div class='pull-right' role='form' style='width:10%; margin-left:15px;'>"
+		    +		"<select class='form-control'>"
+		    +			monthDaysOptions
+		    +		"</select>"
+		    +   "</div>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='host-history-cpu-usage-monitor-btn'>选择近一个月天数并点击查询(CPU)</button>"
+		    +   "</div>"
+		    +   "<div id='host-history-cpu-usage-monitor-chart'></div>"
+		    + "</div>");
+  
+  //host的历史Memory使用率监控区域
+  $("#content-area").append("<div id='host-history-memory-usage-monitor-area' style='margin-top:100px;'>"
+		    +   "<div class='pull-right' role='form' style='width:10%; margin-left:15px;'>"
+		    +		"<select class='form-control'>"
+		    +			monthDaysOptions
+		    +		"</select>"
+		    +   "</div>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='host-history-memory-usage-monitor-btn'>选择近一个月天数并点击查询(内存)</button>"
+		    +   "</div>"
+		    +   "<div id='host-history-memory-usage-monitor-chart'></div>"
+		    + "</div>");
+ 
 }

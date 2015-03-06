@@ -35,7 +35,7 @@
 				<ul class="nav nav-pills nav-stacked">
 					<li class="dropdown active"><a href="javascript:void(0);"
 						class="dropdown-toggle" data-toggle="dropdown"><span
-							class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;系统资源管理<b
+							class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;基础设施资源管理<b
 							class="caret"></b> </a>
 						<ul class="dropdown-menu">
 							<li class="sidebar-cloud-resource-infrastructure"><a
@@ -102,8 +102,8 @@
 	<script src="front/jQuery/shCircleLoader/jquery.shCircleLoader-min.js"></script>
 
 	<!-- Cloud OCS Portal的JS文件 -->
-	<script src="front/js/resource/cloud-resource-infrastructure.js"></script>
-	<script src="front/js/resource/cloud-resource-capacity.js"></script>
+	<script src="front/js/infrastructure/cloud-infrastructure.js"></script>
+	<script src="front/js/infrastructure/cloud-capacity.js"></script>
 	
 	<script src="front/js/service/cloud-ocs-service.js"></script>
 	<script src="front/js/service/cloud-ocs-service-network.js"></script>

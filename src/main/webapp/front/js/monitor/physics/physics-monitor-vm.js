@@ -99,9 +99,11 @@ function monitorVmDetail(event) {
 
   //将当前vm Id设置为全局变量
   window.curMonitorVmId = vmDetail.vmId;
+  
+  $("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;实时数据监控</strong></span></div>");
 
   //Vm CPU使用率实时使用曲线区域
-  $("#content-area").append("<div id='vm-cpu-usage-monitor-area' style='margin-top:100px;'>"
+  $("#content-area").append("<div id='vm-cpu-usage-monitor-area' style=''>"
 	+   "<div>"
 	+     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-cpu-usage-monitor-btn'>点击开始监控CPU使用情况</button>"
 	+   "</div>"
@@ -267,4 +269,7 @@ function monitorVmDetail(event) {
 		series: []
 	});
 	cityVmRxbpsTxbpsMonitorChartCurrSeries = 0;
+	
+	$("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;历史数据监控</strong></span></div>");
+
 }

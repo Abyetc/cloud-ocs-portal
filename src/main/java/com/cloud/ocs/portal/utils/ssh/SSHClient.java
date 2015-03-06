@@ -46,6 +46,7 @@ public class SSHClient {
 				line = br.readLine();
 			}
 			result = strBuffer.toString();
+			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -60,7 +61,16 @@ public class SSHClient {
 		return result;
 	}
 
-	private static Connection connectTo(String host, int port, String userName, String password) throws IOException {
+	/**
+	 * 获得与远程主机的SSH连接
+	 * @param host
+	 * @param port
+	 * @param userName
+	 * @param password
+	 * @return
+	 * @throws IOException
+	 */
+	public static Connection connectTo(String host, int port, String userName, String password) throws IOException {
         Connection connection = new Connection(host, port);
         connection.connect();
         connection.authenticateWithPassword(userName, password);

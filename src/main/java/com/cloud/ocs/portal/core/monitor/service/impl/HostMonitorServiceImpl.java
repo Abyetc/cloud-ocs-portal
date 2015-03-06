@@ -1,7 +1,12 @@
 package com.cloud.ocs.portal.core.monitor.service.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.annotation.Resource;
 
@@ -9,14 +14,19 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.cloud.ocs.portal.common.bean.OcsHost;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
+import com.cloud.ocs.portal.common.dao.OcsHostDao;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
 import com.cloud.ocs.portal.core.monitor.dto.HostDetail;
 import com.cloud.ocs.portal.core.monitor.service.HostMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
+import com.cloud.ocs.portal.properties.OcsHostProperties;
+import com.cloud.ocs.portal.utils.DateUtil;
 import com.cloud.ocs.portal.utils.UnitUtil;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
+import com.cloud.ocs.portal.utils.ssh.SSHClient;
 
 /**
  * 监控主机service实现类
@@ -30,7 +40,14 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 public class HostMonitorServiceImpl implements HostMonitorService {
 	
 	@Resource
+	private OcsHostDao ocsHostDao;
+	
+	@Resource
 	private OcsVmMonitorService vmMonitorService;
+	
+	private DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-");
+	private DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
+	private DateFormat dateFormat3 = new SimpleDateFormat("dd");
 
 	@Override
 	public List<HostDetail> getHostDetailList(String zoneId) {
@@ -86,7 +103,7 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 	}
 
 	@Override
-	public double getCurHostCpuUsagePercentage(String hostId) {
+	public double getHostCurCpuUsagePercentageFromCs(String hostId) {
 		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
 		request.addRequestParams("id", hostId);
 		CloudStackApiSignatureUtil.generateSignature(request);
@@ -111,7 +128,7 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 	}
 
 	@Override
-	public double getCurHostUsedMemory(String hostId) {
+	public double getHostCurUsedMemoryFromCs(String hostId) {
 		
 		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
 		request.addRequestParams("id", hostId);
@@ -133,6 +150,218 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public double getHostCurCpuUsedPercentage(String hostId) {
+		double res = 0.0;
+		OcsHost ocsHost = ocsHostDao.findByHostId(hostId);
+		if (ocsHost == null) {
+			return 0.0;
+		}
+		
+		int sshPort = OcsHostProperties.getOcsHostSshPort();
+		String hostIp = ocsHost.getIpAddress();
+		String rootPwd = OcsHostProperties.getOcsHostPassword();
+		String cmd = OcsHostProperties.getCurCpuUsagePercentageCmd();
+		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		String resLine = ret.split("\n")[3];
+		String resStr = resLine.substring(resLine.lastIndexOf(" "), resLine.length());
+		if (resStr != null) {
+			res = 100.0 - Double.parseDouble(resStr);
+		}
+		
+		return res;
+	}
+
+	@Override
+	public double getHostCurMemoryUsedPercentage(String hostId) {
+		double res = 0.0;
+		OcsHost ocsHost = ocsHostDao.findByHostId(hostId);
+		if (ocsHost == null) {
+			return 0.0;
+		}
+		
+		int sshPort = OcsHostProperties.getOcsHostSshPort();
+		String hostIp = ocsHost.getIpAddress();
+		String rootPwd = OcsHostProperties.getOcsHostPassword();
+		String cmd = OcsHostProperties.getCurMemoryUsagePercentageCmd();
+		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		String resLine = ret.split("\n")[3];
+		int indexOfFirstDot = resLine.indexOf('.');
+		int beg = indexOfFirstDot - 1;
+		int end = indexOfFirstDot + 1;
+		while (resLine.charAt(beg) != ' ') {
+			beg--;
+		}
+		while (resLine.charAt(end) != ' ') {
+			end++;
+		}
+		String resStr = resLine.substring(beg + 1, end);
+		if (resStr != null) {
+			res = Double.parseDouble(resStr);
+		}
+		
+		return res;
+	}
+
+	@Override
+	public List<List<Object>> getHostHistoryCpuUsedPercentage(String hostId,
+			int dayOfMonth) {
+		List<List<Object>> res = null;
+		OcsHost ocsHost = ocsHostDao.findByHostId(hostId);
+		if (ocsHost == null) {
+			return null;
+		}
+		
+		int sshPort = OcsHostProperties.getOcsHostSshPort();
+		String hostIp = ocsHost.getIpAddress();
+		String rootPwd = OcsHostProperties.getOcsHostPassword();
+		String cmd = (dayOfMonth < 10 ? OcsHostProperties.getHistoryCpuUsagePercentageCmd() + "0" : OcsHostProperties.getHistoryCpuUsagePercentageCmd()) + dayOfMonth;
+		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		
+		if (ret != null) {
+			String arr[] = ret.split("\n");
+			res = new ArrayList<List<Object>>();
+			String date = dateFormat3.format(new Date());
+			int curDayOfMonth = Integer.parseInt(date);
+			for (int i = 0; i < arr.length - 1; i++) {
+				if (arr[i].contains("all")) {
+					List<Object> oneRecord = processOneLineCpuUsageRecord(arr[i], curDayOfMonth, dayOfMonth);
+					if (oneRecord != null) {
+						res.add(oneRecord);
+					}
+				}
+			}
+			
+		}
+		
+		return res;
+	}
+
+	@Override
+	public List<List<Object>> getHostHistoryMemoryUsedPercentage(String hostId,
+			int dayOfMonth) {
+		List<List<Object>> res = null;
+		OcsHost ocsHost = ocsHostDao.findByHostId(hostId);
+		if (ocsHost == null) {
+			return null;
+		}
+		
+		int sshPort = OcsHostProperties.getOcsHostSshPort();
+		String hostIp = ocsHost.getIpAddress();
+		String rootPwd = OcsHostProperties.getOcsHostPassword();
+		String cmd = (dayOfMonth < 10 ? OcsHostProperties.getHistoryMemoryUsagePercentageCmd() + "0" : OcsHostProperties.getHistoryMemoryUsagePercentageCmd()) + dayOfMonth;
+		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		
+		if (ret != null) {
+			String arr[] = ret.split("\n");
+			res = new ArrayList<List<Object>>();
+			String date = dateFormat3.format(new Date());
+			int curDayOfMonth = Integer.parseInt(date);
+			for (int i = 3; i < arr.length - 1; i++) {
+				if (arr[i].isEmpty() || arr[i].contains("commit") || arr[i].contains("RESTART")) {
+					continue;
+				}
+				List<Object> oneRecord = processOneLineMemoryUsageRecord(arr[i], curDayOfMonth, dayOfMonth);
+				if (oneRecord != null) {
+					res.add(oneRecord);
+				}
+			}
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * 处理一行CPU使用记录字符串
+	 * @param record
+	 * @return
+	 */
+	private List<Object> processOneLineCpuUsageRecord(String record, int curDayOfMonth, int dayOfMonth) {
+		List<Object> res = null;
+		if(record == null) {
+			return null;
+		}
+		
+		String resStr = record.substring(record.lastIndexOf(" "), record.length());
+		String time = record.substring(0, record.indexOf("M") + 1);
+		String dateStr = dateFormat1.format(new Date()) + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + time;
+		String aa = dateStr.substring(dateStr.lastIndexOf(" ")+1, dateStr.length());
+		String dateStr2 = dateStr.substring(0, dateStr.lastIndexOf(" "));
+		if (aa.equals("AM")) {
+			dateStr2 = dateStr2 + " 上午";
+		}
+		else {
+			dateStr2 = dateStr2 + " 下午";
+		}
+		Date date = null;
+		try {
+			dateFormat2.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+			date = dateFormat2.parse(dateStr2);
+			if (dayOfMonth > curDayOfMonth) {
+				date = DateUtil.transferDateInMonthField(date, -1);
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		if (date != null) {
+			res = new ArrayList<Object>();
+			res.add(date.getTime());
+			res.add(100.0 - Double.parseDouble(resStr));
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * 处理一行Memory使用记录字符串
+	 * @param record
+	 * @return
+	 */
+	private List<Object> processOneLineMemoryUsageRecord(String record, int curDayOfMonth, int dayOfMonth) {
+		List<Object> res = null;
+		if(record == null) {
+			return null;
+		}
+		int indexOfFirstDot = record.indexOf('.');
+		int beg = indexOfFirstDot - 1;
+		int end = indexOfFirstDot + 1;
+		while (record.charAt(beg) != ' ') {
+			beg--;
+		}
+		while (record.charAt(end) != ' ') {
+			end++;
+		}
+		String resStr = record.substring(beg + 1, end);
+		
+		String time = record.substring(0, record.indexOf("M") + 1);
+		String dateStr = dateFormat1.format(new Date()) + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + time;
+		String aa = dateStr.substring(dateStr.lastIndexOf(" ")+1, dateStr.length());
+		String dateStr2 = dateStr.substring(0, dateStr.lastIndexOf(" "));
+		if (aa.equals("AM")) {
+			dateStr2 = dateStr2 + " 上午";
+		}
+		else {
+			dateStr2 = dateStr2 + " 下午";
+		}
+		Date date = null;
+		try {
+			dateFormat2.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+			date = dateFormat2.parse(dateStr2);
+			if (dayOfMonth > curDayOfMonth) {
+				date = DateUtil.transferDateInMonthField(date, -1);
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		if (date != null) {
+			res = new ArrayList<Object>();
+			res.add(date.getTime());
+			res.add(Double.parseDouble(resStr));
+		}
+		
+		return res;
 	}
 
 }

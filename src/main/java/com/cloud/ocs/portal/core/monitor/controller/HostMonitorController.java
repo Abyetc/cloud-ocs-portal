@@ -27,7 +27,7 @@ public class HostMonitorController {
 	
 	@Resource
 	private HostMonitorService hostMonitorService;
-
+	
 	@RequestMapping(value="/listHostDetail", method=RequestMethod.GET)
 	@ResponseBody
 	public List<HostDetail> listHostDetail(@RequestParam("zoneId") String zoneId) {
@@ -37,12 +37,26 @@ public class HostMonitorController {
 	@RequestMapping(value="/getCurHostCpuUsagePercentage", method=RequestMethod.GET)
 	@ResponseBody
 	public double getCurHostCpuUsagePercentage(@RequestParam("hostId") String hostId) {
-		return hostMonitorService.getCurHostCpuUsagePercentage(hostId);
+		return hostMonitorService.getHostCurCpuUsedPercentage(hostId);
 	}
 	
-	@RequestMapping(value="/getCurHostUsedMemory", method=RequestMethod.GET)
+	@RequestMapping(value="/getCurHostMemoryUsagePercentage", method=RequestMethod.GET)
 	@ResponseBody
-	public double getCurHostUsedMemory(@RequestParam("hostId") String hostId) {
-		return hostMonitorService.getCurHostUsedMemory(hostId);
+	public double getCurHostMemoryUsagePercentage(@RequestParam("hostId") String hostId) {
+		return hostMonitorService.getHostCurMemoryUsedPercentage(hostId);
+	}
+	
+	@RequestMapping(value="/getHostHistoryCpuUsedPercentage", method=RequestMethod.GET)
+	@ResponseBody
+	public List<List<Object>> getHostHistoryCpuUsedPercentage(@RequestParam("hostId") String hostId,
+			@RequestParam("dayOfMonth") Integer dayOfMonth) {
+		return hostMonitorService.getHostHistoryCpuUsedPercentage(hostId, dayOfMonth);
+	}
+	
+	@RequestMapping(value="/getHostHistoryMemoryUsedPercentage", method=RequestMethod.GET)
+	@ResponseBody
+	public List<List<Object>> getHostHistoryMemoryUsedPercentage(@RequestParam("hostId") String hostId,
+			@RequestParam("dayOfMonth") Integer dayOfMonth) {
+		return hostMonitorService.getHostHistoryMemoryUsedPercentage(hostId, dayOfMonth);
 	}
 }

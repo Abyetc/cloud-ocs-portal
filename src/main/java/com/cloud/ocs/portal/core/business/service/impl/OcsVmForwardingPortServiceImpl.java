@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.bean.OcsVmForwardingPort;
+import com.cloud.ocs.portal.common.cache.OcsVmForwardingPortCache;
 import com.cloud.ocs.portal.common.dao.OcsVmForwardingPortDao;
-import com.cloud.ocs.portal.core.business.cache.OcsVmForwardingPortCache;
 import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.utils.RandomNumUtil;
 

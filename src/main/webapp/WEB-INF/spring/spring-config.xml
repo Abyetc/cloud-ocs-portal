@@ -159,7 +159,7 @@
 		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 	</bean>
 	
-	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.core.business.cache.OcsVmForwardingPortCache">
+	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.common.cache.OcsVmForwardingPortCache">
 	</bean>
 	
 	

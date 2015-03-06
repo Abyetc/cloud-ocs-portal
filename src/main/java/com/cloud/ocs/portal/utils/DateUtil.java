@@ -62,4 +62,13 @@ public class DateUtil {
 		
 		return result;
 	}
+	
+	public static Date transferDateInMonthField(Date date, int amount) {
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(date);
+		calendar.add(Calendar.MONTH, amount);
+		
+		return calendar.getTime();
+	}
 }

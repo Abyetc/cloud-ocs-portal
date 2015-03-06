@@ -95,13 +95,13 @@ function startMonitoringHostMemoryUsage() {
 	//请求数据
 	$.ajax({
 		type: "GET",
-		url: "monitor/host/getCurHostUsedMemory",
+		url: "monitor/host/getCurHostMemoryUsagePercentage",
 		dataType: "json",
 		data: {
 			hostId: window.curMonitorHostId
 		},
 		success: function(data) {
-			console.log("getCurHostUsedMemory:" + data);
+			console.log("getCurHostMemoryUsagePercentage:" + data);
 			y = data;
 			var shiftFlag = hostMemoryUsageMonitorChart.series[hostMemoryUsageMonitorChartCurrSeries - 1].data.length > 100;
 			var point = [x, y];
@@ -128,3 +128,98 @@ function stopMonitoringHostMemoryUsage() {
 	clearTimeout(window.hostMemoryUsageMonitorTimer);
 	window.hostMemoryUsageMonitorTimer = null;
 }
+
+//==============================================================================
+//==============================================================================
+
+$("body").on("click", "#host-history-cpu-usage-monitor-btn", function() {
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/host/getHostHistoryCpuUsedPercentage",
+		dataType: "json",
+		data: {
+			hostId: window.curMonitorHostId,
+			dayOfMonth: $("#host-history-cpu-usage-monitor-area select").val()
+		},
+		success: function(data) {
+			 hostHistoryCpuUsagePercentageMonitorChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'host-history-cpu-usage-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "CPU使用率历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "CPU使用率历史曲线" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 2) + '%';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 100,
+				        },
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"CPU使用率历史曲线", data:data}]
+			  });
+		},
+		error: function(xhr, status) {
+			alert(status);
+		}
+	});
+});
+
+$("body").on("click", "#host-history-memory-usage-monitor-btn", function() {
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/host/getHostHistoryMemoryUsedPercentage",
+		dataType: "json",
+		data: {
+			hostId: window.curMonitorHostId,
+			dayOfMonth: $("#host-history-memory-usage-monitor-area select").val()
+		},
+		success: function(data) {
+			 hostHistoryCpuUsagePercentageMonitorChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'host-history-memory-usage-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "内存使用率历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "内存使用率历史曲线" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 2) + '%';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 100,
+				        },
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"内存使用率历史曲线", data:data}]
+			  });
+		},
+		error: function(xhr, status) {
+			alert(status);
+		}
+	});
+});
