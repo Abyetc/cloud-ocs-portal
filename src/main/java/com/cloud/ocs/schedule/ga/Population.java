@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import com.cloud.ocs.schedule.VmLoad;
+
+
 /**
  * 遗传算法中的群体类
  * 

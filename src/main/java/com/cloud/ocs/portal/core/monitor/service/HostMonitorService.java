@@ -22,6 +22,13 @@ public interface HostMonitorService {
 	public List<HostDetail> getHostDetailList(String zoneId);
 	
 	/**
+	 * 获得主机的CPU总量
+	 * @param hostId
+	 * @return
+	 */
+	public Long getHostTotalCpuCapacity(String hostId);
+	
+	/**
 	 * 从CloudStack获取host当前的CPU使用率
 	 * @param hostId
 	 * @return

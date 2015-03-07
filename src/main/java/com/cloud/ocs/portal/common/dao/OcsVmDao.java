@@ -1,5 +1,7 @@
 package com.cloud.ocs.portal.common.dao;
 
+import java.util.List;
+
 import com.cloud.ocs.portal.common.bean.OcsVm;
 
 /**
@@ -39,4 +41,12 @@ public interface OcsVmDao extends GenericDao<OcsVm> {
 	 * @return
 	 */
 	public Integer findOcsVmStateByVmId(String vmId);
+	
+	/**
+	 * 获得host上所有在running状态的虚拟机Id列表
+	 * @param hostId
+	 * @return
+	 */
+	public List<String> findAllRunningVmsOnHost(String hostId);
+	
 }

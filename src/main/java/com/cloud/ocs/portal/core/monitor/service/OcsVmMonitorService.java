@@ -32,6 +32,13 @@ public interface OcsVmMonitorService {
 	public List<OcsVmDetail> getVmDetailList(String hostId);
 	
 	/**
+	 * 获得VM的CPU总量
+	 * @param vmId
+	 * @return
+	 */
+	public Long getVmTotalCpuCapacity(String vmId);
+	
+	/**
 	 * 从CloudStack的API获取某个虚拟机的CPU的使用率
 	 * @param vmId
 	 * @return

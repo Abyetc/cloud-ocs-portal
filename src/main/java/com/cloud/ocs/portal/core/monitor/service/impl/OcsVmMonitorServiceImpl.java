@@ -144,6 +144,33 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		
 		return result;
 	}
+	
+	@Override
+	public Long getVmTotalCpuCapacity(String vmId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_VM_DETAIL);
+		request.addRequestParams("id", vmId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		Long result = 0L;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listvirtualmachinesresponse");
+			if (vmsListJsonObj.has("virtualmachine")) {
+				JSONArray vmsJsonArrayObj = vmsListJsonObj.getJSONArray("virtualmachine");
+				if (vmsJsonArrayObj != null && vmsJsonArrayObj.length() != 0) {
+					JSONObject jsonObject = (JSONObject)vmsJsonArrayObj.get(0);
+					int cpuNum = jsonObject.getInt("cpunumber");
+					long cpuSpeed = jsonObject.getLong("cpuspeed");
+					result = cpuNum * cpuSpeed;
+				}
+			}
+		}
+		
+		return result;
+	}
 
 	@Override
 	public double getCurVmCpuUsagePercentageFromCs(String vmId) {

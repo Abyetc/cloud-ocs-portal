@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule.ga;
+package com.cloud.ocs.schedule;
 
 /**
  * 用于描述虚拟机负载的工具类
@@ -8,10 +8,14 @@ package com.cloud.ocs.schedule.ga;
  * @date 2015-3-6 下午3:42:59
  *
  */
-class VmLoad  implements Comparable {
+public class VmLoad  implements Comparable {
 	private int vmNo;
 	private double load;
 	
+	public VmLoad() {
+		super();
+	}
+
 	public VmLoad(int vmNo, double load) {
 		super();
 		this.vmNo = vmNo;

@@ -58,4 +58,11 @@ public class OcsVmDaoImpl extends GenericDaoImpl<OcsVm> implements OcsVmDao {
 		return null;
 	}
 
+	@Override
+	public List<String> findAllRunningVmsOnHost(String hostId) {
+		Query query = em.createQuery("select model.vmId from OcsVm model where model.hsotId='" + hostId + "' and model.state=1");
+		
+		return query.getResultList();
+	}
+
 }

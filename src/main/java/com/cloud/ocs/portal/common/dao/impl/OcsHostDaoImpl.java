@@ -31,4 +31,11 @@ public class OcsHostDaoImpl extends GenericDaoImpl<OcsHost> implements OcsHostDa
 		return null;
 	}
 
+	@Override
+	public List<String> findAllHostIds() {
+		Query query = em.createQuery("select model.hostId from OcsHost model");
+		
+		return query.getResultList();
+	}
+
 }

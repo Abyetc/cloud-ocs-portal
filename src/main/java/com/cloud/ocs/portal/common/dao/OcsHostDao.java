@@ -1,5 +1,7 @@
 package com.cloud.ocs.portal.common.dao;
 
+import java.util.List;
+
 import com.cloud.ocs.portal.common.bean.OcsHost;
 
 /**
@@ -16,4 +18,10 @@ public interface OcsHostDao extends GenericDao<OcsHost> {
 	 * @return
 	 */
 	public OcsHost findByHostId(String hostId);
+	
+	/**
+	 * 得到所有Host的Id列表
+	 * @return
+	 */
+	public List<String> findAllHostIds();
 }

@@ -101,6 +101,33 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		
 		return result;
 	}
+	
+	@Override
+	public Long getHostTotalCpuCapacity(String hostId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
+		request.addRequestParams("id", hostId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		Long result = 0L;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
+			if (hostsListJsonObj.has("host")) {
+				JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
+				if (hostsJsonArrayObj != null && hostsJsonArrayObj.length() != 0) {
+					JSONObject jsonObject = (JSONObject)hostsJsonArrayObj.get(0);
+					int cpuNum = jsonObject.getInt("cpunumber");
+					long cpuSpeed = jsonObject.getLong("cpuspeed");
+					result = cpuNum * cpuSpeed;
+				}
+			}
+		}
+		
+		return result;
+	}
 
 	@Override
 	public double getHostCurCpuUsagePercentageFromCs(String hostId) {
