@@ -1,5 +1,7 @@
 package com.cloud.ocs.monitor.dao;
 
+import java.util.Date;
+
 import com.cloud.ocs.monitor.bean.SessionRecord;
 import com.cloud.ocs.monitor.common.GenericDao;
 
@@ -26,4 +28,22 @@ public interface SessionRecordDao extends GenericDao<SessionRecord> {
 	 * @return
 	 */
 	public Long getCityCurSessionNum(Integer cityId);
+	
+	/**
+	 * 城市在指定时间区间内接入的会话数
+	 * @param cityId
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	public Long getCityHistorySessionNum(Integer cityId, Date from, Date to);
+	
+	/**
+	 * 网络在指定时间区间内接入的会话数
+	 * @param cityId
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	public Long getNetworkHistorySessionNum(Integer networkIp, Date from, Date to);
 }

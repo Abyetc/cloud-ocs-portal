@@ -101,6 +101,37 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		return (Double)query.getSingleResult();
 	}
 	
+	@Override
+	public Double getMessageAverageProcessTimeOfCityAtSpecificDate(Integer cityId,
+			MessageType messageType, Date date) {
+		List<String> allNetworkIps = cityNetworkService.getAllPublicIpsOfCity(cityId);
+		
+		if (allNetworkIps == null) {
+			return null;
+		}
+		
+		StringBuffer networkIpQueryCondition = new StringBuffer();
+		int i = 0;
+		for (; i < allNetworkIps.size() - 1; i++) {
+			networkIpQueryCondition.append("record.routeIp = '" + allNetworkIps.get(i) + "' or ");
+		}
+		networkIpQueryCondition.append("record.routeIp = '" + allNetworkIps.get(i) + "'");
+		
+		String messageTypeQueryCondition = this.transferMessageTypeToQueryConditionString(messageType);
+		
+		//统计在从现在开始到一分钟之前之间处理完成的包
+		Date dNow = date;
+		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600);
+		Timestamp to = DateUtil.transferDateInSecondField(date, 0);
+		
+		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
+				"(" + networkIpQueryCondition.toString() + ") " +
+				messageTypeQueryCondition +
+				" and record.receivedTime > '" + from + "' and record.receivedTime <= '" + to + "'");
+		
+		return (Double)query.getSingleResult();
+	}
+	
 	/**
 	 * 将包类型转换为数据库查询的查询字符串
 	 * @param messageType
@@ -126,6 +157,20 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		}
 		
 		return messageTypeQueryCondition.toString();
+	}
+
+	@Override
+	public Double getMessageAverageProcessTimeOfNetworkAtSpecificDate(
+			String networkIp, MessageType messageType, Date date) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getMessageAverageProcessTimeOfVmAtSpecificDate(
+			String networkIp, String vmIp, MessageType messageType, Date date) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

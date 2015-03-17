@@ -1,6 +1,8 @@
 package com.cloud.ocs.portal.core.monitor.service.impl;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -14,65 +16,61 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.cloud.ocs.monitor.constant.MessageType;
+import com.cloud.ocs.monitor.dao.SessionRecordDao;
+import com.cloud.ocs.monitor.dao.ThroughputRecordDao;
 import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
 import com.cloud.ocs.monitor.service.MessageRecordService;
-import com.cloud.ocs.monitor.service.SessionRecordService;
-import com.cloud.ocs.monitor.service.ThroughputRecordService;
 import com.cloud.ocs.portal.common.bean.CityNetwork;
-import com.cloud.ocs.portal.common.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
-import com.cloud.ocs.portal.core.business.service.OcsVmForwardingPortService;
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
-import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.service.CityNetworkMonitorService;
-import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 
 @Service
 public class CityNetworkMonitorServiceImpl implements CityNetworkMonitorService {
 	
 	@Resource
-	private SessionRecordService sessionRecordService;
-	
-	@Resource
 	private MessageRecordService messageRecordService;
 	
 	@Resource
-	private ThroughputRecordService throughputRecordService;
+	private SessionRecordDao sessionRecordDao;
+	
+	@Resource
+	private ThroughputRecordDao throughputRecordDao;
 	
 	@Resource
 	private CityNetworkService cityNetworkService;
 	
-	@Resource
-	private OcsVmForwardingPortService vmForwardingPortService;
-	
-	@Resource
-	private OcsVmMonitorService vmMonitorService;
+//	@Resource
+//	private OcsVmForwardingPortService vmForwardingPortService;
+//	
+//	@Resource
+//	private OcsVmMonitorService vmMonitorService;
 	
 	@Override
-	public Long getRealtimeSessionNum(String networkId) {
+	public Long getNetworkRealtimeSessionNum(String networkId) {
 		CityNetwork cityNetwork = cityNetworkService.getCityNetworkByNetworkId(networkId);
 		
 		if (cityNetwork == null) {
 			return null;
 		}
 		
-		return sessionRecordService.getNetworkCurSessionNum(cityNetwork.getPublicIp());
+		return sessionRecordDao.getNetworkCurSessionNum(cityNetwork.getPublicIp());
 	}
 	
 	@Override
-	public MessageThroughputDto getMessageThroughput(String networkId) {
+	public MessageThroughputDto getNetworkRealtimeMessageThroughput(String networkId) {
 		CityNetwork cityNetwork = cityNetworkService.getCityNetworkByNetworkId(networkId);
 		
 		if (cityNetwork == null) {
 			return null;
 		}
 		
-		return throughputRecordService.getMessageThroughputOfNetwork(cityNetwork.getPublicIp());
+		return throughputRecordDao.getNetworkCurMessageThroughput(cityNetwork.getPublicIp());
 	}
 
 	@Override
-	public MessageProcessTimeDto getMessageProcessTime(String networkId) {
+	public MessageProcessTimeDto getNetworkRealtimeMessageAverageProcessTime(String networkId) {
 		CityNetwork cityNetwork = cityNetworkService.getCityNetworkByNetworkId(networkId);
 		
 		if (cityNetwork == null) {
@@ -127,88 +125,109 @@ public class CityNetworkMonitorServiceImpl implements CityNetworkMonitorService 
 	}
 
 	@Override
-	public RxbpsTxbpsDto getCityNetworkRxbpsTxbps(String networkId, final String interfaceName) {
-		RxbpsTxbpsDto result = new RxbpsTxbpsDto();
-		
-		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByNetworkId(networkId);
-		
-		if (vmForwardingPorts == null) {
-			return result;
-		}
-		
-		ExecutorService executor = Executors.newCachedThreadPool();
-		CompletionService<RxbpsTxbpsDto> comp = new ExecutorCompletionService<RxbpsTxbpsDto>(executor);
-		for (final OcsVmForwardingPort vmForwardingPort : vmForwardingPorts) {
-			comp.submit(new Callable<RxbpsTxbpsDto>() {
-				public RxbpsTxbpsDto call() throws Exception {
-					return vmMonitorService.getVmRxbpsTxbps(vmForwardingPort.getVmId(), interfaceName);
-				}
-			});
-		}
-		executor.shutdown();
-		int count = 0;
-		while (count < vmForwardingPorts.size()) {
-			Future<RxbpsTxbpsDto> future = comp.poll();
-			if (future == null) {
-				continue;
-			}
-			else {
-				try {
-					RxbpsTxbpsDto rxbpsTxbpsDto = future.get();
-					result.setRxbps(result.getRxbps() + rxbpsTxbpsDto.getRxbps());
-					result.setTxbps(result.getTxbps() + rxbpsTxbpsDto.getTxbps());
-					count++;
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		return result;
+	public Map<String, List<List<Object>>> getNetworkHistoryMessageAverageProcessTime(
+			String networkId, Date date) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public Long getCityNetworkConcurrencyRequestNum(String networkId) {
-		Long result = 0L;
-		
-		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByNetworkId(networkId);
-		
-		if (vmForwardingPorts == null) {
-			return result;
-		}
-		
-		ExecutorService executor = Executors.newCachedThreadPool();
-		CompletionService<Long> comp = new ExecutorCompletionService<Long>(executor);
-		for (final OcsVmForwardingPort vmForwardingPort : vmForwardingPorts) {
-			comp.submit(new Callable<Long>() {
-				public Long call() throws Exception {
-					return vmMonitorService.getVmConcurrencyRequestNum(vmForwardingPort.getVmId());
-				}
-			});
-		}
-		executor.shutdown();
-		int count = 0;
-		while (count < vmForwardingPorts.size()) {
-			Future<Long> future = comp.poll();
-			if (future == null) {
-				continue;
-			}
-			else {
-				try {
-					Long requestNum = future.get();
-					result += requestNum;
-					count++;
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		return result;
+	public Map<String, List<List<Object>>> getNetworkHistoryMessageThroughput(
+			String networkId, Date date) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	@Override
+	public List<List<Object>> getNetworkHistorySessionNum(String networkId,
+			Date date) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+//	@Override
+//	public RxbpsTxbpsDto getCityNetworkRxbpsTxbps(String networkId, final String interfaceName) {
+//		RxbpsTxbpsDto result = new RxbpsTxbpsDto();
+//		
+//		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByNetworkId(networkId);
+//		
+//		if (vmForwardingPorts == null) {
+//			return result;
+//		}
+//		
+//		ExecutorService executor = Executors.newCachedThreadPool();
+//		CompletionService<RxbpsTxbpsDto> comp = new ExecutorCompletionService<RxbpsTxbpsDto>(executor);
+//		for (final OcsVmForwardingPort vmForwardingPort : vmForwardingPorts) {
+//			comp.submit(new Callable<RxbpsTxbpsDto>() {
+//				public RxbpsTxbpsDto call() throws Exception {
+//					return vmMonitorService.getVmCurRxbpsTxbps(vmForwardingPort.getVmId(), interfaceName);
+//				}
+//			});
+//		}
+//		executor.shutdown();
+//		int count = 0;
+//		while (count < vmForwardingPorts.size()) {
+//			Future<RxbpsTxbpsDto> future = comp.poll();
+//			if (future == null) {
+//				continue;
+//			}
+//			else {
+//				try {
+//					RxbpsTxbpsDto rxbpsTxbpsDto = future.get();
+//					result.setRxbps(result.getRxbps() + rxbpsTxbpsDto.getRxbps());
+//					result.setTxbps(result.getTxbps() + rxbpsTxbpsDto.getTxbps());
+//					count++;
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				} catch (ExecutionException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		
+//		return result;
+//	}
+//
+//	@Override
+//	public Long getCityNetworkConcurrencyRequestNum(String networkId) {
+//		Long result = 0L;
+//		
+//		final List<OcsVmForwardingPort> vmForwardingPorts = vmForwardingPortService.getVmForwardingPortListByNetworkId(networkId);
+//		
+//		if (vmForwardingPorts == null) {
+//			return result;
+//		}
+//		
+//		ExecutorService executor = Executors.newCachedThreadPool();
+//		CompletionService<Long> comp = new ExecutorCompletionService<Long>(executor);
+//		for (final OcsVmForwardingPort vmForwardingPort : vmForwardingPorts) {
+//			comp.submit(new Callable<Long>() {
+//				public Long call() throws Exception {
+//					return vmMonitorService.getVmCurConcurrencyRequestNum(vmForwardingPort.getVmId());
+//				}
+//			});
+//		}
+//		executor.shutdown();
+//		int count = 0;
+//		while (count < vmForwardingPorts.size()) {
+//			Future<Long> future = comp.poll();
+//			if (future == null) {
+//				continue;
+//			}
+//			else {
+//				try {
+//					Long requestNum = future.get();
+//					result += requestNum;
+//					count++;
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				} catch (ExecutionException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		
+//		return result;
+//	}
 
 }

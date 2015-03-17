@@ -19,6 +19,7 @@ import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.dao.OcsHostDao;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
 import com.cloud.ocs.portal.core.monitor.dto.HostDetail;
+import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.service.HostMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 import com.cloud.ocs.portal.properties.OcsHostProperties;
@@ -129,55 +130,55 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		return result;
 	}
 
-	@Override
-	public double getHostCurCpuUsagePercentageFromCs(String hostId) {
-		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
-		request.addRequestParams("id", hostId);
-		CloudStackApiSignatureUtil.generateSignature(request);
-		String requestUrl = request.generateRequestURL();
-		String response = HttpRequestSender.sendGetRequest(requestUrl);
-		
-		double result = 0.0;
-		
-		if (response != null) {
-			JSONObject responseJsonObj = new JSONObject(response);
-			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
-			if (hostsListJsonObj.has("host")) {
-				JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
-				if (hostsJsonArrayObj != null && hostsJsonArrayObj.length() != 0) {
-					String resultStr = ((JSONObject)hostsJsonArrayObj.get(0)).getString("cpuused");
-					result = Double.parseDouble(resultStr.substring(0, resultStr.indexOf('%')));
-				}
-			}
-		}
-		
-		return result;
-	}
+//	@Override
+//	public double getHostCurCpuUsagePercentageFromCs(String hostId) {
+//		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
+//		request.addRequestParams("id", hostId);
+//		CloudStackApiSignatureUtil.generateSignature(request);
+//		String requestUrl = request.generateRequestURL();
+//		String response = HttpRequestSender.sendGetRequest(requestUrl);
+//		
+//		double result = 0.0;
+//		
+//		if (response != null) {
+//			JSONObject responseJsonObj = new JSONObject(response);
+//			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
+//			if (hostsListJsonObj.has("host")) {
+//				JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
+//				if (hostsJsonArrayObj != null && hostsJsonArrayObj.length() != 0) {
+//					String resultStr = ((JSONObject)hostsJsonArrayObj.get(0)).getString("cpuused");
+//					result = Double.parseDouble(resultStr.substring(0, resultStr.indexOf('%')));
+//				}
+//			}
+//		}
+//		
+//		return result;
+//	}
 
-	@Override
-	public double getHostCurUsedMemoryFromCs(String hostId) {
-		
-		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
-		request.addRequestParams("id", hostId);
-		CloudStackApiSignatureUtil.generateSignature(request);
-		String requestUrl = request.generateRequestURL();
-		String response = HttpRequestSender.sendGetRequest(requestUrl);
-		
-		double result = 0.0;
-		
-		if (response != null) {
-			JSONObject responseJsonObj = new JSONObject(response);
-			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
-			if (hostsListJsonObj.has("host")) {
-				JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
-				if (hostsJsonArrayObj != null && hostsJsonArrayObj.length() != 0) {
-					result = UnitUtil.formatSizeUnitToGB(((JSONObject)hostsJsonArrayObj.get(0)).getLong("memoryused"));
-				}
-			}
-		}
-		
-		return result;
-	}
+//	@Override
+//	public double getHostCurUsedMemoryFromCs(String hostId) {
+//		
+//		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_HOST_DETAIL);
+//		request.addRequestParams("id", hostId);
+//		CloudStackApiSignatureUtil.generateSignature(request);
+//		String requestUrl = request.generateRequestURL();
+//		String response = HttpRequestSender.sendGetRequest(requestUrl);
+//		
+//		double result = 0.0;
+//		
+//		if (response != null) {
+//			JSONObject responseJsonObj = new JSONObject(response);
+//			JSONObject hostsListJsonObj = responseJsonObj.getJSONObject("listhostsresponse");
+//			if (hostsListJsonObj.has("host")) {
+//				JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
+//				if (hostsJsonArrayObj != null && hostsJsonArrayObj.length() != 0) {
+//					result = UnitUtil.formatSizeUnitToGB(((JSONObject)hostsJsonArrayObj.get(0)).getLong("memoryused"));
+//				}
+//			}
+//		}
+//		
+//		return result;
+//	}
 
 	@Override
 	public double getHostCurCpuUsedPercentage(String hostId) {
@@ -230,6 +231,13 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		}
 		
 		return res;
+	}
+	
+	@Override
+	public RxbpsTxbpsDto getHostCurRxbpsTxbps(String hostId,
+			String interfaceName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -389,6 +397,13 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		}
 		
 		return res;
+	}
+
+	@Override
+	public List<List<Object>> getHostHistoryRxbpsTxbps(String hostId,
+			String interfaceName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

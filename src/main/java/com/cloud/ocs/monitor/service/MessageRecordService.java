@@ -1,5 +1,6 @@
 package com.cloud.ocs.monitor.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cloud.ocs.monitor.bean.MessageRecord;
@@ -25,7 +26,6 @@ public interface MessageRecordService {
 
 	/**
 	 * Vm处理包的平均时间
-	 * 
 	 * @param networkIp
 	 * @param vmIp
 	 * @param messageType
@@ -36,7 +36,6 @@ public interface MessageRecordService {
 
 	/**
 	 * Network处理包的平均时间
-	 * 
 	 * @param networkIp
 	 * @param messageType
 	 * @return
@@ -46,11 +45,40 @@ public interface MessageRecordService {
 
 	/**
 	 * City处理包的平均时间
-	 * 
 	 * @param cityId
 	 * @param messageType
 	 * @return
 	 */
 	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfCity(
 			Integer cityId, MessageType messageType);
+	
+	/**
+	 * 获取城市在某个时间上的包处理时长
+	 * @param cityId
+	 * @param messageType
+	 * @param date
+	 * @return
+	 */
+	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfCityAtSpecificDate(
+			Integer cityId, MessageType messageType, Date date);
+	
+	/**
+	 * 获取网络在某个时间上的包处理时长
+	 * @param cityId
+	 * @param messageType
+	 * @param date
+	 * @return
+	 */
+	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfNetworkAtSpecificDate(
+			String networkIp, MessageType messageType, Date date);
+	
+	/**
+	 * 获取虚拟机在某个时间上的包处理时长
+	 * @param cityId
+	 * @param messageType
+	 * @param date
+	 * @return
+	 */
+	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfVmAtSpecificDate(
+			String networkIp, String vmIp, MessageType messageType, Date date);
 }

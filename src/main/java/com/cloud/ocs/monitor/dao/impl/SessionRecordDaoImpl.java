@@ -70,4 +70,38 @@ public class SessionRecordDaoImpl extends GenericDaoImpl<SessionRecord> implemen
 		return (Long)query.getSingleResult();
 	}
 
+	@Override
+	public Long getCityHistorySessionNum(Integer cityId, Date from, Date to) {
+		List<String> allNetworkIps = cityNetworkService.getAllPublicIpsOfCity(cityId);
+		
+		if (allNetworkIps == null) {
+			return null;
+		}
+		
+		StringBuffer networkIpQueryCondition = new StringBuffer();
+		int i = 0;
+		for (; i < allNetworkIps.size() - 1; i++) {
+			networkIpQueryCondition.append("record.routeIp = '" + allNetworkIps.get(i) + "' or ");
+		}
+		networkIpQueryCondition.append("record.routeIp = '" + allNetworkIps.get(i) + "'");
+		
+		Timestamp timestamp1 = DateUtil.transferDateInSecondField(from, 0);
+		Timestamp timestamp2 = DateUtil.transferDateInSecondField(to, 0);
+		
+		Query query =  em.createQuery("select count(*) from SessionRecord record where "
+				+ "(" + networkIpQueryCondition.toString() + ") and " +
+				"record.sessionState = " + 1 + " and " +
+				"record.startTime > '" + timestamp1 + "' and " + 
+				"record.startTime <= '" + timestamp2 + "'");
+		
+		return (Long)query.getSingleResult();
+	}
+
+	@Override
+	public Long getNetworkHistorySessionNum(Integer networkIp, Date from,
+			Date to) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

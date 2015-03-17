@@ -1,7 +1,9 @@
 package com.cloud.ocs.portal.core.monitor.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -18,9 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.monitor.constant.MessageType;
+import com.cloud.ocs.monitor.dao.ThroughputRecordDao;
 import com.cloud.ocs.monitor.dto.MessageAverageProcessTimeWrapper;
 import com.cloud.ocs.monitor.service.MessageRecordService;
-import com.cloud.ocs.monitor.service.ThroughputRecordService;
 import com.cloud.ocs.portal.common.bean.OcsVm;
 import com.cloud.ocs.portal.common.bean.OcsVmForwardingPort;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
@@ -57,7 +59,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	private MessageRecordService messageRecordService;
 	
 	@Resource
-	private ThroughputRecordService throughputRecordService;
+	private ThroughputRecordDao throughputRecordDao;
 	
 	@Resource
 	private OcsVmService ocsVmService;
@@ -172,33 +174,33 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		return result;
 	}
 
-	@Override
-	public double getCurVmCpuUsagePercentageFromCs(String vmId) {
-		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_VM_DETAIL);
-		request.addRequestParams("id", vmId);
-		CloudStackApiSignatureUtil.generateSignature(request);
-		String requestUrl = request.generateRequestURL();
-		String response = HttpRequestSender.sendGetRequest(requestUrl);
-		
-		double result = 0.0;
-		
-		if (response != null) {
-			JSONObject responseJsonObj = new JSONObject(response);
-			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listvirtualmachinesresponse");
-			if (vmsListJsonObj.has("virtualmachine")) {
-				JSONArray vmsJsonArrayObj = vmsListJsonObj.getJSONArray("virtualmachine");
-				if (vmsJsonArrayObj != null && vmsJsonArrayObj.length() != 0) {
-					String resultStr = ((JSONObject)vmsJsonArrayObj.get(0)).getString("cpuused");
-					result = Double.parseDouble(resultStr.substring(0, resultStr.indexOf('%')));
-				}
-			}
-		}
-		
-		return result;
-	}
+//	@Override
+//	public double getCurVmCpuUsagePercentageFromCs(String vmId) {
+//		CloudStackApiRequest request = new CloudStackApiRequest(MonitorApiName.MONITOR_API_LIST_VM_DETAIL);
+//		request.addRequestParams("id", vmId);
+//		CloudStackApiSignatureUtil.generateSignature(request);
+//		String requestUrl = request.generateRequestURL();
+//		String response = HttpRequestSender.sendGetRequest(requestUrl);
+//		
+//		double result = 0.0;
+//		
+//		if (response != null) {
+//			JSONObject responseJsonObj = new JSONObject(response);
+//			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listvirtualmachinesresponse");
+//			if (vmsListJsonObj.has("virtualmachine")) {
+//				JSONArray vmsJsonArrayObj = vmsListJsonObj.getJSONArray("virtualmachine");
+//				if (vmsJsonArrayObj != null && vmsJsonArrayObj.length() != 0) {
+//					String resultStr = ((JSONObject)vmsJsonArrayObj.get(0)).getString("cpuused");
+//					result = Double.parseDouble(resultStr.substring(0, resultStr.indexOf('%')));
+//				}
+//			}
+//		}
+//		
+//		return result;
+//	}
 	
 	@Override
-	public Double getCurVmCpuUsagePercentage(String vmId) {
+	public Double getVmCurCpuUsagePercentage(String vmId) {
 		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
 		
 		if (vmForwardingPort == null) {
@@ -220,7 +222,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	}
 
 	@Override
-	public Double getCurMemoryUsagePercentage(String vmId) {
+	public Double getVmCurMemoryUsagePercentage(String vmId) {
 		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
 		
 		if (vmForwardingPort == null) {
@@ -242,7 +244,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	}
 
 	@Override
-	public RxbpsTxbpsDto getVmRxbpsTxbps(String vmId, String interfaceName) {
+	public RxbpsTxbpsDto getVmCurRxbpsTxbps(String vmId, String interfaceName) {
 		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
 		
 		if (vmForwardingPort == null) {
@@ -263,9 +265,30 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 
 		return result;
 	}
+	
+	@Override
+	public List<List<Object>> getVmHistoryCpuUsagePercentage(String vmId,
+			int dayOfMonth) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
-	public Long getVmConcurrencyRequestNum(String vmId) {
+	public List<List<Object>> getVmHistoryMemoryUsagePercentage(String vmId,
+			int dayOfMonth) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<List<Object>> getVmHistoryRxbpsTxbps(String vmId,
+			String interfaceName, int dayOfMonth) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getVmCurConcurrencyRequestNum(String vmId) {
 		Long result = 0L;
 		
 		OcsVmForwardingPort vmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
@@ -289,7 +312,7 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	}
 	
 	@Override
-	public MessageThroughputDto getMessageThroughput(String vmId) {
+	public MessageThroughputDto getVmCurMessageThroughput(String vmId) {
 		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
 		if (ocsVm == null) {
 			return null;
@@ -297,11 +320,11 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		String networkIp = ocsVm.getPublicIp();
 		String vmIp = ocsVm.getPrivateIp();
 		
-		return throughputRecordService.getMessageThroughputOfVm(networkIp, vmIp);
+		return throughputRecordDao.getVmCurMessageThroughput(networkIp, vmIp);
 	}
 
 	@Override
-	public MessageProcessTimeDto getCityVmMessageProcessTime(String vmId) {
+	public MessageProcessTimeDto getVmCurMessageAverageProcessTime(String vmId) {
 		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
 		if (ocsVm == null) {
 			return null;
@@ -353,6 +376,20 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public Map<String, List<List<Object>>> getVmHistoryMessageAverageProcessTime(
+			String vmId, Date date) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, List<List<Object>>> getVmHistoryMessageThroughput(String vmId,
+			Date date) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.cloud.ocs.monitor.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cloud.ocs.monitor.bean.MessageRecord;
@@ -46,4 +47,34 @@ public interface MessageRecordDao extends GenericDao<MessageRecord> {
 	 * @return
 	 */
 	public Double getMessageAverageProcessTimeOfCity(Integer cityId, MessageType messageType);
+	
+	/**
+	 * 获取城市在某个具体时间内的包处理时长
+	 * @param cityId
+	 * @param messageType
+	 * @param date
+	 * @return
+	 */
+	public Double getMessageAverageProcessTimeOfCityAtSpecificDate(Integer cityId,
+			MessageType messageType, Date date);
+	
+	/**
+	 * 获取网络在某个具体时间内的包处理时长
+	 * @param cityId
+	 * @param messageType
+	 * @param date
+	 * @return
+	 */
+	public Double getMessageAverageProcessTimeOfNetworkAtSpecificDate(String networkIp,
+			MessageType messageType, Date date);
+	
+	/**
+	 * 获取虚拟机在某个具体时间内的包处理时长
+	 * @param cityId
+	 * @param messageType
+	 * @param date
+	 * @return
+	 */
+	public Double getMessageAverageProcessTimeOfVmAtSpecificDate(String networkIp, String vmIp,
+			MessageType messageType, Date date);
 }

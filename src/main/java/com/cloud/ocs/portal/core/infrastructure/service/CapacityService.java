@@ -13,5 +13,10 @@ import com.cloud.ocs.portal.core.infrastructure.dto.CapacityDto;
  */
 public interface CapacityService {
 
+	/**
+	 * 获取系统容量
+	 * @param zoneId
+	 * @return
+	 */
 	public List<CapacityDto> getCapacityList(String zoneId);
 }

@@ -15,6 +15,7 @@
 <!-- 包含 bootstrap 样式表 -->
 <link rel="stylesheet" href="front/css/style.css">
 <link rel="stylesheet" href="front/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="front/jQuery/jquery-ui/jquery-ui.css">
 </head>
 
 <body>
@@ -91,6 +92,7 @@
 	<!-- JavaScript 放置在文档最后面可以使页面加载速度更快 -->
 	<!-- jQuery 库 -->
 	<script src="front/jQuery/jquery-2.1.1.min.js"></script>
+	<script src="front/jQuery/jquery-ui/jquery-ui.js"></script>
 	<!-- Bootstrap JavaScript 插件 -->
 	<script src="front/bootstrap/js/bootstrap.min.js"></script>
 	<!-- Highcharts 插件 -->

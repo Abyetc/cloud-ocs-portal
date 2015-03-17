@@ -10,6 +10,8 @@ var cityVmMessageThroughputMonitorChart;
 var cityVmMessageThroughputMonitorChartCurrSeries = 0;
 var cityVmMessageProcessTimeChart;
 var cityVmMessageProcessTimeChartCurrSeries = 0;
+var vmHistoryMessageThroughputChart;
+var vmHistoryMessageProcessTimeChart;
 
 function monitorVM(cityId, networkId, VMId, VMName) {
   var thirdLevelTitle = $("ol.breadcrumb.breadcrumb-ocs-vm-monitor li.active").text();
@@ -199,59 +201,34 @@ function monitorVM(cityId, networkId, VMId, VMName) {
   cityVmMessageProcessTimeChartCurrSeries = 0;
   
   //============================================================================================================
-  
-  var cityVmHistoryRequestNumMonitorChart;
-  var cityVmHistoryMessageThroughputMonitorChart;
-  
+
   $("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;历史数据监控</strong></span></div>");
-  
-  //vm的历史并发请求数监控区域
-  $("#content-area").append("<div id='city-vm-history-request-num-monitor-area' style=''>"
-		    +   "<div>"
-		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-vm-history-request-num-monitor-btn'>点击查询</button>"
+
+  //vm的历史包吞吐量监控区域
+  $("#content-area").append("<div id='vm-history-message-throughput-monitor-area' style=''>"
+		    +   "<div class='form-group'>"
+		    +       "<div class='input-group pull-right' style='width:20%; margin-left:10px;'>"
+		    +		   "<input class='form-control' type='text' id='vm-history-message-throughput-datepicker'>"
+		    +		"</div>"
 		    +   "</div>"
-		    +   "<div id='city-vm-history-request-num-monitor-chart'></div>"
-		    + "</div>");
-  cityVmHistoryRequestNumMonitorChart = new Highcharts.StockChart({
-	  chart: {
-	      renderTo: 'city-vm-history-request-num-monitor-chart',
-	      marginRight: 10,
-	      plotBorderWidth: 1
-	    },
-	    title: {
-	      text: VMName + " 历史并发请求连接数"
-	    },
-	    exporting: {
-	        enabled: false
-	      },
-	      credits: {
-	        enabled: false
-	    },
-	    series: []
-  });
-  
-  //vm的历史包吞吐量数据监控区域
-  $("#content-area").append("<div id='city-vm-history-message-throughput-monitor-area' style=''>"
 		    +   "<div>"
-		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='city-vm-history-message-throughput-monitor-btn'>点击查询</button>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-history-message-throughput-monitor-btn'>查询包吞吐量历史数据</button>"
 		    +   "</div>"
-		    +   "<div id='city-vm-history-message-throughput-monitor-chart'></div>"
+		    +   "<div id='vm-history-message-throughput-monitor-chart'></div>"
 		    + "</div>");
-  cityVmHistoryMessageThroughputMonitorChart = new Highcharts.StockChart({
-	  chart: {
-	      renderTo: 'city-vm-history-message-throughput-monitor-chart',
-	      marginRight: 10,
-	      plotBorderWidth: 1
-	    },
-	    title: {
-	      text: VMName + " 历史包吞吐量"
-	    },
-	    exporting: {
-	        enabled: false
-	      },
-	      credits: {
-	        enabled: false
-	    },
-	    series: []
-  });
+  $( "#vm-history-message-throughput-datepicker" ).datepicker();
+  
+  //vm的历史包处理时长监控区域
+  $("#content-area").append("<br /><div id='vm-history-message-process-time-monitor-area' style='margin-top:80px;'>"
+		    +   "<div class='form-group'>"
+		    +       "<div class='input-group pull-right' style='width:20%; margin-left:10px;'>"
+		    +		   "<input class='form-control' type='text' id='vm-history-message-process-time-datepicker'>"
+		    +		"</div>"
+		    +   "</div>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-history-message-process-time-monitor-btn'>查询包处理时长历史数据</button>"
+		    +   "</div>"
+		    +   "<div id='vm-history-message-process-time-monitor-chart'></div>"
+		    + "</div>");
+  $( "#vm-history-message-process-time-datepicker" ).datepicker();
 }

@@ -225,3 +225,175 @@ function stopMonitoringCityNetworkMessageProcessTime() {
 	clearTimeout(window.cityNetworkMessageProcessTimeMonitorTimer);
 	window.cityNetworkMessageProcessTimeMonitorTimer = null;
 }
+
+//==============================================================================
+//==============================================================================
+
+$("body").on("click", "#network-history-session-num-monitor-btn", function() {
+	$("#network-history-session-num-monitor-btn").append("<div class='loader'></div>");
+	$("div.loader").shCircleLoader({
+		    duration: 0.75
+	});
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor//",
+		dataType: "json",
+		data: {
+			cityNetworkId: window.curMonitorCityNetworkId,
+			date: $("#network-history-session-num-datepicker").val()
+		},
+		success: function(data) {
+		     $("div.loader").shCircleLoader('destroy');
+		     $("div.loader").remove();
+		     networkHistorySessionNumChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'network-history-session-num-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "会话数历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "接入的会话数" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 0) + '个';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 500,
+				        },
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"会话数历史曲线", data:data}]
+			  });
+		},
+		error: function(xhr, status) {
+		    $("div.loader").shCircleLoader('destroy');
+		    $("div.loader").remove();
+			alert(status);
+		}
+	});
+});
+
+$("body").on("click", "#network-history-message-throughput-monitor-btn", function() {
+	$("#network-history-message-throughput-monitor-btn").append("<div class='loader'></div>");
+	$("div.loader").shCircleLoader({
+		    duration: 0.75
+	});
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor//",
+		dataType: "json",
+		data: {
+			cityNetworkId: window.curMonitorCityNetworkId,
+			date: $("#network-history-message-throughput-datepicker").val()
+		},
+		success: function(data) {
+		     $("div.loader").shCircleLoader('destroy');
+		     $("div.loader").remove();
+		     networkHistoryMessageThroughputChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'network-history-message-throughput-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "包吞吐量历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "包个数" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 0) + '个';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 500,
+				        },
+				    legend: {
+				        enabled: true
+				    },
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"接收到的包个数", data:data.received}, {name:"处理完成的包个数", data:data.finished}]
+			  });
+		},
+		error: function(xhr, status) {
+		    $("div.loader").shCircleLoader('destroy');
+		    $("div.loader").remove();
+			alert(status);
+		}
+	});
+});
+
+$("body").on("click", "#network-history-message-process-time-monitor-btn", function() {
+	$("#network-history-message-process-time-monitor-btn").append("<div class='loader'></div>");
+	$("div.loader").shCircleLoader({
+		    duration: 0.75
+	});
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor//",
+		dataType: "json",
+		data: {
+			cityNetworkId: window.curMonitorCityNetworkId,
+			date: $("#network-history-message-process-time-datepicker").val()
+		},
+		success: function(data) {
+			console.log(data.allMsg);
+		     $("div.loader").shCircleLoader('destroy');
+		     $("div.loader").remove();
+		     networkHistoryMessageProcessTimeChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'network-history-message-process-time-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "包处理时长历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "包处理时长" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 0) + 'ms';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 1000,
+				        },
+				    legend: {
+				        enabled: true
+				    },
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"所有包", data:data.allMsg}, {name:"I包", data:data.iMsg}, {name:"U包", data:data.uMsg}, {name:"T包", data:data.tMsg}]
+			  });
+		},
+		error: function(xhr, status) {
+		    $("div.loader").shCircleLoader('destroy');
+		    $("div.loader").remove();
+			alert(status);
+		}
+	});
+});

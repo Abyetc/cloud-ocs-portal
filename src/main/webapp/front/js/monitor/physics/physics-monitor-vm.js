@@ -270,6 +270,51 @@ function monitorVmDetail(event) {
 	});
 	cityVmRxbpsTxbpsMonitorChartCurrSeries = 0;
 	
+	//========================================================================
+	
 	$("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;历史数据监控</strong></span></div>");
 
+	var monthDaysOptions = "";
+	  for (var i = 1; i <= 31; i++) {
+		  monthDaysOptions += "<option>" + i + "</option>";
+	  }
+	  
+	  //vm的历史CPU使用率监控区域
+	  $("#content-area").append("<div id='vm-history-cpu-usage-monitor-area' style=''>"
+			    +   "<div class='pull-right' role='form' style='width:10%; margin-left:15px;'>"
+			    +		"<select class='form-control'>"
+			    +			monthDaysOptions
+			    +		"</select>"
+			    +   "</div>"
+			    +   "<div>"
+			    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-history-cpu-usage-monitor-btn'>选择近一个月天数并点击查询(CPU)</button>"
+			    +   "</div>"
+			    +   "<div id='vm-history-cpu-usage-monitor-chart'></div>"
+			    + "</div>");
+	  
+	  //vm的历史Memory使用率监控区域
+	  $("#content-area").append("<br/><div id='vm-history-memory-usage-monitor-area' style='margin-top:80px;'>"
+			    +   "<div class='pull-right' role='form' style='width:10%; margin-left:15px;'>"
+			    +		"<select class='form-control'>"
+			    +			monthDaysOptions
+			    +		"</select>"
+			    +   "</div>"
+			    +   "<div>"
+			    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-history-memory-usage-monitor-btn'>选择近一个月天数并点击查询(内存)</button>"
+			    +   "</div>"
+			    +   "<div id='vm-history-memory-usage-monitor-chart'></div>"
+			    + "</div>");
+	  
+	  //vm的历史network使用率监控区域
+	  $("#content-area").append("<br/><div id='vm-history-network-usage-monitor-area' style='margin-top:80px;'>"
+			    +   "<div class='pull-right' role='form' style='width:10%; margin-left:15px;'>"
+			    +		"<select class='form-control'>"
+			    +			monthDaysOptions
+			    +		"</select>"
+			    +   "</div>"
+			    +   "<div>"
+			    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='vm-history-network-usage-monitor-btn'>选择近一个月天数并点击查询(网络)</button>"
+			    +   "</div>"
+			    +   "<div id='vm-history-network-usage-monitor-chart'></div>"
+			    + "</div>");
 }

@@ -1,5 +1,6 @@
 package com.cloud.ocs.monitor.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -78,6 +79,36 @@ public class MessageRecordServiceImpl implements MessageRecordService {
 		result.setProcessTime(resultProcessTime);
 		
 		return result;
+	}
+	
+	@Override
+	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfCityAtSpecificDate(
+			Integer cityId, MessageType messageType, Date date) {
+		MessageAverageProcessTimeWrapper result = new MessageAverageProcessTimeWrapper();
+		result.setMessageType(messageType);
+		double resultProcessTime = 0.0;
+		Double processTime = messageRecordDao
+				.getMessageAverageProcessTimeOfCityAtSpecificDate(cityId, messageType, date);
+		if (processTime != null) {
+			resultProcessTime = processTime.doubleValue();
+		}
+		result.setProcessTime(resultProcessTime);
+		
+		return result;
+	}
+
+	@Override
+	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfNetworkAtSpecificDate(
+			String networkIp, MessageType messageType, Date date) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfVmAtSpecificDate(
+			String networkIp, String vmIp, MessageType messageType, Date date) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

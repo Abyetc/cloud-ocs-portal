@@ -10,6 +10,9 @@ var cityNetworkMessageThroughputMonitorChart;
 var cityNetworkMessageThroughputMonitorChartCurrSeries = 0;
 var cityNetworkMessageProcessTimeMonitorChart;
 var cityNetworkMessageProcessTimeMonitorChartCurrSeries = 0;
+var networkHistorySessionNumChart;
+var networkHistoryMessageThroughputChart;
+var networkHistoryMessageProcessTimeChart;
 
 function monitorCityNetworks(cityId, networkId, networkName) {
 	//先处理breadcrumb
@@ -269,4 +272,50 @@ function monitorCityNetworks(cityId, networkId, networkName) {
     series: []
   });
   cityNetworkMessageProcessTimeMonitorChartCurrSeries = 0;
+  
+//============================================================================================================
+
+  $("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;历史数据监控</strong></span></div>");
+
+  //network的历史会话数监控区域
+  $("#content-area").append("<div id='network-history-session-num-monitor-area' style=''>"
+		    +   "<div class='form-group'>"
+		    +       "<div class='input-group pull-right' style='width:20%; margin-left:10px;'>"
+		    +		   "<input class='form-control' type='text' id='network-history-session-num-datepicker'>"
+		    +		"</div>"
+		    +   "</div>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='network-history-session-num-monitor-btn'>查询历史会话数</button>"
+		    +   "</div>"
+		    +   "<div id='network-history-session-num-monitor-chart'></div>"
+		    + "</div>");
+  $( "#network-history-session-num-datepicker" ).datepicker();
+  
+  //network的历史包吞吐量监控区域
+  $("#content-area").append("<br /><div id='network-history-message-throughput-monitor-area' style='margin-top:80px;'>"
+		    +   "<div class='form-group'>"
+		    +       "<div class='input-group pull-right' style='width:20%; margin-left:10px;'>"
+		    +		   "<input class='form-control' type='text' id='network-history-message-throughput-datepicker'>"
+		    +		"</div>"
+		    +   "</div>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='network-history-message-throughput-monitor-btn'>查询包吞吐量历史数据</button>"
+		    +   "</div>"
+		    +   "<div id='network-history-message-throughput-monitor-chart'></div>"
+		    + "</div>");
+  $( "#network-history-message-throughput-datepicker" ).datepicker();
+  
+  //network的历史包处理时长监控区域
+  $("#content-area").append("<br /><div id='network-history-message-process-time-monitor-area' style='margin-top:80px;'>"
+		    +   "<div class='form-group'>"
+		    +       "<div class='input-group pull-right' style='width:20%; margin-left:10px;'>"
+		    +		   "<input class='form-control' type='text' id='network-history-message-process-time-datepicker'>"
+		    +		"</div>"
+		    +   "</div>"
+		    +   "<div>"
+		    +     "<button type='button' class='btn btn-primary btn-sm pull-right' id='network-history-message-process-time-monitor-btn'>查询包处理时长历史数据</button>"
+		    +   "</div>"
+		    +   "<div id='network-history-message-process-time-monitor-chart'></div>"
+		    + "</div>");
+  $( "#network-history-message-process-time-datepicker" ).datepicker();
 }

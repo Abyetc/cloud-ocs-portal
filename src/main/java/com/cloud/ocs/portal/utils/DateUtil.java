@@ -63,11 +63,50 @@ public class DateUtil {
 		return result;
 	}
 	
+	/**
+	 * 在月份上进行增减
+	 * @param date
+	 * @param amount
+	 * @return
+	 */
 	public static Date transferDateInMonthField(Date date, int amount) {
 		Calendar calendar = Calendar.getInstance();
 		
 		calendar.setTime(date);
 		calendar.add(Calendar.MONTH, amount);
+		
+		return calendar.getTime();
+	}
+	
+	/**
+	 * 在分钟上进行增减
+	 * @param date
+	 * @param amount
+	 * @return
+	 */
+	public static Date transferDateInMinuteField(Date date, int amount) {
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(date);
+		calendar.add(Calendar.MINUTE, amount);
+		
+		return calendar.getTime();
+	}
+	
+	public static Date transferDateInDayField(Date date, int amount) {
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(date);
+		calendar.add(Calendar.DAY_OF_MONTH, amount);
+		
+		return calendar.getTime();
+	}
+	
+	public static Date transferDateInSecondField2(Date date, int amount) {
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(date);
+		calendar.add(Calendar.SECOND, amount);
 		
 		return calendar.getTime();
 	}

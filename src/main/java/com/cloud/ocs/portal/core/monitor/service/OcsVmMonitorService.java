@@ -1,6 +1,8 @@
 package com.cloud.ocs.portal.core.monitor.service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
@@ -43,48 +45,89 @@ public interface OcsVmMonitorService {
 	 * @param vmId
 	 * @return
 	 */
-	public double getCurVmCpuUsagePercentageFromCs(String vmId);
+//	public double getCurVmCpuUsagePercentageFromCs(String vmId);
 	
 	/**
-	 * 通过自己写的Restful接口获取CPU使用率数据
+	 * 获取虚拟机CPU实时使用率数据
 	 * @param vmId
 	 * @return
 	 */
-	public Double getCurVmCpuUsagePercentage(String vmId);
+	public Double getVmCurCpuUsagePercentage(String vmId);
 	
 	/**
-	 * 通过自己写的Restful接口获取内存使用率数据
+	 * 获取虚拟机内存实时使用率数据
 	 * @param vmId
 	 * @return
 	 */
-	public Double getCurMemoryUsagePercentage(String vmId);
+	public Double getVmCurMemoryUsagePercentage(String vmId);
 	
 	/**
-	 * 某个虚拟机在某个网卡上的数据吞吐率数据
+	 * 获取虚拟机在某个网卡上的数据吞吐率实时数据
 	 * @param vmId
 	 * @param interfaceName
 	 * @return
 	 */
-	public RxbpsTxbpsDto getVmRxbpsTxbps(String vmId, String interfaceName);
+	public RxbpsTxbpsDto getVmCurRxbpsTxbps(String vmId, String interfaceName);
+	
+	/**
+	 * 获取虚拟机CPU使用率历史数据
+	 * @param vmId
+	 * @param dayOfMonth
+	 * @return
+	 */
+	public List<List<Object>> getVmHistoryCpuUsagePercentage(String vmId, int dayOfMonth);
+	
+	/**
+	 * 获取虚拟机内存使用率历史数据
+	 * @param vmId
+	 * @param dayOfMonth
+	 * @return
+	 */
+	public List<List<Object>> getVmHistoryMemoryUsagePercentage(String vmId, int dayOfMonth);
+	
+	/**
+	 * 获取虚拟机在某个网卡上的数据吞吐率历史数据
+	 * @param vmId
+	 * @param interfaceName
+	 * @param dayOfMonth
+	 * @return
+	 */
+	public List<List<Object>> getVmHistoryRxbpsTxbps(String vmId, String interfaceName, int dayOfMonth);
 	
 	/**
 	 * 某一时刻虚拟机正在处理的并发请求连接数
 	 * @param vmId
 	 * @return
 	 */
-	public Long getVmConcurrencyRequestNum(String vmId);
+	public Long getVmCurConcurrencyRequestNum(String vmId);
 	
 	/**
-	 * 虚拟机包吞吐量
+	 * 获取虚拟机包吞吐量实时数据
 	 * @param vmId
 	 * @return
 	 */
-	public MessageThroughputDto getMessageThroughput(String vmId);
+	public MessageThroughputDto getVmCurMessageThroughput(String vmId);
 	
 	/**
-	 * 虚拟机包处理平均时长
+	 * 获取虚拟机包处理平均时长实时数据
 	 * @param vmId
 	 * @return
 	 */
-	public MessageProcessTimeDto getCityVmMessageProcessTime(String vmId);
+	public MessageProcessTimeDto getVmCurMessageAverageProcessTime(String vmId);
+	
+	/**
+	 * 获取虚拟机包吞吐量历史数据
+	 * @param vmId
+	 * @param date
+	 * @return
+	 */
+	public Map<String, List<List<Object>>> getVmHistoryMessageThroughput(String vmId, Date date);
+	
+	/**
+	 * 获取虚拟机包处理平均时长历史数据
+	 * @param vmId
+	 * @param date
+	 * @return
+	 */
+	public Map<String, List<List<Object>>> getVmHistoryMessageAverageProcessTime(String vmId, Date date);
 }

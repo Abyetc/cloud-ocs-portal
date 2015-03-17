@@ -65,7 +65,7 @@ public class VmDistributionScheduler {
 			for (int j = 0; j < allVmIdsOnHost.size(); j++) {
 				long hostTotalCpuCapacity = hostMonitorService.getHostTotalCpuCapacity(allHostIds.get(i));
 				long vmTotalCpuCapacity = ocsVmMonitorService.getVmTotalCpuCapacity(allVmIdsOnHost.get(j));
-				double vmCurCpuUsagePercentage = ocsVmMonitorService.getCurVmCpuUsagePercentage(allVmIdsOnHost.get(j));
+				double vmCurCpuUsagePercentage = ocsVmMonitorService.getVmCurCpuUsagePercentage(allVmIdsOnHost.get(j));
 				double vmLoadData = (double)((vmTotalCpuCapacity*vmCurCpuUsagePercentage*100.0) / hostTotalCpuCapacity);
 				
 				LoadData loadData = new LoadData();
