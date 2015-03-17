@@ -15,4 +15,6 @@ import com.cloud.ocs.portal.common.bean.City;
 public interface CityDao extends GenericDao<City> {
 	
 	public List<City> findAll();
+	
+	public City findById(Integer cityId);
 }

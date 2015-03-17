@@ -57,4 +57,9 @@ public class CityServiceImpl implements CityService {
 		return cityDao.findAll();
 	}
 
+	@Override
+	public City getCityById(Integer cityId) {
+		return cityDao.findById(cityId);
+	}
+
 }

@@ -28,4 +28,11 @@ public class CityDaoImpl extends GenericDaoImpl<City> implements CityDao {
 		return query.getResultList();
 	}
 
+	@Override
+	public City findById(Integer cityId) {
+		Query query = em.createQuery("select city from City city where city.id='" + cityId + "'");
+		
+		return (City)query.getSingleResult();
+	}
+
 }

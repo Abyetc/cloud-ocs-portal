@@ -1,6 +1,8 @@
 package com.cloud.ocs.portal.core.auth.service;
 
-import com.cloud.ocs.portal.common.bean.User;
+import java.util.List;
+
+import com.cloud.ocs.portal.common.bean.Employee;
 import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
 
 /**
@@ -11,7 +13,13 @@ import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
  *
  */
 public interface UserAuthService {
-	public User findUserByAccount(String accountId);
-	public User updateLoginDate(User user);
+	public Employee findUserByAccount(String accountId);
+	public Employee updateLoginDate(Employee user);
 	public LoginStatus checkLogin(String accountId, String accountPassword);
+	
+	/**
+	 * 返回所有计费业务管理人员
+	 * @return
+	 */
+	public List<Employee> getAllBizEmployee();
 }

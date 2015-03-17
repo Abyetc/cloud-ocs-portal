@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cloud.ocs.portal.common.bean.User;
+import com.cloud.ocs.portal.common.bean.Employee;
 import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
 import com.cloud.ocs.portal.core.auth.constant.LoginUserConstant;
 import com.cloud.ocs.portal.core.auth.service.UserAuthService;
@@ -59,7 +59,7 @@ public class UserAuthController {
 			return LoginStatus.LOGIN_ACCOUNT_PASSWORD_ERROE.getCode();
 		}
 		
-		User loginUser =  userService.findUserByAccount(accountId);
+		Employee loginUser =  userService.findUserByAccount(accountId);
 		session.setAttribute(LoginUserConstant.LOGIN_USER_SESSTION_ATTRIBUTE_NAME, loginUser);
 		userService.updateLoginDate(loginUser);
 		return LoginStatus.LOGIN_SUCCESS.getCode();

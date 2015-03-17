@@ -66,11 +66,12 @@
 							class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;警报<b
 							class="caret"></b> </a>
 						<ul class="dropdown-menu">
-							<li><a href="javascript:void(0);">jmeter</a></li>
+							<li class="sidebar-infrastructure-alert">
+							<a href="javascript:void(0);">基础设施警报</a>
+							</li>
 							<li class="divider"></li>
-							<li><a href="javascript:void(0);">分离的链接</a></li>
-							<li class="divider"></li>
-							<li><a href="javascript:void(0);">另一个分离的链接</a></li>
+							<li class="sidebar-business-alert">
+							<a href="javascript:void(0);">计费业务警报</a></li>
 						</ul>
 					</li>
 				</ul>
@@ -122,6 +123,9 @@
 	<script src="front/js/monitor/service/service-monitor-network-dynamic-chart.js"></script>
 	<script src="front/js/monitor/service/service-monitor-vm.js"></script>
 	<script src="front/js/monitor/service/service-monitor-vm-dynamic-chart.js"></script>
+	
+	<script src="front/js/alert/infrastructure-alert.js"></script>
+	<script src="front/js/alert/business-alert.js"></script>
 	
 	<script src="front/js/utils.js"></script>
 	<script src="front/js/common.js"></script>

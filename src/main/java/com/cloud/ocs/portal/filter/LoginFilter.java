@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.cloud.ocs.portal.common.bean.User;
+import com.cloud.ocs.portal.common.bean.Employee;
 import com.cloud.ocs.portal.core.auth.constant.LoginUserConstant;
 
 public class LoginFilter extends OncePerRequestFilter{
@@ -25,7 +25,7 @@ public class LoginFilter extends OncePerRequestFilter{
         if ( url.equals("") ) 
         	url += "/";  
         if ( !url.equals("/") && !url.equals("/login") && !url.startsWith("/front") ) {
-        	User user=(User)request.getSession().getAttribute(LoginUserConstant.LOGIN_USER_SESSTION_ATTRIBUTE_NAME);  
+        	Employee user=(Employee)request.getSession().getAttribute(LoginUserConstant.LOGIN_USER_SESSTION_ATTRIBUTE_NAME);  
             if(user == null){
             	response.sendRedirect("login"); 
                 return;          

@@ -17,4 +17,6 @@ public interface CityService {
 
 	public List<City> getCitiesList();
 	public AddCityDto addCity(City city);
+	
+	public City getCityById(Integer cityId);
 }

@@ -16,6 +16,8 @@ public class OperateObjectDto {
 	private int code;
 	private String message;
 	private Object operatedObject;
+	
+	private int index;
 
 	public int getCode() {
 		return code;
@@ -39,6 +41,14 @@ public class OperateObjectDto {
 
 	public void setOperatedObject(Object operatedObject) {
 		this.operatedObject = operatedObject;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 	
 }

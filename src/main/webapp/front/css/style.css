@@ -53,6 +53,14 @@ div.login-container input.form-control {
 	width: 70%;
 }
 
+#add-biz-alert-monitor-point-modal input.form-control {
+	width: 70%;
+}
+
+#add-biz-alert-monitor-point-modal select.form-control {
+	width: 70%;
+}
+
 .modal-dialog-center {
     margin-top: 15% !important;
 }

@@ -12,8 +12,8 @@ import javax.persistence.Table;
  * User entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "user", catalog = "cloud_ocs_portal")
-public class User implements java.io.Serializable {
+@Table(name = "employee", catalog = "cloud_ocs_portal")
+public class Employee implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -24,22 +24,23 @@ public class User implements java.io.Serializable {
 	private String name;
 	private String email;
 	private String phoneNumber;
+	private Integer employeeType;
 	private Timestamp lastLoginDate;
 
 	// Constructors
 	/** default constructor */
-	public User() {
+	public Employee() {
 	}
 
 	/** minimal constructor */
-	public User(String accountId, String accountPassword, String name) {
+	public Employee(String accountId, String accountPassword, String name) {
 		this.accountId = accountId;
 		this.accountPassword = accountPassword;
 		this.name = name;
 	}
 
 	/** full constructor */
-	public User(String accountId, String accountPassword, String name,
+	public Employee(String accountId, String accountPassword, String name,
 			String email, String phoneNumber, Timestamp lastLoginDate) {
 		this.accountId = accountId;
 		this.accountPassword = accountPassword;
@@ -113,6 +114,15 @@ public class User implements java.io.Serializable {
 
 	public void setLastLoginDate(Timestamp lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
+	}
+
+	@Column(name = "employee_type", length = 2)
+	public Integer getEmployeeType() {
+		return employeeType;
+	}
+
+	public void setEmployeeType(Integer employeeType) {
+		this.employeeType = employeeType;
 	}
 
 }
