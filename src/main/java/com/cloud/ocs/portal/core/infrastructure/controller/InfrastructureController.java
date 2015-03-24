@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.infrastructure.dto.AddHostDto;
 import com.cloud.ocs.portal.core.infrastructure.dto.ClusterDto;
 import com.cloud.ocs.portal.core.infrastructure.dto.HostDto;
@@ -107,5 +108,25 @@ public class InfrastructureController {
 			@RequestParam("hostAccount") String hostAccount,
 			@RequestParam("hostPassword") String hostPassword) {
 		return infrastructureService.addHost(zoneId, podId, clusterId, ipAddress, hostAccount, hostPassword);
+	}
+	
+	public OperateObjectDto removeHost(String hostId) {
+		return null;
+	}
+	
+	public OperateObjectDto addPrimaryStorage(String a, String b, String c) {
+		return null;
+	}
+	
+	public OperateObjectDto removePrimaryStorage(String id) {
+		return null;
+	}
+	
+	public OperateObjectDto addSecondaryStorage(String a, String b, String c) {
+		return null;
+	}
+	
+	public OperateObjectDto removeSecondaryStorage(String id) {
+		return null;
 	}
 }

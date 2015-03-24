@@ -119,7 +119,7 @@ public class OcsVm implements java.io.Serializable {
 		this.privateIp = privateIp;
 	}
 
-	@Column(name = "hsot_id", length = 40)
+	@Column(name = "host_id", length = 40)
 	public String getHsotId() {
 		return this.hsotId;
 	}

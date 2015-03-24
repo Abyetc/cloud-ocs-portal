@@ -48,7 +48,7 @@
 					</li>
 					<li class="sidebar-cloud-ocs-service"><a
 						href="javascript:void(0);"><span
-							class="glyphicon glyphicon-cloud"></span>&nbsp;&nbsp;业务服务管理</a></li>
+							class="glyphicon glyphicon-cloud"></span>&nbsp;&nbsp;计费业务管理</a></li>
 					<li class="dropdown"><a href="javascript:void(0);"
 						class="dropdown-toggle" data-toggle="dropdown"><span
 							class="glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;系统监控<b
