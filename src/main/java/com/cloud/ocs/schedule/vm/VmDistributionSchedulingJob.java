@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule;
+package com.cloud.ocs.schedule.vm;
 
 import java.util.HashSet;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import com.cloud.ocs.schedule.ga.Individual;
+import com.cloud.ocs.schedule.vm.ga.Individual;
 
 /**
  * 用于虚拟机分布调度的定时任务类

@@ -171,6 +171,21 @@ public class OcsVmServiceImpl implements OcsVmService {
 		
 		return result;
 	}
+	
+	@Override
+	public List<OcsVmDto> getOcsVmListByCityId(Integer cityId) {
+		List<OcsVmDto> result = new ArrayList<OcsVmDto>();
+		
+		List<CityNetworkListDto> cityNetworks = cityNetworkSerivce.getCityNetworksList(cityId);
+		
+		if (cityNetworks != null) {
+			for (CityNetworkListDto cityNetwork : cityNetworks) {
+				result.addAll(this.getOcsVmsListByNetworkId(cityNetwork.getNetworkId()));
+			}
+		}
+		
+		return result;
+	}
 
 	@Override
 	public AddOcsVmDto addOcsVm(String vmName, String networkId, String zoneId,

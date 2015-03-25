@@ -1,6 +1,7 @@
 package com.cloud.ocs.portal.core.business.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +125,18 @@ public class OcsVmForwardingPortServiceImpl implements OcsVmForwardingPortServic
 		Map<String, List<OcsVmForwardingPort>> vmForwardingPortMapByNetworkId = vmForwardingPortCache.getVmForwardingPortMapByNetworkId();
 		if (vmForwardingPortMapByNetworkId != null) {
 			result = vmForwardingPortMapByNetworkId.get(networkId);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public Map<String, OcsVmForwardingPort> getVmForwardingPortMap(
+			List<String> vmIds) {
+		Map<String, OcsVmForwardingPort> result = new HashMap<String, OcsVmForwardingPort>();
+		
+		for (String vmId : vmIds) {
+			result.put(vmId, this.getVmForwardingPortByVmId(vmId));
 		}
 		
 		return result;

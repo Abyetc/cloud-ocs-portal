@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule;
+package com.cloud.ocs.schedule.vm;
 
 /**
  * 用于描述虚拟机负载的工具类

@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule.ga;
+package com.cloud.ocs.schedule.vm.ga;
 
 import java.util.List;
 

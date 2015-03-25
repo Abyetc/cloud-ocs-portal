@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule;
+package com.cloud.ocs.schedule.vm;
 
 /**
  * 用于描述物理主机-虚拟机的负载的工具类，并将其ID与运行遗传算法时的逻辑编号进行对应

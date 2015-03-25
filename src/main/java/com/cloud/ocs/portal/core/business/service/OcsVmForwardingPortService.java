@@ -1,6 +1,7 @@
 package com.cloud.ocs.portal.core.business.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cloud.ocs.portal.common.bean.OcsVmForwardingPort;
 
@@ -57,4 +58,11 @@ public interface OcsVmForwardingPortService {
 	 * @return
 	 */
 	public List<OcsVmForwardingPort> getVmForwardingPortListByNetworkId(String networkId);
+	
+	/**
+	 * 以VmId为key，端口转发规则为value的map
+	 * @param vmIds
+	 * @return
+	 */
+	public Map<String, OcsVmForwardingPort> getVmForwardingPortMap(List<String> vmIds);
 }

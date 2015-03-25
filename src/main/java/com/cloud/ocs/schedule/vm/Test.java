@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule;
+package com.cloud.ocs.schedule.vm;
 
 public class Test {
 

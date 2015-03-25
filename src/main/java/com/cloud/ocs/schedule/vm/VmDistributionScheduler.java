@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule;
+package com.cloud.ocs.schedule.vm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,8 @@ import com.cloud.ocs.portal.common.dao.OcsHostDao;
 import com.cloud.ocs.portal.common.dao.OcsVmDao;
 import com.cloud.ocs.portal.core.monitor.service.HostMonitorService;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
-import com.cloud.ocs.schedule.ga.GAExecutor;
-import com.cloud.ocs.schedule.ga.Individual;
+import com.cloud.ocs.schedule.vm.ga.GAExecutor;
+import com.cloud.ocs.schedule.vm.ga.Individual;
 
 /**
  * 云环境中虚拟机资源分布调度器

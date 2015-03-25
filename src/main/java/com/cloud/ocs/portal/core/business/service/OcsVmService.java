@@ -45,6 +45,13 @@ public interface OcsVmService {
 	 * @return 
 	 */
 	public Map<String, List<OcsVmDto>> getOcsVmsListByCityId(Integer cityId);
+	
+	/**
+	 * 获取城市内所有虚拟机
+	 * @param cityId
+	 * @return
+	 */
+	public List<OcsVmDto> getOcsVmListByCityId(Integer cityId);
 
 	/**
 	 * 添加新的ocs虚拟机

@@ -1,4 +1,4 @@
-package com.cloud.ocs.schedule.ga;
+package com.cloud.ocs.schedule.vm.ga;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import com.cloud.ocs.schedule.VmLoad;
+import com.cloud.ocs.schedule.vm.VmLoad;
 
 
 /**
