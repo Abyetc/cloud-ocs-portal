@@ -7,4 +7,6 @@ import com.cloud.ocs.portal.common.bean.BizAlertMonitorPoint;
 public interface BizAlertMonitorPointDao extends GenericDao<BizAlertMonitorPoint> {
 
 	public List<BizAlertMonitorPoint> findAll();
+	
+	public BizAlertMonitorPoint findById();
 }

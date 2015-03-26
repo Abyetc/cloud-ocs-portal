@@ -19,4 +19,10 @@ public class BizAlertMonitorPointDaoImpl extends GenericDaoImpl<BizAlertMonitorP
 		return query.getResultList();
 	}
 
+	@Override
+	public BizAlertMonitorPoint findById() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -15,18 +15,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.portal.common.bean.Alert;
 import com.cloud.ocs.portal.common.bean.BizAlertMonitorPoint;
 import com.cloud.ocs.portal.common.bean.City;
 import com.cloud.ocs.portal.common.bean.Employee;
+import com.cloud.ocs.portal.common.bean.InfrastructureAlertMonitorPoint;
 import com.cloud.ocs.portal.common.dao.EmployeeDao;
 import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.alarm.Dto.BizAlertMonitorPointListDto;
+import com.cloud.ocs.portal.core.alarm.service.AlertService;
 import com.cloud.ocs.portal.core.alarm.service.BizAlertMonitorPointService;
+import com.cloud.ocs.portal.core.alarm.service.InfrastructureAlertMonitorPointService;
 import com.cloud.ocs.portal.core.business.service.CityService;
 
 @Controller
 @RequestMapping(value="/alert")
-public class BizAlertController {
+public class AlertController {
 	
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -38,6 +42,12 @@ public class BizAlertController {
 	
 	@Resource
 	private CityService cityService;
+	
+	@Resource
+	private InfrastructureAlertMonitorPointService infrastructureAlertMonitorPointService;
+	
+	@Resource
+	private AlertService alertService;
 	
 	@RequestMapping(value="/getAllBizEmployee", method=RequestMethod.GET)
 	@ResponseBody
@@ -107,5 +117,37 @@ public class BizAlertController {
 		result.setOperatedObject(bizAlertMonitorPointListDto);
 		result.setIndex(bizAlertMonitorPointService.getAllBizAlertMonitorPoint().size());
 		return result;
+	}
+	
+	public OperateObjectDto removeBizMonitorPoint(Integer pointId) {
+		return null;
+	}
+	
+	public List<InfrastructureAlertMonitorPoint> listAllInfrastructureAlertMonitorPoint() {
+		return null;
+	}
+	
+	public OperateObjectDto addInfrastructureMonitorPoint(String a, String b, Double c, Integer d, String e) {
+		return null;
+	}
+	
+	public OperateObjectDto removeInfrastructureMonitorPoint(Integer id) {
+		return null;
+	}
+	
+	public List<Alert> listAllBizAlerts() {
+		return null;
+	}
+	
+	public List<Alert> listAllInfrastructureAlerts() {
+		return null;
+	}
+	
+	public OperateObjectDto removeBizAlert() {
+		return null;
+	}
+	
+	public OperateObjectDto removeInfrastructureAlert() {
+		return null;
 	}
 }

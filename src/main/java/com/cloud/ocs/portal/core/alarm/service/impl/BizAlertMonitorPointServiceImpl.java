@@ -47,4 +47,12 @@ public class BizAlertMonitorPointServiceImpl implements BizAlertMonitorPointServ
 		return bizAlertMonitorPointDao.findAll();
 	}
 
+	@Override
+	public OperateObjectDto removeBizAlertMonitorPoint(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+
 }
