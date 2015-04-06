@@ -263,7 +263,7 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 	var primaryStorageList = $("<table class='table table-bordered text-center primary-storage-list-table'>"
 		+ "<caption><strong>集群" + clusterName + "主存储列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>名称</th><th>主机IP</th>"
-		+ "<th>路径</th><th>类型</th><th>状态</th></tr></thead>"
+		+ "<th>路径</th><th>类型</th><th>状态</th><th>操作</th></tr></thead>"
 		+ "<tbody></tbody>"
 		+ "</table>");
 	$("#content-area").append(primaryStorageList);
@@ -271,6 +271,9 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 	$("#primary-storage-list-table-loader").shCircleLoader({
 		duration: 0.75
 	});
+	
+	$("#content-area").append("<button style='margin-bottom:50px;' type='button' class='btn btn-primary btn-sm pull-right' id='' data-toggle='modal' data-target=''><span class='glyphicon glyphicon-plus'></span>  点击添加主存储</button>");
+
 
 	var hostListTable = $("<table class='table table-bordered text-center host-list-table'>"
 		+ "<caption><strong>集群" + clusterName + "主机列表</strong></caption>"
@@ -300,14 +303,15 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 			for (var i = 0; i < data.length; i++) {
 				$(".table.primary-storage-list-table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].primaryStorageName + "</td>"
 					+ "<td>" + data[i].hostIpAddress + "</td><td>" + data[i].path + "</td><td>" + data[i].type + "</td>"
-					+ (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>" + data[i].state + "</span></td>"));
+					+ (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>" + data[i].state + "</span></td>")
+					+ "<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td>");
 			}
 		},
 		error: function( xhr, status ) {
 			alert(status); 
 		} 
 	});
-
+	
 	//请求获取Host数据
 	$.ajax({
 		type: "GET",
@@ -400,7 +404,7 @@ function addHost(zoneId, podId, clusterId, clusterName) {
 
 	//添加转菊花
 	$("#add-host-modal div.modal-body").append("<div class='loader'></div>");
-	$("#add-host-modal div.modal-body").append("<span class='text-primary pull-right'>正在添加，事件稍长，请耐心等待...</span>");
+	$("#add-host-modal div.modal-body").append("<span class='text-primary pull-right'>正在添加，时间稍长，请耐心等待...</span>");
 	$("div.loader").shCircleLoader({
 		duration: 0.75
 	});

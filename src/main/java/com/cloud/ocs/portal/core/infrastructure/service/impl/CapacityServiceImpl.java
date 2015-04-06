@@ -70,38 +70,41 @@ public class CapacityServiceImpl implements CapacityService {
 								capacityDto.setCapacityTotal(UnitUtil.formatSizeUnit(jsonObject.getLong("capacitytotal")));
 								capacityDto.setCapacityUsed(UnitUtil.formatSizeUnit(jsonObject.getLong("capacityused")));
 								break;
-							case 4: //公用类IP地址
-								capacityDto.setCapacityName("公用类IP地址");
-								capacityDto.setUnit("个");
-								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
-								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
-								break;
-							case 5: //管理类IP地址
-								capacityDto.setCapacityName("管理类IP地址");
-								capacityDto.setUnit("个");
-								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
-								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
-								break;
+//							case 4: //公用类IP地址
+//								capacityDto.setCapacityName("公用类IP地址");
+//								capacityDto.setUnit("个");
+//								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
+//								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
+//								break;
+//							case 5: //管理类IP地址
+//								capacityDto.setCapacityName("管理类IP地址");
+//								capacityDto.setUnit("个");
+//								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
+//								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
+//								break;
 							case 6: //辅助存储
 								capacityDto.setCapacityName("辅助存储");
 								capacityDto.setUnit("GB");
 								capacityDto.setCapacityTotal(UnitUtil.formatSizeUnit(jsonObject.getLong("capacitytotal")));
 								capacityDto.setCapacityUsed(UnitUtil.formatSizeUnit(jsonObject.getLong("capacityused")));
 								break;
-							case 7: //VLAN
-								capacityDto.setCapacityName("VLAN");
-								capacityDto.setUnit("个");
-								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
-								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
-								break;
-							case 19: //GPU
-								capacityDto.setCapacityName("GPU");
-								capacityDto.setUnit("个");
-								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
-								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
-								break;
+//							case 7: //VLAN
+//								capacityDto.setCapacityName("VLAN");
+//								capacityDto.setUnit("个");
+//								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
+//								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
+//								break;
+//							case 19: //GPU
+//								capacityDto.setCapacityName("GPU");
+//								capacityDto.setUnit("个");
+//								capacityDto.setCapacityTotal(Long.toString(jsonObject.getLong("capacitytotal")));
+//								capacityDto.setCapacityUsed(Long.toString(jsonObject.getLong("capacityused")));
+//								break;
 							default:
 								break;
+						}
+						if (type == 4 || type == 7 || type == 5 ||  type == 19) {
+							continue;
 						}
 						capacityDto.setPercentUsed(jsonObject.getDouble("percentused"));
 						result.add(capacityDto);

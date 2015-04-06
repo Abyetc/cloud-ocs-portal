@@ -43,11 +43,11 @@ public class AlertController {
 	@Resource
 	private CityService cityService;
 	
-	@Resource
-	private InfrastructureAlertMonitorPointService infrastructureAlertMonitorPointService;
+//	@Resource
+//	private InfrastructureAlertMonitorPointService infrastructureAlertMonitorPointService;
 	
-	@Resource
-	private AlertService alertService;
+//	@Resource
+//	private AlertService alertService;
 	
 	@RequestMapping(value="/getAllBizEmployee", method=RequestMethod.GET)
 	@ResponseBody

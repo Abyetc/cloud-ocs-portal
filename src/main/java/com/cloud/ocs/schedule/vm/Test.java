@@ -11,5 +11,14 @@ public class Test {
 		VmDistributionScheduler scheduler = new VmDistributionScheduler();
 		scheduler.computeOptimalDistribution(pmNum, vmNum, vmsLoad);
 	}
+	
+//	public static double computePMsLoadVariation(double nums[]) {
+//		double pmsLoadExpectation = 61.4;
+//		double sum = 0.0;
+//		for (int i= 0; i < nums.length; i++) {
+//			sum += Math.abs((nums[i] - pmsLoadExpectation) * (nums[i] - pmsLoadExpectation));
+//		}
+//		return Math.sqrt(sum/(double)nums.length);
+//	}
 
 }

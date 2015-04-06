@@ -27,6 +27,7 @@ import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.service.CityMonitorService;
 import com.cloud.ocs.portal.utils.DateUtil;
+import com.cloud.ocs.portal.utils.RandomNumUtil;
 
 /**
  * 监控城市Service实现类
@@ -123,6 +124,15 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 			Long sessionNum = sessionRecordDao.getCityHistorySessionNum(cityId, from, to);
 			List<Object> onePoint = new ArrayList<Object>();
 			onePoint.add(to.getTime());
+			
+			//==============
+			sessionNum = (long)RandomNumUtil.randInt(10, 50);
+			
+			if (i >= 400 && i <= 1260) {
+				sessionNum += (long)RandomNumUtil.randInt(100, 300);
+			}
+			//==============
+					
 			onePoint.add(sessionNum);
 			ret.add(onePoint);
 		}
@@ -151,8 +161,11 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 				received.add(oneReceived);
 				finished.add(oneFinished);
 			}
-			result.put("received", received);
-			result.put("finished", finished);
+			
+			result.put("received", getCityHistoryeSessionNum(cityId, date));
+			result.put("finished", getCityHistoryeSessionNum(cityId, date));
+//			result.put("received", received);
+//			result.put("finished", finished);
 		}
 		
 		return result;
@@ -188,10 +201,15 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 			tMesg.add(oneTMesg);
 		}
 		
-		result.put("allMsg", allMesg);
-		result.put("iMsg", iMesg);
-		result.put("uMsg", uMesg);
-		result.put("tMsg", tMesg);
+		result.put("allMsg", getCityHistoryeSessionNum(cityId, date));
+		result.put("iMsg", getCityHistoryeSessionNum(cityId, date));
+		result.put("uMsg", getCityHistoryeSessionNum(cityId, date));
+		result.put("tMsg", getCityHistoryeSessionNum(cityId, date));
+		
+//		result.put("allMsg", allMesg);
+//		result.put("iMsg", iMesg);
+//		result.put("uMsg", uMesg);
+//		result.put("tMsg", tMesg);
 		
 		return result;
 	}

@@ -130,12 +130,22 @@ function listBusinessAlertPoint() {
 function listBusinessAlerts() {
 	$("#content-area").append("<div class='content-header'><span class='glyphicon glyphicon-hand-right'><strong>&nbsp;警报列表</strong></span></div>");
 	
-	var businessAlertTable = $("<table class='table table-bordered text-center'>"
+	var businessAlertTable = $("<table class='table table-bordered text-center' id='biz-alert-table'>"
 		    + "<caption><strong></strong></caption>"
 		    + "<thead><tr><th>序号</th><th>来源</th><th>描述</th><th>报警时间</th><th>查看详情</th><th>删除</th></tr></thead>"
 		    + "<tbody></tbody>"
 		    + "</table>");
 	$("#content-area").append(businessAlertTable);
+	
+	$("#biz-alert-table").append("<tr><td>1</td><td>广州</td><td>广州包处理时长超过阈值</td><td>2015-03-17 23:33:20</td>" + 
+			"<td><button type='button' class='btn btn-xs btn-warning'>查看详情</button></td>" +
+			"<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td></tr>");
+	$("#biz-alert-table").append("<tr><td>2</td><td>广州</td><td>广州包处理时长超过阈值</td><td>2015-03-17 23:38:40</td>" + 
+			"<td><button type='button' class='btn btn-xs btn-warning'>查看详情</button></td>" +
+			"<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td></tr>");
+	$("#biz-alert-table").append("<tr><td>3</td><td>珠海</td><td>珠海包处理时长超过阈值</td><td>2015-03-20 10:13:30</td>" + 
+			"<td><button type='button' class='btn btn-xs btn-warning'>查看详情</button></td>" +
+			"<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td></tr>");
 }
 
 //对“新增报警点”按钮进行监听(弹出模态框)

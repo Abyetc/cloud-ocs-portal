@@ -37,6 +37,7 @@ function startMonitoringCityRealtimeSessionNum() {
 		success: function(data) {
 			console.log("startMonitoringCityRealtimeSessionNum:" + data);
 			y = data;
+			y = Math.random() * 100;
 			var shiftFlag = cityRealtimeSessionNumMonitorChart.series[cityRealtimeSessionNumMonitorChartCurrSeries - 1].data.length > 100;
 			var point = [x, y];
 

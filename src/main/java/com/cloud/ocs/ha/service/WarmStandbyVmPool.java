@@ -38,6 +38,4 @@ public class WarmStandbyVmPool {
 	public boolean isFull() {
 		return false;
 	}
-	
-	
 }
