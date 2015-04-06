@@ -18,6 +18,8 @@ public class Individual {
 	private double[] pmsLoad;
 	private double[] vmsLoad;
 	
+	private double loadStandardDeviation;
+	
 	private Chromosome chromosome; //个体的染色体
 	private double fitness; //个体适应度
 	
@@ -28,6 +30,7 @@ public class Individual {
 		this.vmsLoad = vmsLoad;
 		this.pmsLoad = new double[pmNum];
 		this.chromosome = new Chromosome(pmNum, vmNum);
+		this.loadStandardDeviation = this.computePMsLoadStandardDeviation();
 	}
 	
 	public int getPmNum() {
@@ -139,21 +142,29 @@ public class Individual {
 	 * 计算当前个体的适应值
 	 */
 	public void computeFitness() {
-		//需要调用computeHostLoadVariation();
-		this.fitness = 1.0 / this.computePMsLoadVariation();
+		double loadStandardDeviation = this.computePMsLoadStandardDeviation();
+		double penaltyValue = 1.0;
+		if (loadStandardDeviation - GAExecutor.LOAD_BALANCING_THRESHOLD > 0) {
+			penaltyValue = 50.0;
+		}
+		
+		this.fitness = 1.0 / (GAExecutor.FITNESS_FUNCTION_COEF_A + GAExecutor.FITNESS_FUNCTION_COEF_B * penaltyValue);
+//		this.fitness = 1.0 / this.computePMsLoadStandardDeviation();
 	}
 	
 	/**
-	 * 计算当前个体(分布情况)的物理主机负载数据的方差
+	 * 计算当前个体(分布情况)的物理主机负载数据的标准差
 	 * @return
 	 */
-	public double computePMsLoadVariation() {
+	public double computePMsLoadStandardDeviation() {
 		double pmsLoadExpectation = computePMsLoadExpectation();
 		double sum = 0.0;
 		for (int i= 0; i < pmNum; i++) {
 			sum += Math.abs((pmsLoad[i] - pmsLoadExpectation) * (pmsLoad[i] - pmsLoadExpectation));
 		}
-		return Math.sqrt(sum/(double)pmNum);
+		double loadSD =  Math.sqrt(sum/(double)pmNum);
+		this.loadStandardDeviation = loadSD;
+		return loadSD;
 	}
 	
 	/**
@@ -182,6 +193,12 @@ public class Individual {
 			}
 		}
 		return true;
+	}
+
+	public double getLoadStandardDeviation() {
+		this.loadStandardDeviation = this.computePMsLoadStandardDeviation();
+		
+		return this.loadStandardDeviation;
 	}
 
 }

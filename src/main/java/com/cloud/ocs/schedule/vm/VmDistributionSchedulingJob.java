@@ -54,7 +54,7 @@ public class VmDistributionSchedulingJob {
 		}
 		
 		//若需要，则调用computeOptimalDistribution(int pmNum, int vmNum, double[] vmsLoad)
-		Individual optimalDistributionIndividual = scheduler.computeOptimalDistribution(pmNum, vmNum, vmsLoad);
+		Individual optimalDistributionIndividual = scheduler.computeOptimalDistribution(pmNum, vmNum, vmsLoad, originIndividual);
 		
 		//最后执行完成VM动态迁移工作
 		scheduler.executeScheduling(optimalDistributionIndividual);
