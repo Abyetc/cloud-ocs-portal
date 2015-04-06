@@ -90,9 +90,7 @@ public class VmDistributionScheduler {
 	 * @return
 	 */
 	public boolean checkWheatherNeedToExecutingScheduling(Individual individual) {
-		individual.computeFitness();
-		
-		if (individual.getFitness() >= GAExecutor.MIN_TERMINAL_FITNESS) {
+		if (individual.getLoadStandardDeviation() <= GAExecutor.LOAD_BALANCING_THRESHOLD) {
 			return false;
 		}
 		
@@ -106,8 +104,8 @@ public class VmDistributionScheduler {
 	 * @param vmsLoad
 	 * @return
 	 */
-	public Individual computeOptimalDistribution(int pmNum, int vmNum, double[] vmsLoad) {
-		return gaExecutor.executeGA(pmNum, vmNum, vmsLoad);
+	public Individual computeOptimalDistribution(int pmNum, int vmNum, double[] vmsLoad, Individual originIndividual) {
+		return gaExecutor.executeGA(pmNum, vmNum, vmsLoad, originIndividual);
 	}
 	
 	/**

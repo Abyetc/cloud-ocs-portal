@@ -62,6 +62,21 @@ public class Population {
 		return max;
 	}
 	
+	/**
+	 * 获取种群中已经达到负载均衡约束条件的个体个数
+	 * @return
+	 */
+	public int getLoadBalancingIndividualNum() {
+		int count = 0; 
+		for (Individual individual : individuals) {
+			if (individual.getLoadStandardDeviation() <= GAExecutor.LOAD_BALANCING_THRESHOLD) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
 	public Individual getMaxFitnessIndividualInPopulation() {
 		Individual maxFitnessIndividual = null;
 		double maxFitness = -1.0;
@@ -256,6 +271,51 @@ public class Population {
 			}
 		}
 		return this.individuals.get(selectedIndividualNum);
+	}
+	
+	/**
+	 * 返回符合负载均衡约束条件中迁移开销最小的个体
+	 * @param originIndividual
+	 * @return
+	 */
+	public Individual getMinMigrateCostIndividual(Individual originIndividual) {
+		Individual result = null;
+		int minCost = Integer.MAX_VALUE;
+		for (Individual individual : this.individuals) {
+			if (individual.computePMsLoadStandardDeviation() <= GAExecutor.LOAD_BALANCING_THRESHOLD) {
+				int cost = this.computeMigrateCost(originIndividual, individual);
+				if (cost < minCost) {
+					result = individual;
+					minCost = cost;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 计算迁移开销
+	 * @param origin
+	 * @param dest
+	 * @return
+	 */
+	private int computeMigrateCost(Individual origin, Individual dest) {
+		int cost = 0;
+		int vmNum = origin.getVmNum();
+		int pmNum = origin.getPmNum();
+		List<int []> originGenes = origin.getChromosome().getGenes();
+		List<int []> destGenes = dest.getChromosome().getGenes();
+		
+		for (int i = 0; i < pmNum; i++) {
+			for (int j = 0; j < vmNum; j++) {
+				if (originGenes.get(i)[j] == 1 && destGenes.get(i)[j] == 0) {
+					cost++;
+				}
+			}
+		}
+		
+		return cost;
 	}
 	
 	/**

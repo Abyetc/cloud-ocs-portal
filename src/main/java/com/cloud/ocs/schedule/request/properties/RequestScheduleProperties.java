@@ -9,6 +9,14 @@ import java.util.Properties;
 
 import com.cloud.ocs.portal.properties.CloudStackApiProperties;
 
+/**
+ * 计费请求调度服务相关常量
+ * 
+ * @author Wang Chao
+ *
+ * @date 2015-4-5 下午7:40:53
+ *
+ */
 public class RequestScheduleProperties {
 
 	private static Properties requestScheduleProperties;
@@ -48,5 +56,33 @@ public class RequestScheduleProperties {
 	
 	public static double getResponseTimeCoefficient() {
 		return Double.parseDouble(requestScheduleProperties.getProperty("response.time.coefficient"));
+	}
+	
+	public static double getConvergenceRateCoefficient1() {
+		return Double.parseDouble(requestScheduleProperties.getProperty("convergence.rate.coefficient1"));
+	}
+	
+	public static double getConvergenceRateCoefficient2() {
+		return Double.parseDouble(requestScheduleProperties.getProperty("convergence.rate.coefficient2"));
+	}
+	
+	public static double getDeviation() {
+		return Double.parseDouble(requestScheduleProperties.getProperty("deviation"));
+	}
+	
+	public static double getOptimalLoad() {
+		return Double.parseDouble(requestScheduleProperties.getProperty("optimal.load"));
+	}
+	
+	public static int getMinWeight() {
+		return Integer.parseInt(requestScheduleProperties.getProperty("weight.min"));
+	}
+	
+	public static int getMaxWeight() {
+		return Integer.parseInt(requestScheduleProperties.getProperty("weight.max"));
+	}
+	
+	public static int getResponseTimeThreshold() {
+		return Integer.parseInt(requestScheduleProperties.getProperty("response.time.threshold"));
 	}
 }

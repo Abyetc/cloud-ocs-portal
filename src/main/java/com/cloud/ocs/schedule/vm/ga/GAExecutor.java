@@ -14,19 +14,25 @@ import java.util.Random;
 public class GAExecutor {
 	
 	public final static int POPULATION_NUM = 50; //种群数量
-	public final static int MAX_GEN = 500; //最大遗传代数
-	public final static double MIN_TERMINAL_FITNESS = 2.0;
+	public final static int MAX_GEN = 1000; //最大遗传代数
+//	public final static double MIN_TERMINAL_FITNESS = 2.0;
+	public final static double LOAD_BALANCING_THRESHOLD = 0.5; //负载均衡约束条件
 	public final static double REPLICATION_PROBABILITY = 0.1; //选择概率Pr
 	public final static double HYBRIDIZATION_PROBABILITY = 0.9; //交叉概率Pc
 	
-	public Individual executeGA(int pmNum, int vmNum, double[] vmsLoad) {
+	public final static int DEF_NUM = 5; //预定义种群中达到负载均衡的个体数
+	
+	public final static double FITNESS_FUNCTION_COEF_A = 0.5;
+	public final static double FITNESS_FUNCTION_COEF_B = 1.5;
+	
+	public Individual executeGA(int pmNum, int vmNum, double[] vmsLoad, Individual originIndividual) {
 		int curGen = 0; //当前种群的代数
 		Population population = initializePopulation(pmNum, vmNum, vmsLoad);
 		
 		//计算population中的适应度
 		population.computeFitnessInPopulation();
 		while (true) {
-			if (population.getMaxFitnessInPopulation() >= MIN_TERMINAL_FITNESS || curGen >= MAX_GEN) {
+			if (population.getLoadBalancingIndividualNum() >= DEF_NUM || curGen >= MAX_GEN) {
 				break;
 			}
 			List<Individual> selectedIndividuals = population.selectInPopulation();
@@ -43,7 +49,17 @@ public class GAExecutor {
 			
 			curGen++;
 		}
-		Individual optimalIndividual = population.getMaxFitnessIndividualInPopulation();
+		
+		Individual optimalIndividual = null;
+		if (population.getLoadBalancingIndividualNum() >= DEF_NUM) { //选择迁移开销小的
+			optimalIndividual = population.getMinMigrateCostIndividual(originIndividual);
+			System.out.println("1");
+		}
+		else {
+			optimalIndividual = population.getMaxFitnessIndividualInPopulation(); //选择适应度最大的
+			System.out.println("2");
+		}
+		
 		System.out.println("-------------------------------");
 		optimalIndividual.printChromosome();
 		System.out.println(optimalIndividual.getFitness());
@@ -103,6 +119,7 @@ public class GAExecutor {
 //			one.addVM(4, 15);
 			one.computePMsLoad();
 			one.computeFitness();
+			one.computePMsLoadStandardDeviation();
 //			one.printChromosome();
 //			System.out.println(one.computePMsLoadExpectation());
 //			System.out.println(one.computePMsLoadVariation());
