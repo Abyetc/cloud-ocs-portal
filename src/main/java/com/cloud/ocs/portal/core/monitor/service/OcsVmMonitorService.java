@@ -92,7 +92,7 @@ public interface OcsVmMonitorService {
 	 * @param dayOfMonth
 	 * @return
 	 */
-	public List<List<Object>> getVmHistoryRxbpsTxbps(String vmId, String interfaceName, int dayOfMonth);
+	public Map<String, List<List<Object>>> getVmHistoryRxbpsTxbps(String vmId, String interfaceName, int dayOfMonth);
 	
 	/**
 	 * 某一时刻虚拟机正在处理的并发请求连接数

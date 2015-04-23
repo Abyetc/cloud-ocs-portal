@@ -63,4 +63,20 @@ public class OcsVmProperties {
 	public static String getOcsVmEngineCheckStateCmd() {
 		return ocsVmProperties.getProperty("ocs.vm.engine.check.state.cmd");
 	}
+	
+	public static String getOcsVmHistoryCpuUsagePercentageCmd() {
+		return ocsVmProperties.getProperty("ocs.vm.monitor.cmd.history.cpu.usage.percentage");
+	}
+	
+	public static String getOcsVmHistoryMemoryUsagePercentageCmd() {
+		return ocsVmProperties.getProperty("ocs.vm.monitor.cmd.history.memory.usage.percentage");
+	}
+	
+	public static String getOcsVmHistoryNetworkUsagePercentageCmd1() {
+		return ocsVmProperties.getProperty("ocs.vm.monitor.cmd1.history.network.usage.percentage");
+	}
+	
+	public static String getOcsVmHistoryNetworkUsagePercentageCmd2() {
+		return ocsVmProperties.getProperty("ocs.vm.monitor.cmd2.history.network.usage.percentage");
+	}
 }

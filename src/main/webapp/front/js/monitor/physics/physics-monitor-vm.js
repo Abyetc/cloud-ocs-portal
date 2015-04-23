@@ -63,6 +63,9 @@ var vmMemoryUsageMonitorChart;
 var vmMemoryUsageMonitorChartCurrSeries = 0;
 var cityVmRxbpsTxbpsMonitorChart;
 var cityVmRxbpsTxbpsMonitorChartCurrSeries = 0;
+var vmHistoryCpuUsagePercentageMonitorChart;
+var vmHistoryMemoryUsagePercentageMonitorChart;
+var vmHistoryNetworkUsagePercentageMonitorChart;
 
 function monitorVmDetail(event) {
 	var vmDetail = event.data.vmDetail;
@@ -240,7 +243,7 @@ function monitorVmDetail(event) {
 		},
 		yAxis: {
 			min: 0,
-			max: 1000,
+			max: 5000,
 			title: {
 				text: '接收/发送数据吞吐率(KBps)'
 			},

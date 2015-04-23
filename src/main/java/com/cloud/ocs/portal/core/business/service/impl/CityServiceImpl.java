@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.bean.City;
 import com.cloud.ocs.portal.common.dao.CityDao;
+import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.business.constant.CityState;
 import com.cloud.ocs.portal.core.business.dto.AddCityDto;
 import com.cloud.ocs.portal.core.business.service.CityService;
@@ -60,6 +61,29 @@ public class CityServiceImpl implements CityService {
 	@Override
 	public City getCityById(Integer cityId) {
 		return cityDao.findById(cityId);
+	}
+
+	@Override
+	public OperateObjectDto removeCity(Integer cityId) {
+		OperateObjectDto operateObjectDto = new OperateObjectDto();
+		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
+		operateObjectDto.setMessage("Remove city error.");
+		
+		City city = cityDao.findById(cityId);
+		if (city == null) {
+			return operateObjectDto;
+		}
+		
+		if (city.getState().equals(CityState.SERVICING)) {
+			operateObjectDto.setMessage("Can't remove city because it is servicing.");
+			return operateObjectDto;
+		}
+		
+		cityDao.remove(city);
+		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+		operateObjectDto.setMessage("Remove city Success.");
+		
+		return operateObjectDto;
 	}
 
 }

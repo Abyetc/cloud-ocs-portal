@@ -1,7 +1,11 @@
 package com.cloud.ocs.portal.core.monitor.service.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -34,10 +38,12 @@ import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
+import com.cloud.ocs.portal.properties.OcsVmProperties;
 import com.cloud.ocs.portal.utils.UnitUtil;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
 import com.cloud.ocs.portal.utils.http.RestfulClient;
+import com.cloud.ocs.portal.utils.ssh.SSHClient;
 import com.google.gson.Gson;
 
 /**
@@ -63,6 +69,9 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	
 	@Resource
 	private OcsVmService ocsVmService;
+	
+	DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-"); 
+	 DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH时mm分ss秒");
 
 	@Override
 	public int getVmNumOnHost(String hostId) {
@@ -269,22 +278,107 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	@Override
 	public List<List<Object>> getVmHistoryCpuUsagePercentage(String vmId,
 			int dayOfMonth) {
-		// TODO Auto-generated method stub
-		return null;
+		List<List<Object>> res = null;
+		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
+		if (ocsVm == null) {
+			return null;
+		}
+		
+		OcsVmForwardingPort ocsVmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
+		int sshPort = ocsVmForwardingPort.getSshPublicPort();
+		String publicIp = ocsVmForwardingPort.getPublicIp();
+		String rootPwd = OcsVmProperties.getOcsVmPassword();
+		String cmd = (dayOfMonth < 10 ? OcsVmProperties.getOcsVmHistoryCpuUsagePercentageCmd() + "0" : OcsVmProperties.getOcsVmHistoryCpuUsagePercentageCmd()) + dayOfMonth;
+		String ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		
+		if (ret != null) {
+			String arr[] = ret.split("\n");
+			res = new ArrayList<List<Object>>();
+			for (int i = 0; i < arr.length - 1; i++) {
+				if (arr[i].contains("all")) {
+					List<Object> oneRecord = processOneLineCpuUsageRecord(arr[i], dayOfMonth);
+					if (oneRecord != null) {
+						res.add(oneRecord);
+					}
+				}
+			}
+			
+		}
+		
+		return res;
 	}
 
 	@Override
 	public List<List<Object>> getVmHistoryMemoryUsagePercentage(String vmId,
 			int dayOfMonth) {
-		// TODO Auto-generated method stub
-		return null;
+		List<List<Object>> res = null;
+		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
+		if (ocsVm == null) {
+			return null;
+		}
+		
+		OcsVmForwardingPort ocsVmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
+		int sshPort = ocsVmForwardingPort.getSshPublicPort();
+		String publicIp = ocsVmForwardingPort.getPublicIp();
+		String rootPwd = OcsVmProperties.getOcsVmPassword();
+		String cmd = (dayOfMonth < 10 ? OcsVmProperties.getOcsVmHistoryMemoryUsagePercentageCmd() + "0" : OcsVmProperties.getOcsVmHistoryMemoryUsagePercentageCmd()) + dayOfMonth;
+		String ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		
+		if (ret != null) {
+			String arr[] = ret.split("\n");
+			res = new ArrayList<List<Object>>();
+			for (int i = 3; i < arr.length - 1; i++) {
+				if (arr[i].isEmpty() || arr[i].contains("commit") || arr[i].contains("RESTART")) {
+					continue;
+				}
+				List<Object> oneRecord = processOneLineMemoryUsageRecord(arr[i], dayOfMonth);
+				if (oneRecord != null) {
+					res.add(oneRecord);
+				}
+			}
+		}
+		
+		return res;
 	}
 
 	@Override
-	public List<List<Object>> getVmHistoryRxbpsTxbps(String vmId,
+	public Map<String, List<List<Object>>> getVmHistoryRxbpsTxbps(String vmId,
 			String interfaceName, int dayOfMonth) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, List<List<Object>>> res = null;
+		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
+		if (ocsVm == null) {
+			return null;
+		}
+		
+		OcsVmForwardingPort ocsVmForwardingPort = vmForwardingPortService.getVmForwardingPortByVmId(vmId);
+		int sshPort = ocsVmForwardingPort.getSshPublicPort();
+		String publicIp = ocsVmForwardingPort.getPublicIp();
+		String rootPwd = OcsVmProperties.getOcsVmPassword();
+		String cmd = (dayOfMonth < 10 ? OcsVmProperties.getOcsVmHistoryNetworkUsagePercentageCmd1() + "0" : OcsVmProperties.getOcsVmHistoryNetworkUsagePercentageCmd1()) + dayOfMonth + OcsVmProperties.getOcsVmHistoryNetworkUsagePercentageCmd2();
+		String ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		
+		if (ret != null) {
+			String arr[] = ret.split("\n");
+			res = new HashMap<String, List<List<Object>>>();
+			List<List<Object>> rxbpsList = new ArrayList<List<Object>>();
+			List<List<Object>> txbpsList = new ArrayList<List<Object>>();
+			
+			for (int i = 0; i < arr.length; i++) {
+				if (arr[i].contains("Average")) {
+					continue;
+				}
+				Map<String, List<Object>> oneRes = processOneLineNetworkUsageRecord(arr[i], dayOfMonth);
+				if (oneRes != null) {
+					rxbpsList.add(oneRes.get("rxbps"));
+					txbpsList.add(oneRes.get("txbps"));
+				}
+			}
+			
+			res.put("rxbps", rxbpsList);
+			res.put("txbps", txbpsList);
+		}
+		
+		return res;
 	}
 
 	@Override
@@ -390,6 +484,141 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 			Date date) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	/**
+	 * 处理一行CPU使用记录字符串
+	 * @param record
+	 * @return
+	 */
+	private List<Object> processOneLineCpuUsageRecord(String record, int dayOfMonth) {
+		List<Object> res = null;
+		if(record == null) {
+			return null;
+		}
+		
+		res = new ArrayList<Object>();
+		String dateStr = record.substring(0, record.indexOf(" "));
+		String yyyyMMdd = dateFormat1.format(new Date()) + (dayOfMonth < 10 ?  "0" + dayOfMonth : dayOfMonth);
+		Date date = null;
+		try {
+			date = dateFormat2.parse(yyyyMMdd + " " + dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		String cpuIdleUsageStr = record.substring(record.lastIndexOf(" ") + 1);
+		res.add(date.getTime());
+		res.add(100.0 - Double.parseDouble(cpuIdleUsageStr));
+		
+		return res;
+	}
+	
+	/**
+	 * 处理一行内存记录
+	 * @param record
+	 * @param dayOfMonth
+	 * @return
+	 */
+	private List<Object> processOneLineMemoryUsageRecord(String record, int dayOfMonth) {
+		List<Object> res = null;
+		if(record == null) {
+			return null;
+		}
+		
+		res = new ArrayList<Object>();
+		String dateStr = record.substring(0, record.indexOf(" "));
+		String yyyyMMdd = dateFormat1.format(new Date()) + (dayOfMonth < 10 ?  "0" + dayOfMonth : dayOfMonth);
+		Date date = null;
+		try {
+			date = dateFormat2.parse(yyyyMMdd + " " + dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		int indexOfFirstDot = record.indexOf('.');
+		int beg = indexOfFirstDot - 1;
+		int end = indexOfFirstDot + 1;
+		while (record.charAt(beg) != ' ') {
+			beg--;
+		}
+		while (record.charAt(end) != ' ') {
+			end++;
+		}
+		String resStr = record.substring(beg + 1, end);
+		res.add(date.getTime());
+		res.add(Double.parseDouble(resStr));
+		
+		return res;
+	}
+	
+	/**
+	 * 处理一行网络记录
+	 * @param record
+	 * @param dayOfMonth
+	 * @return
+	 */
+	private Map<String, List<Object>> processOneLineNetworkUsageRecord(String record, int dayOfMonth) {
+		Map<String, List<Object>> res = null;
+		if (record == null || record.isEmpty()) {
+			return null;
+		}
+		
+		res = new HashMap<String, List<Object>>();
+		String dateStr = record.substring(0, record.indexOf(" "));
+		String yyyyMMdd = dateFormat1.format(new Date()) + (dayOfMonth < 10 ?  "0" + dayOfMonth : dayOfMonth);
+		Date date = null;
+		try {
+			date = dateFormat2.parse(yyyyMMdd + " " + dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		int indexOfThirdDot = 0;
+		int indexOfFourthDot = 0;
+		int dotCount = 0;
+		for (int i = 0; i < record.length(); i++) {
+			if (record.charAt(i) == '.') {
+				++dotCount;
+			}
+			if (dotCount == 2) {
+				indexOfThirdDot = i;
+			}
+			if (dotCount == 3) {
+				indexOfFourthDot = i;
+			}
+		}
+
+		int beg = indexOfThirdDot - 1;
+		int end = indexOfThirdDot + 1;
+		while (record.charAt(beg) != ' ') {
+			beg--;
+		}
+		while (record.charAt(end) != ' ') {
+			end++;
+		}
+		String rxbpsStr = record.substring(beg + 1, end);
+
+		beg = indexOfFourthDot - 1;
+		end = indexOfFourthDot + 1;
+		while (record.charAt(beg) != ' ') {
+			beg--;
+		}
+		while (record.charAt(end) != ' ') {
+			end++;
+		}
+		String txbpsStr = record.substring(beg + 1, end);
+		
+		List<Object> rxbpsList = new ArrayList<Object>();
+		rxbpsList.add(date.getTime());
+		rxbpsList.add(Double.parseDouble(rxbpsStr));
+		List<Object> txbpsList = new ArrayList<Object>();
+		txbpsList.add(date.getTime());
+		txbpsList.add(Double.parseDouble(txbpsStr));
+		res.put("rxbps", rxbpsList);
+		res.put("txbps", txbpsList);
+		
+		return res;
 	}
 
 }

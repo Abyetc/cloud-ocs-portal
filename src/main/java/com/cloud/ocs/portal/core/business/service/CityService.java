@@ -3,6 +3,7 @@ package com.cloud.ocs.portal.core.business.service;
 import java.util.List;
 
 import com.cloud.ocs.portal.common.bean.City;
+import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.business.dto.AddCityDto;
 
 /**
@@ -19,4 +20,6 @@ public interface CityService {
 	public AddCityDto addCity(City city);
 	
 	public City getCityById(Integer cityId);
+	
+	public OperateObjectDto removeCity(Integer cityId);
 }

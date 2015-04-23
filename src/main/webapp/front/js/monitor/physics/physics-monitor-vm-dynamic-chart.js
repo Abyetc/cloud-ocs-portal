@@ -135,11 +135,11 @@ $("body").on("click", "#city-vm-rxbps-txbps-monitor-btn", function() {
 		//设置button文字
 		$(this).text("点击暂停监控数据吞吐率");
 		cityVmRxbpsTxbpsMonitorChart.addSeries({
-			name: "接收数据吞吐率",
+			name: "接收数据速率",
 			data: []
 		});
 		cityVmRxbpsTxbpsMonitorChart.addSeries({
-			name: "发送数据吞吐率",
+			name: "发送数据速率",
 			data: []
 		});
 		cityVmRxbpsTxbpsMonitorChartCurrSeries++;
@@ -158,7 +158,7 @@ function startMonitoringCityVmRxbpsTxbps() {
 	// //请求数据
 	$.ajax({
 		type: "GET",
-		url: "monitor/vm/getRxbpsTxbps",
+		url: "monitor/vm/getCurRxbpsTxbps",
 		dataType: "json",
 		data: {
 			cityVmId: window.curMonitorVmId,
@@ -195,3 +195,149 @@ function stopMonitoringCityVmRxbpsTxbps() {
 	clearTimeout(window.cityVmRxbpsTxbpsMonitorTimer);
 	window.cityVmRxbpsTxbpsMonitorTimer = null;
 }
+
+//==============================================================================
+//==============================================================================
+
+$("body").on("click", "#vm-history-cpu-usage-monitor-btn", function() {
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/vm/getVmHistoryCpuUsagePercentage",
+		dataType: "json",
+		data: {
+			vmId: window.curMonitorVmId,
+			dayOfMonth: $("#vm-history-cpu-usage-monitor-area select").val()
+		},
+		success: function(data) {
+			 vmHistoryCpuUsagePercentageMonitorChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'vm-history-cpu-usage-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "CPU使用率历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "CPU使用率历史曲线" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 2) + '%';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 100,
+				        },
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"CPU使用率历史曲线", data:data}]
+			  });
+		},
+		error: function(xhr, status) {
+			alert(status);
+		}
+	});
+});
+
+$("body").on("click", "#vm-history-memory-usage-monitor-btn", function() {
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/vm/getVmHistoryMemoryUsagePercentage",
+		dataType: "json",
+		data: {
+			vmId: window.curMonitorVmId,
+			dayOfMonth: $("#vm-history-memory-usage-monitor-area select").val()
+		},
+		success: function(data) {
+			 vmHistoryMemoryUsagePercentageMonitorChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'vm-history-memory-usage-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "内存使用率历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "内存使用率历史曲线" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 2) + '%';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 100,
+				        },
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"内存使用率历史曲线", data:data}]
+			  });
+		},
+		error: function(xhr, status) {
+			alert(status);
+		}
+	});
+});
+
+$("body").on("click", "#vm-history-network-usage-monitor-btn", function() {
+	//请求数据
+	$.ajax({
+		type: "GET",
+		url: "monitor/vm/getVmHistoryNetworkUsagePercentage",
+		dataType: "json",
+		data: {
+			vmId: window.curMonitorVmId,
+			interfaceName: "eth0",
+			dayOfMonth: $("#vm-history-network-usage-monitor-area select").val()
+		},
+		success: function(data) {
+			 vmHistoryNetworkUsagePercentageMonitorChart = new Highcharts.StockChart({
+				  chart: {
+				      renderTo: 'vm-history-network-usage-monitor-chart',
+				      marginRight: 10,
+				      plotBorderWidth: 1
+				    },
+				    title: {
+				      text:  "网卡eth0接收/发送数据吞吐率历史曲线"
+				    },
+				    tooltip: { //鼠标指在线上出现的框
+				        formatter: function() {
+				          return '<b>' + "速率" + '</b><br/>' +
+				            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+				            Highcharts.numberFormat(this.y, 2) + 'KBps';
+				        }
+				      },
+				    yAxis: {
+				          min: 0,
+				          max: 5000,
+				        },
+					legend: {
+						enabled: true
+					},
+				    exporting: {
+				        enabled: false
+				      },
+				      credits: {
+				        enabled: false
+				    },
+				    series: [{name:"接收数据速率历史曲线", data:data["rxbps"]},
+				             {name:"发送数据速率历史曲线", data:data["txbps"]}]
+			  });
+		},
+		error: function(xhr, status) {
+			alert(status);
+		}
+	});
+});

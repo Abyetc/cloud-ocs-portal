@@ -117,7 +117,7 @@ function listPods(zoneId, zoneName) {
 	var secondaryStorageList = $("<table class='table table-bordered text-center secondary-storage-list-table'>"
 		+ "<caption><strong>区域" + zoneName + "二级存储列表</strong></caption>"
 		+ "<thead><tr><th>序号</th><th>名称</th><th>URL</th>"
-		+ "<th>协议</th><th>提供者</th></tr></thead>"
+		+ "<th>协议</th><th>提供者</th><th>删除</th></tr></thead>"
 		+ "<tbody></tbody>"
 		+ "</table>");
 	$("#content-area").append(secondaryStorageList);
@@ -174,15 +174,82 @@ function listPods(zoneId, zoneName) {
 			$("table.secondary-storage-list-table").addClass("table-interval");
 			$("#secondary-storage-list-table-loader").remove();
 			for (var i = 0; i < data.length; i++) {
-				$(".table.secondary-storage-list-table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].secondaryStorageName + "</td>"
+				$(".table.secondary-storage-list-table tbody").append("<tr id='" + data[i].secondaryStorageId + "'>"
+					+ "<td>" + (i+1) + "</td><td>" + data[i].secondaryStorageName + "</td>"
 					+ "<td>" + data[i].url + "</td><td>" + data[i].protocol + "</td><td>" 
-					+ data[i].providerName + "</td></tr>");
+					+ data[i].providerName + "</td>" 
+					+ "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeSecondaryStorage(\"" + data[i].secondaryStorageId + "\")'>删除</button></td></tr>");
 			}
 		},
 		error: function( xhr, status ) {
 			alert(status); 
 		} 
 	});
+	//添加辅助存储按钮
+	$("#content-area").append("<button style='margin-bottom:50px;' type='button' class='btn btn-primary btn-sm pull-right' id='add-secondary-storage-btn' data-toggle='modal' data-target=''><span class='glyphicon glyphicon-plus'></span>  点击添加辅助存储</button>");
+	//弹出的添加辅助存储表单模态框
+	$("#add-secondary-storage-btn").after("<div class='modal fade' id='add-secondary-storage-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+   						   + 	"<div class='modal-dialog modal-dialog-center'>"
+   						   +		"<div class='modal-content'>"
+   						   +			"<div class='modal-header'>"
+   						   +				"<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+   						   +				"<h4 class='modal-title'>添加辅助存储</h4>"
+   						   +			"</div>"
+   						   +			"<div class='modal-body'>"
+          				   +       			"<div class='form-horizontal' role='form'>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>名称：</label>"
+          				   +						"<div class='col-lg-8'>"
+          				   +							"<input type='text' class='form-control' id='secondary-storage-name' placeholder='请输入辅助存储名称'>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>服务器：</label>"
+          				   +						"<div class='col-lg-8'>"
+          				   +							"<input type='text' class='form-control' id='secondary-storage-server-ip' placeholder='请输入服务器IP'>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>路径：</label>"
+          				   +						"<div class='col-lg-8'>"
+          				   +							"<input type='text' class='form-control' id='secondary-storage-path' placeholder='请输入路径'>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>协议：</label>"
+          				   +						"<div class='col-lg-8'>"
+                           +                 			"<select class='form-control' id='secondary-storage-protocol'>"
+                           +								"<option value='nfs'>nfs</option>"
+                           +								"<option value='Swift'>Swift</option>"
+                           +              				"</select>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +				"</div>"
+         				   +			"</div>"
+         				   +			"<div class='modal-footer'>"
+         				   +				"<button type='button' class='btn btn-default' data-dismiss='modal'>关闭</button>"
+         				   +				"<button type='button' class='btn btn-primary' onclick=\"addSecondaryStorage('" + zoneId + "')\">" + "提交</button>"
+         				   +			"</div>"
+   						   +		"</div>"
+   						   + 	"</div>"
+   						   + "</div>");
+	//删除辅助存储的模态框
+	$("#add-secondary-storage-btn").after("<div class='modal fade' id='remove-secondary-storage-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+                     +  "<div class='modal-dialog modal-dialog-center'>"
+                     +    "<div class='modal-content'>"
+                     +      "<div class='modal-header'>"
+                     +        "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+                     +        "<h4 class='modal-title'>删除辅助存储</h4>"
+                     +      "</div>"
+                     +      "<div class='modal-body'>"
+                     +      	"<h3 class='text-center text-info'>确认删除？删除后将无法恢复！</h3>"
+                     +      "</div>"
+                     +      "<div class='modal-footer'>"
+                     +      "</div>"
+                     +    "</div>"
+                     +  "</div>"
+                     + "</div>");
+	
 	
 	//请求获取系统虚拟机列表数据
 	$.ajax({
@@ -272,8 +339,70 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 		duration: 0.75
 	});
 	
-	$("#content-area").append("<button style='margin-bottom:50px;' type='button' class='btn btn-primary btn-sm pull-right' id='' data-toggle='modal' data-target=''><span class='glyphicon glyphicon-plus'></span>  点击添加主存储</button>");
-
+	//添加主存储按钮
+	$("#content-area").append("<button style='margin-bottom:50px;' type='button' class='btn btn-primary btn-sm pull-right' id='add-primary-storage-btn' data-toggle='modal' data-target=''><span class='glyphicon glyphicon-plus'></span>  点击添加主存储</button>");
+	//弹出的添加主存储表单模态框
+	$("#add-primary-storage-btn").after("<div class='modal fade' id='add-primary-storage-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+   						   + 	"<div class='modal-dialog modal-dialog-center'>"
+   						   +		"<div class='modal-content'>"
+   						   +			"<div class='modal-header'>"
+   						   +				"<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+   						   +				"<h4 class='modal-title'>添加主存储</h4>"
+   						   +			"</div>"
+   						   +			"<div class='modal-body'>"
+          				   +       			"<div class='form-horizontal' role='form'>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>名称：</label>"
+          				   +						"<div class='col-lg-8'>"
+          				   +							"<input type='text' class='form-control' id='primary-storage-name' placeholder='请输入主存储名称'>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>服务器：</label>"
+          				   +						"<div class='col-lg-8'>"
+          				   +							"<input type='text' class='form-control' id='primary-storage-server-ip' placeholder='请输入服务器IP'>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>路径：</label>"
+          				   +						"<div class='col-lg-8'>"
+          				   +							"<input type='text' class='form-control' id='primary-storage-path' placeholder='请输入路径'>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +					"<div class='form-group'>"
+          				   +						"<label for='' class='col-lg-4 control-label'>协议：</label>"
+          				   +						"<div class='col-lg-8'>"
+                           +                 			"<select class='form-control' id='primary-storage-protocol'>"
+                           +								"<option value='nfs'>nfs</option>"
+                           +								"<option value='SharedMountPoint'>SharedMountPoint</option>"
+                           +              				"</select>"
+          				   +						"</div>"
+          				   +					"</div>"
+          				   +				"</div>"
+         				   +			"</div>"
+         				   +			"<div class='modal-footer'>"
+         				   +				"<button type='button' class='btn btn-default' data-dismiss='modal'>关闭</button>"
+         				   +				"<button type='button' class='btn btn-primary' onclick=\"addPrimaryStorage('" + zoneId + "','" + podId + "','" + clusterId + "','" + clusterName + "')\">" + "提交</button>"
+         				   +			"</div>"
+   						   +		"</div>"
+   						   + 	"</div>"
+   						   + "</div>");
+	//删除主存储的模态框
+	$("#add-primary-storage-btn").after("<div class='modal fade' id='remove-primary-storage-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+                     +  "<div class='modal-dialog modal-dialog-center'>"
+                     +    "<div class='modal-content'>"
+                     +      "<div class='modal-header'>"
+                     +        "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+                     +        "<h4 class='modal-title'>删除主存储</h4>"
+                     +      "</div>"
+                     +      "<div class='modal-body'>"
+                     +      	"<h3 class='text-center text-info'>确认删除？删除后将无法恢复！</h3>"
+                     +      "</div>"
+                     +      "<div class='modal-footer'>"
+                     +      "</div>"
+                     +    "</div>"
+                     +  "</div>"
+                     + "</div>");
 
 	var hostListTable = $("<table class='table table-bordered text-center host-list-table'>"
 		+ "<caption><strong>集群" + clusterName + "主机列表</strong></caption>"
@@ -301,10 +430,11 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 			$("table.primary-storage-list-table").addClass("table-interval");
 			$("#primary-storage-list-table-loader").remove();
 			for (var i = 0; i < data.length; i++) {
-				$(".table.primary-storage-list-table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].primaryStorageName + "</td>"
+				$(".table.primary-storage-list-table tbody").append("<tr id='" + data[i].primaryStorageId + "'>" 
+					+ "<td>" + (i+1) + "</td><td>" + data[i].primaryStorageName + "</td>"
 					+ "<td>" + data[i].hostIpAddress + "</td><td>" + data[i].path + "</td><td>" + data[i].type + "</td>"
 					+ (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>" + data[i].state + "</span></td>")
-					+ "<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td>");
+					+ "<td><button type='button' class='btn btn-xs btn-danger' onclick='removePrimaryStorage(\"" + data[i].primaryStorageId + "\")'>删除</button></td>");
 			}
 		},
 		error: function( xhr, status ) {
@@ -325,10 +455,11 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 			$("table.host-list-table").addClass("table-interval");
 			$("#host-list-table-loader").remove();
 			for (var i = 0; i < data.length; i++) {
-				$(".table.host-list-table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].ipAddress + "</td>"
+				$(".table.host-list-table tbody").append("<tr id='" + data[i].hostId + "'>"
+					+ "<td>" + (i+1) + "</td><td>" + data[i].ipAddress + "</td>"
 					+ "<td>" + data[i].hostName + "</td><td>" + data[i].hypervisor + "</td><td>" + data[i].createdDate + "</td>"
 					+ (data[i].state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>Down</span></td>")
-					+ "<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td>");
+					+ "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeHost(\"" + data[i].hostId + "\")'>删除</button></td>");
 			}
 		},
 		error: function( xhr, status ) {
@@ -337,7 +468,7 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
 	});
 
 	$("#content-area").append("<button type='button' class='btn btn-primary btn-sm pull-right' id='add-host-btn' data-toggle='modal' data-target=''><span class='glyphicon glyphicon-plus'></span>  点击添加物理主机</button>");
-	//弹出的模态框
+	//弹出的添加主机表单模态框
 	$("#add-host-btn").after("<div class='modal fade' id='add-host-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
    						   + 	"<div class='modal-dialog modal-dialog-center'>"
    						   +		"<div class='modal-content'>"
@@ -374,7 +505,37 @@ function listHosts(zoneId, podId, clusterId, clusterName) {
    						   +		"</div>"
    						   + 	"</div>"
    						   + "</div>");
+	//删除主机的模态框
+	$("#add-host-btn").after("<div class='modal fade' id='remove-host-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+                     +  "<div class='modal-dialog modal-dialog-center'>"
+                     +    "<div class='modal-content'>"
+                     +      "<div class='modal-header'>"
+                     +        "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+                     +        "<h4 class='modal-title'>删除主机</h4>"
+                     +      "</div>"
+                     +      "<div class='modal-body'>"
+                     +      	"<h3 class='text-center text-info'>确认删除？删除后将无法恢复！</h3>"
+                     +      "</div>"
+                     +      "<div class='modal-footer'>"
+                     +      "</div>"
+                     +    "</div>"
+                     +  "</div>"
+                     + "</div>");
 }
+
+//对“添加主存储”按钮进行监听(弹出模态框)
+$("body").on("click", '#add-secondary-storage-btn', function(){
+	$('#add-secondary-storage-modal').modal({
+		keyboard: true
+	});
+});
+
+//对“添加主存储”按钮进行监听(弹出模态框)
+$("body").on("click", '#add-primary-storage-btn', function(){
+	$('#add-primary-storage-modal').modal({
+		keyboard: true
+	});
+});
 
 //对“添加物理主机”按钮进行监听(弹出模态框)
 $("body").on("click", '#add-host-btn', function(){
@@ -382,6 +543,259 @@ $("body").on("click", '#add-host-btn', function(){
 		keyboard: true
 	});
 });
+
+//弹出删除主存储模态框
+function removePrimaryStorage(primaryStorageId) {
+	$('#remove-primary-storage-modal').modal({
+		keyboard: true
+	});
+	$("#remove-primary-storage-modal div.modal-footer").empty();
+	$("#remove-primary-storage-modal div.modal-footer").append("<button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>");
+	$("#remove-primary-storage-modal div.modal-footer").append("<button type='button' class='btn btn-primary' onclick=\"removePrimaryStorageSubmit('" + primaryStorageId + "')\">" + "确认</button>");
+}
+
+//弹出删除辅助存储模态框
+function removeSecondaryStorage(secondaryStorageId) {
+	$('#remove-secondary-storage-modal').modal({
+		keyboard: true
+	});
+	$("#remove-secondary-storage-modal div.modal-footer").empty();
+	$("#remove-secondary-storage-modal div.modal-footer").append("<button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>");
+	$("#remove-secondary-storage-modal div.modal-footer").append("<button type='button' class='btn btn-primary' onclick=\"removeSecondaryStorageSubmit('" + secondaryStorageId + "')\">" + "确认</button>");
+}
+
+//弹出删除主机模态框
+function removeHost(hostId) {
+	$('#remove-host-modal').modal({
+		keyboard: true
+	});
+	$("#remove-host-modal div.modal-footer").empty();
+	$("#remove-host-modal div.modal-footer").append("<button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>");
+	$("#remove-host-modal div.modal-footer").append("<button type='button' class='btn btn-primary' onclick=\"removeHostSubmit('" + hostId + "')\">" + "确认</button>");
+}
+
+function removeHostSubmit(hostId) {
+	//添加转菊花
+	$("#remove-host-modal div.modal-body").append("<div class='loader'></div>");
+	$("#remove-host-modal div.modal-body").append("<span class='text-primary pull-right'>正在删除，过程稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+
+	$.ajax({
+		type: "GET",
+		url: "resource/infrastructure/removeHost",
+		dataType: "json",
+		data: {
+			hostId: hostId
+		},
+		success: function(data) {
+			$("#remove-host-modal div.loader").shCircleLoader('destroy');
+			$("#remove-host-modal div.loader").remove();
+			$("#remove-host-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //删除成功
+				alert("主机删除成功！");
+				$('#remove-host-modal').modal('hide');
+				$('#' + hostId + '').remove();
+			}
+			else {
+				alert("主机删除失败！Msg:" + data.message);
+			}
+		},
+		error: function(xhr, status) {
+			$("#remove-host-modal div.loader").shCircleLoader('destroy');
+			$("#remove-host-modal div.loader").remove();
+			$("#remove-host-modal span.text-primary.pull-right").remove();
+			alert(status);
+		}
+	});
+}
+
+//提交删除主存储请求到后台
+function removePrimaryStorageSubmit(primaryStorageId) {
+	//添加转菊花
+	$("#remove-primary-storage-modal div.modal-body").append("<div class='loader'></div>");
+	$("#remove-primary-storage-modal div.modal-body").append("<span class='text-primary pull-right'>正在删除，过程稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+
+	$.ajax({
+		type: "GET",
+		url: "resource/infrastructure/removePrimaryStorage",
+		dataType: "json",
+		data: {
+			primaryStorageId: primaryStorageId
+		},
+		success: function(data) {
+			$("#remove-primary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#remove-primary-storage-modal div.loader").remove();
+			$("#remove-primary-storage-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //删除成功
+				alert("主存储删除成功！");
+				$('#remove-primary-storage-modal').modal('hide');
+				$('#' + primaryStorageId + '').remove();
+			}
+			else {
+				alert("主存储删除失败！Msg:" + data.message);
+			}
+		},
+		error: function(xhr, status) {
+			$("#remove-primary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#remove-primary-storage-modal div.loader").remove();
+			$("#remove-primary-storage-modal span.text-primary.pull-right").remove();
+			alert(status);
+		}
+	});
+}
+
+//提交删除辅助存储请求到后台
+function removeSecondaryStorageSubmit(secondaryStorageId) {
+	//添加转菊花
+	$("#remove-secondary-storage-modal div.modal-body").append("<div class='loader'></div>");
+	$("#remove-secondary-storage-modal div.modal-body").append("<span class='text-primary pull-right'>正在删除，过程稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+
+	$.ajax({
+		type: "GET",
+		url: "resource/infrastructure/removeSecondaryStorage",
+		dataType: "json",
+		data: {
+			secondaryStorageId: secondaryStorageId
+		},
+		success: function(data) {
+			$("#remove-secondary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#remove-secondary-storage-modal div.loader").remove();
+			$("#remove-secondary-storage-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //删除成功
+				alert("辅助存储删除成功！");
+				$('#remove-secondary-storage-modal').modal('hide');
+				$('#' + secondaryStorageId + '').remove();
+			}
+			else {
+				alert("辅助存储删除失败！Msg:" + data.message);
+			}
+		},
+		error: function(xhr, status) {
+			$("#remove-secondary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#remove-secondary-storage-modal div.loader").remove();
+			$("#remove-secondary-storage-modal span.text-primary.pull-right").remove();
+			alert(status);
+		}
+	});
+}
+
+//添加辅助存储表单提交按钮触发函数
+function addSecondaryStorage(zoneId) {
+	var secondaryStorageName = $("#secondary-storage-name").val();
+	var secondaryStorageServerIp = $("#secondary-storage-server-ip").val();
+	var secondaryStoragePath = $("#secondary-storage-path").val();
+	var secondaryStorageProtocol = $("#secondary-storage-protocol").val();
+	
+	//添加转菊花
+	$("#add-secondary-storage-modal div.modal-body").append("<div class='loader'></div>");
+	$("#add-secondary-storage-modal div.modal-body").append("<span class='text-primary pull-right'>正在添加，时间稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+	
+	$.ajax({
+		type: "POST",
+		url: "resource/infrastructure/addSecondaryStorage",
+		dataType: "json",
+		data: {
+			zoneId: zoneId,
+			secondaryStorageName: secondaryStorageName.trim(),
+			secondaryStorageServerIp: secondaryStorageServerIp.trim(),
+			secondaryStoragePath: secondaryStoragePath.trim(),
+			secondaryStorageProtocol: secondaryStorageProtocol
+		},
+		success: function(data) {
+			$("#add-secondary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#add-secondary-storage-modal div.loader").remove();
+			$("#add-secondary-storage-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //添加成功
+				$("#secondary-storage-name").val('');
+				$("#secondary-storage-server-ip").val('');
+				$("#secondary-storage-path").val('');
+				alert("辅助存储添加成功！");
+				$('#add-secondary-storage-modal').modal('hide');
+				$(".table.secondary-storage-list-table tbody").append("<tr id='" + data.operatedObject.secondaryStorageId + "'>"
+						+ "<td>" + data.index + "</td><td>" + data.operatedObject.secondaryStorageName + "</td>"
+						+ "<td>" + data.operatedObject.url + "</td><td>" + data.operatedObject.protocol + "</td><td>" 
+						+ data.operatedObject.providerName + "</td>" 
+						+ "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeSecondaryStorage(\"" + data.operatedObject.secondaryStorageId + "\")'>删除</button></td></tr>");
+			}
+			else {
+				alert("辅助存储添加失败！消息：" + data.message);
+			}
+		},
+		error: function( xhr, status ) {
+			$("#add-secondary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#add-secondary-storage-modal div.loader").remove();
+			$("#add-secondary-storage-modal span.text-primary.pull-right").remove();
+			alert(status); 
+		} 
+	});
+}
+
+//添加主存储表单提交按钮触发函数
+function addPrimaryStorage(zoneId, podId, clusterId, clusterName) {
+	var primaryStorageName = $("#primary-storage-name").val();
+	var primaryStorageServerIp = $("#primary-storage-server-ip").val();
+	var primaryStoragePath = $("#primary-storage-path").val();
+	var primaryStorageProtocol = $("#primary-storage-protocol").val();
+	
+	//添加转菊花
+	$("#add-primary-storage-modal div.modal-body").append("<div class='loader'></div>");
+	$("#add-primary-storage-modal div.modal-body").append("<span class='text-primary pull-right'>正在添加，时间稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+	
+	$.ajax({
+		type: "POST",
+		url: "resource/infrastructure/addPrimaryStorage",
+		dataType: "json",
+		data: {
+			zoneId: zoneId,
+			podId: podId,
+			clusterId: clusterId,
+			primaryStorageName: primaryStorageName.trim(),
+			primaryStorageServerIp: primaryStorageServerIp.trim(),
+			primaryStoragePath: primaryStoragePath.trim(),
+			primaryStorageProtocol: primaryStorageProtocol
+		},
+		success: function(data) {
+			$("#add-primary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#add-primary-storage-modal div.loader").remove();
+			$("#add-primary-storage-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //添加成功
+				$("#primary-storage-name").val('');
+				$("#primary-storage-server-ip").val('');
+				$("#primary-storage-path").val('');
+				alert("主存储添加成功！");
+				$('#add-primary-storage-modal').modal('hide');
+				$(".table.primary-storage-list-table tbody").append("<tr id='" + data.operatedObject.primaryStorageId + "'>"
+						+ "<td>" + data.index + "</td><td>" + data.operatedObject.primaryStorageName + "</td>"
+						+ "<td>" + data.operatedObject.hostIpAddress + "</td><td>" + data.operatedObject.path + "</td><td>" + data.operatedObject.type + "</td>"
+						+ (data.operatedObject.state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>" + data.operatedObject.state + "</span></td>")
+						+ "<td><button type='button' class='btn btn-xs btn-danger' onclick='removePrimaryStorage(\"" + data.operatedObject.primaryStorageId + "\")'>删除</button></td>");
+			}
+			else {
+				alert("主存储添加失败！消息：" + data.message);
+			}
+		},
+		error: function( xhr, status ) {
+			$("#add-primary-storage-modal div.loader").shCircleLoader('destroy');
+			$("#add-primary-storage-modal div.loader").remove();
+			$("#add-primary-storage-modal span.text-primary.pull-right").remove();
+			alert(status); 
+		} 
+	});
+}
 
 //添加物理主机表单提交按钮触发函数
 function addHost(zoneId, podId, clusterId, clusterName) {
@@ -432,10 +846,11 @@ function addHost(zoneId, podId, clusterId, clusterName) {
 				$("#host-password").val('');
 				alert("主机添加成功！");
 				$('#add-host-modal').modal('hide');
-				$(".table.host-list-table tbody").append("<tr><td>" + data.index + "</td><td>" + data.hostDto.ipAddress + "</td>"
+				$(".table.host-list-table tbody").append("<tr id='" + data.hostDto.hostId + "'>"
+					+ "<td>" + data.index + "</td><td>" + data.hostDto.ipAddress + "</td>"
 					+ "<td>" + data.hostDto.hostName + "</td><td>" + data.hostDto.hypervisor + "</td><td>" + data.hostDto.createdDate + "</td>"
 					+ (data.hostDto.state == "Up" ? "<td><span class='label label-success'>Up</span></td>" : "<td><span class='label label-danger'>" + data.hostDto.state + "</span></td>")
-					+ "<td><button type='button' class='btn btn-xs btn-danger'>删除</button></td>");
+					+ "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeHost(\"" + data.hostDto.hostId + "\")'>删除</button></td>");
 			}
 			else {
 				alert("主机添加失败！消息：" + data.message);

@@ -77,9 +77,9 @@ public class OcsVmMonitorController {
 		return vmMonitorService.getVmHistoryMemoryUsagePercentage(vmId, dayOfMonth);
 	}
 	
-	@RequestMapping(value="/getVmHistoryNetworkUsage", method=RequestMethod.GET)
+	@RequestMapping(value="/getVmHistoryNetworkUsagePercentage", method=RequestMethod.GET)
 	@ResponseBody
-	public List<List<Object>> getVmHistoryNetworkUsage(@RequestParam("vmId") String vmId,
+	public Map<String, List<List<Object>>> getVmHistoryNetworkUsage(@RequestParam("vmId") String vmId,
 			@RequestParam("interfaceName") String interfaceName,
 			@RequestParam("dayOfMonth") int dayOfMonth) {
 		return vmMonitorService.getVmHistoryRxbpsTxbps(vmId, interfaceName, dayOfMonth);

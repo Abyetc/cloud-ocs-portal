@@ -60,6 +60,12 @@ public class CityBusinessController {
 		return cityService.addCity(city); 
 	}
 	
+	@RequestMapping(value="/removeCity", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removeCity(@RequestParam("cityId") Integer cityId) {
+		return cityService.removeCity(cityId);
+	}
+	
 	@RequestMapping(value="/listCityNetworks", method=RequestMethod.GET)
 	@ResponseBody
 	public List<CityNetworkListDto> listCityNetworks(@RequestParam("cityId") Integer cityId) {

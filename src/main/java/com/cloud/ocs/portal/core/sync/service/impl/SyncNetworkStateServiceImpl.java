@@ -86,7 +86,7 @@ public class SyncNetworkStateServiceImpl implements SyncNetworkStateService{
 						network.setNetworkState(NetworkState.getCode(jsonObj.getString("state")));
 						
 						//network state为:Implemented,获取public Ip
-						if (network.getNetworkState() == 3) {
+						if (network.getNetworkState() != null && network.getNetworkState().equals(3)) {
 							PublicIpDto publicIpDto = this.getPublicSourceNatIp(network.getNetworkId());
 							if (publicIpDto != null) {
 								network.setPublicIpId(publicIpDto.getPublicIpId());

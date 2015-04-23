@@ -82,11 +82,27 @@ function listCloudOCSServiceCities() {
                      +    "</div>"
                      +  "</div>"
                      + "</div>");
+	//删除城市的模态框
+	$("#add-city-btn").after("<div class='modal fade' id='remove-city-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+                   +  "<div class='modal-dialog modal-dialog-center'>"
+                   +    "<div class='modal-content'>"
+                   +      "<div class='modal-header'>"
+                   +        "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+                   +        "<h4 class='modal-title'>删除计费城市</h4>"
+                   +      "</div>"
+                   +      "<div class='modal-body'>"
+                   +      	"<h3 class='text-center text-info'>确认删除？删除后将无法恢复！</h3>"
+                   +      "</div>"
+                   +      "<div class='modal-footer'>"
+                   +      "</div>"
+                   +    "</div>"
+                   +  "</div>"
+                   + "</div>");
       
   //已有的服务城市列表
   var cloudOCSServiceCitiesTable = $("<table class='table table-bordered text-center'>"
     + "<caption><strong>云在线计费系统服务城市列表</strong></caption>"
-    + "<thead><tr><th>序号</th><th>城市名称</th><th>状态</th><th>创建时间</th><th>查看详情</th></tr></thead>"
+    + "<thead><tr><th>序号</th><th>城市名称</th><th>状态</th><th>创建时间</th><th>查看详情</th><th>删除</th></tr></thead>"
     + "<tbody></tbody>"
     + "</table>");
   $("#content-area").append(cloudOCSServiceCitiesTable);
@@ -119,10 +135,12 @@ function listCloudOCSServiceCities() {
           default:
             break;
         }
-        $(".table tbody").append("<tr><td>" + (i+1) + "</td><td>" + data[i].name + "</td>" 
+        $(".table tbody").append("<tr id='" + data[i].id + "'>" 
+          + "<td>" + (i+1) + "</td><td>" + data[i].name + "</td>" 
           + state 
           + "<td>" + created.Format("yyyy-MM-dd hh:mm:ss") + "</td>" 
-          + "<td><button type='button' class='btn btn-primary btn-xs city-detail-btn-" + (i+1) + "'>点击查看</button></td></tr>");
+          + "<td><button type='button' class='btn btn-primary btn-xs city-detail-btn-" + (i+1) + "'>点击查看</button></td>" 
+          + "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeCity(" + data[i].id + ")'>删除</button></td></tr>");
         $(".table tbody button.btn.btn-primary.btn-xs.city-detail-btn-" + (i+1)).on("click", {cityDetail: data[i]}, listNetworks);
       }
     },
@@ -192,10 +210,12 @@ function addCity() {
           default:
             break;
         }
-        $(".table tbody").append("<tr><td>" + data.index 
+        $(".table tbody").append("<tr id='" + data.city.id + "'>" 
+          + "<td>" + data.index 
           + "</td><td>" + data.city.name + "</td>" 
           + state + "<td>" + created.Format("yyyy-MM-dd hh:mm:ss") + "</td>" 
-          + "<td><button type='button' class='btn btn-primary btn-xs city-detail-btn-" + data.index + "'>点击查看</button></td></tr>");
+          + "<td><button type='button' class='btn btn-primary btn-xs city-detail-btn-" + data.index + "'>点击查看</button></td>"
+          + "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeCity(" + data.city.id + ")'>删除</button></td></tr>");
         $(".table tbody button.btn.btn-primary.btn-xs.city-detail-btn-" + data.index).on("click", {cityDetail: data.city}, listNetworks);
       } else {
         alert("城市添加失败！消息：" + data.message);
@@ -208,4 +228,52 @@ function addCity() {
       alert(status);
     }
   });
+}
+
+//弹出删除城市模态框
+function removeCity(cityId) {
+	$('#remove-city-modal').modal({
+		keyboard: true
+	});
+	$("#remove-city-modal div.modal-footer").empty();
+	$("#remove-city-modal div.modal-footer").append("<button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>");
+	$("#remove-city-modal div.modal-footer").append("<button type='button' class='btn btn-primary' onclick=\"removeCitySubmit('" + cityId + "')\">" + "确认</button>");
+}
+
+//提交删除城市请求到后台
+function removeCitySubmit(cityId) {
+	//添加转菊花
+	$("#remove-city-modal div.modal-body").append("<div class='loader'></div>");
+	$("#remove-city-modal div.modal-body").append("<span class='text-primary pull-right'>正在删除，过程稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+
+	$.ajax({
+		type: "GET",
+		url: "business/removeCity",
+		dataType: "json",
+		data: {
+			cityId: cityId
+		},
+		success: function(data) {
+			$("#remove-city-modal div.loader").shCircleLoader('destroy');
+			$("#remove-city-modal div.loader").remove();
+			$("#remove-city-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //删除成功
+				alert("主机城市成功！");
+				$('#remove-city-modal').modal('hide');
+				$('#' + cityId + '').remove();
+			}
+			else {
+				alert("主机城市失败！Msg:" + data.message);
+			}
+		},
+		error: function(xhr, status) {
+			$("#remove-city-modal div.loader").shCircleLoader('destroy');
+			$("#remove-city-modal div.loader").remove();
+			$("#remove-city-modal span.text-primary.pull-right").remove();
+			alert(status);
+		}
+	});
 }

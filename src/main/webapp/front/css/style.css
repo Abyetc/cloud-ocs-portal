@@ -25,6 +25,22 @@ div.login-container input.form-control {
 	width: 60%;
 }
 
+#add-secondary-storage-modal input.form-control {
+	width: 70%;
+}
+
+#add-secondary-storage-modal select.form-control {
+	width: 70%;
+}
+
+#add-primary-storage-modal input.form-control {
+	width: 70%;
+}
+
+#add-primary-storage-modal select.form-control {
+	width: 70%;
+}
+
 #add-host-modal input.form-control {
 	width: 70%;
 }

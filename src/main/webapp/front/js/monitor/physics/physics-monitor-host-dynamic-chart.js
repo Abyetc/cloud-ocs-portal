@@ -189,7 +189,7 @@ $("body").on("click", "#host-history-memory-usage-monitor-btn", function() {
 			dayOfMonth: $("#host-history-memory-usage-monitor-area select").val()
 		},
 		success: function(data) {
-			 hostHistoryCpuUsagePercentageMonitorChart = new Highcharts.StockChart({
+			hostHistoryMemoryUsagePercentageMonitorChart = new Highcharts.StockChart({
 				  chart: {
 				      renderTo: 'host-history-memory-usage-monitor-chart',
 				      marginRight: 10,

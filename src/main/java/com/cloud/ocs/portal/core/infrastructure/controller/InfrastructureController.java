@@ -110,23 +110,43 @@ public class InfrastructureController {
 		return infrastructureService.addHost(zoneId, podId, clusterId, ipAddress, hostAccount, hostPassword);
 	}
 	
-	public OperateObjectDto removeHost(String hostId) {
-		return null;
+	@RequestMapping(value="/removeHost", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removeHost(@RequestParam("hostId") String hostId) {
+		return infrastructureService.removeHost(hostId);
 	}
 	
-	public OperateObjectDto addPrimaryStorage(String a, String b, String c) {
-		return null;
+	@RequestMapping(value="/addPrimaryStorage", method=RequestMethod.POST)
+	@ResponseBody
+	public OperateObjectDto addPrimaryStorage(@RequestParam("zoneId") String zoneId,
+			@RequestParam("podId") String podId,
+			@RequestParam("clusterId") String clusterId,
+			@RequestParam("primaryStorageName") String primaryStorageName,
+			@RequestParam("primaryStorageServerIp") String primaryStorageServerIp,
+			@RequestParam("primaryStoragePath") String primaryStoragePath,
+			@RequestParam("primaryStorageProtocol") String primaryStorageProtocol) {
+		return infrastructureService.addPrimaryStorageList(zoneId, podId, clusterId, primaryStorageName, primaryStorageProtocol, primaryStorageServerIp, primaryStoragePath);
 	}
 	
-	public OperateObjectDto removePrimaryStorage(String id) {
-		return null;
+	@RequestMapping(value="/removePrimaryStorage", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removePrimaryStorage(@RequestParam("primaryStorageId") String primaryStorageId) {
+		return infrastructureService.removePrimaryStorageList(primaryStorageId);
 	}
 	
-	public OperateObjectDto addSecondaryStorage(String a, String b, String c) {
-		return null;
+	@RequestMapping(value="/addSecondaryStorage", method=RequestMethod.POST)
+	@ResponseBody
+	public OperateObjectDto addSecondaryStorage(@RequestParam("zoneId") String zoneId,
+			@RequestParam("secondaryStorageName") String secondaryStorageName,
+			@RequestParam("secondaryStorageServerIp") String secondaryStorageServerIp,
+			@RequestParam("secondaryStoragePath") String secondaryStoragePath,
+			@RequestParam("secondaryStorageProtocol") String secondaryStorageProtocol) {
+		return infrastructureService.addSecondaryStorage(zoneId, secondaryStorageName, secondaryStorageProtocol, secondaryStorageServerIp, secondaryStoragePath);
 	}
 	
-	public OperateObjectDto removeSecondaryStorage(String id) {
-		return null;
+	@RequestMapping(value="/removeSecondaryStorage", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removeSecondaryStorage(@RequestParam("secondaryStorageId") String secondaryStorageId) {
+		return infrastructureService.removeSecondaryStorage(secondaryStorageId);
 	}
 }

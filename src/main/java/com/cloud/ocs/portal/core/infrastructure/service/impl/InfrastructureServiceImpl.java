@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.cloud.ocs.portal.common.bean.OcsHost;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
+import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
+import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
+import com.cloud.ocs.portal.common.cs.asyncjob.service.QueryAsyncJobResultService;
 import com.cloud.ocs.portal.common.dao.OcsHostDao;
 import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.infrastructure.constant.ResourceApiName;
@@ -165,14 +168,77 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 	@Override
 	public OperateObjectDto addSecondaryStorage(String zoneId, String name,
 			String provider, String serverIp, String path) {
-		// TODO Auto-generated method stub
-		return null;
+		CloudStackApiRequest request = new CloudStackApiRequest(
+				ResourceApiName.RESOURCE_API_ADD_SECONDARY_STORAGE);
+		request.addRequestParams("zoneid", zoneId);
+		request.addRequestParams("provider", "NFS");
+		request.addRequestParams("name", name);
+		request.addRequestParams("url", provider + "://" + serverIp + path);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		OperateObjectDto operateObjectDto = new OperateObjectDto();
+		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
+		operateObjectDto.setMessage("Unable to add the secondary storage");
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject addHostJsonObj = responseJsonObj
+					.getJSONObject("addimagestoreresponse");
+			if (!addHostJsonObj.has("imagestore")) {
+				operateObjectDto.setMessage(addHostJsonObj.getString("errortext"));
+			} else {
+				operateObjectDto
+						.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+				operateObjectDto.setMessage("Add secondary storage success.");
+				JSONObject secondaryStorageJsonObj = addHostJsonObj
+						.getJSONObject("imagestore");
+				SecondaryStorageDto secondaryStorageDto = new SecondaryStorageDto();
+				secondaryStorageDto
+						.setSecondaryStorageId(secondaryStorageJsonObj
+								.getString("id"));
+				secondaryStorageDto
+						.setSecondaryStorageName(secondaryStorageJsonObj
+								.getString("name"));
+				secondaryStorageDto.setUrl(secondaryStorageJsonObj
+						.getString("url"));
+				secondaryStorageDto.setProtocol(secondaryStorageJsonObj
+						.getString("protocol"));
+				secondaryStorageDto.setProviderName(secondaryStorageJsonObj
+						.getString("providername"));
+				operateObjectDto.setOperatedObject(secondaryStorageDto);
+				operateObjectDto.setIndex(this.getSecondaryStorageList(zoneId)
+						.size());
+			}
+		}
+		
+		return operateObjectDto;
 	}
 
 	@Override
 	public OperateObjectDto removeSecondaryStorage(String secondaryStorageId) {
-		// TODO Auto-generated method stub
-		return null;
+		OperateObjectDto operateObjectDto = new OperateObjectDto();
+		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
+		operateObjectDto.setMessage("Unable to remove secondary storage");
+		
+		CloudStackApiRequest request = new CloudStackApiRequest(
+				ResourceApiName.RESOURCE_API_REMOVE_SECONDARY_STORAGE);
+		request.addRequestParams("id", secondaryStorageId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		if (response != null) {
+			JSONObject resultJsonObj = new JSONObject(response);
+			JSONObject jsonObj = resultJsonObj.getJSONObject("deleteimagestoreresponse");
+			if (jsonObj.has("success") && jsonObj.get("success").equals("true")) {
+				operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+				operateObjectDto.setMessage("Remove secondary storage success");
+			}
+		}
+		 
+		return operateObjectDto;
 	}
 
 	@Override
@@ -318,14 +384,100 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 	public OperateObjectDto addPrimaryStorageList(String zoneId, String podId,
 			String clusterId, String name, String protocol, String serverIp,
 			String path) {
-		// TODO Auto-generated method stub
-		return null;
+		CloudStackApiRequest request = new CloudStackApiRequest(
+				ResourceApiName.RESOURCE_API_ADD_PRIMARY_STORAGE);
+		request.addRequestParams("zoneid", zoneId);
+		request.addRequestParams("podid", podId);
+		request.addRequestParams("clusterid", clusterId);
+		request.addRequestParams("scope", "cluster");
+		request.addRequestParams("name", name);
+		request.addRequestParams("url", protocol + "://" + serverIp + path);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		OperateObjectDto operateObjectDto = new OperateObjectDto();
+		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
+		operateObjectDto.setMessage("Unable to add the primary storage");
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject addHostJsonObj = responseJsonObj
+					.getJSONObject("createstoragepoolresponse");
+			if (!addHostJsonObj.has("storagepool")) {
+				operateObjectDto.setMessage(addHostJsonObj.getString("errortext"));
+			} else {
+				operateObjectDto
+						.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+				operateObjectDto.setMessage("Add primary storage success.");
+				JSONObject primaryStorageJsonObj = addHostJsonObj
+						.getJSONObject("storagepool");
+				PrimaryStorageDto primaryStorageDto = new PrimaryStorageDto();
+				primaryStorageDto.setPrimaryStorageId(primaryStorageJsonObj
+						.getString("id"));
+				primaryStorageDto.setPrimaryStorageName(primaryStorageJsonObj
+						.getString("name"));
+				primaryStorageDto.setType(primaryStorageJsonObj
+						.getString("type"));
+				primaryStorageDto.setPath(primaryStorageJsonObj
+						.getString("path"));
+				primaryStorageDto.setHostIpAddress(primaryStorageJsonObj
+						.getString("ipaddress"));
+				primaryStorageDto.setState(primaryStorageJsonObj
+						.getString("state"));
+				operateObjectDto.setOperatedObject(primaryStorageDto);
+				operateObjectDto.setIndex(this.getPrimaryStorageList(clusterId).size());
+			}
+		}
+		
+		return operateObjectDto;
 	}
 
 	@Override
 	public OperateObjectDto removePrimaryStorageList(String primaryStorageId) {
-		// TODO Auto-generated method stub
-		return null;
+		OperateObjectDto operateObjectDto = new OperateObjectDto();
+		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
+		operateObjectDto.setMessage("Unable to remove primary storage");
+		
+		String jobId = this.sendMaintenancePrimaryStorageCmdToCs(primaryStorageId);
+		if (jobId == null) {
+			operateObjectDto.setMessage("Send Removing Primary Storage Request to Cloudstack Error.");
+			return operateObjectDto;
+		}
+		
+		AsynJobResultDto asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "storagepool");
+		//每隔2秒发送一次请求，查询Job状态
+		while (asyncJobResult != null && asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.PENDING.getCode()) {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "storagepool");
+		}
+		
+		//Job执行成功
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.SUCCESS
+						.getCode()) {
+			CloudStackApiRequest request = new CloudStackApiRequest(
+					ResourceApiName.RESOURCE_API_REMOVE_PRIMARY_STORAGE);
+			request.addRequestParams("id", primaryStorageId);
+			CloudStackApiSignatureUtil.generateSignature(request);
+			String requestUrl = request.generateRequestURL();
+			String response = HttpRequestSender.sendGetRequest(requestUrl);
+			
+			if (response != null) {
+				JSONObject resultJsonObj = new JSONObject(response);
+				JSONObject jsonObj = resultJsonObj.getJSONObject("deletestoragepoolresponse");
+				if (jsonObj.has("success") && jsonObj.get("success").equals("true")) {
+					operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+					operateObjectDto.setMessage("Remove primary storage success");
+				}
+			}
+		}
+		
+		return operateObjectDto;
 	}
 
 	@Override
@@ -439,7 +591,56 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 	@Override
 	public OperateObjectDto removeHost(String hostId) {
 		// TODO Auto-generated method stub
-		return null;
+		OperateObjectDto operateObjectDto = new OperateObjectDto();
+		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
+		operateObjectDto.setMessage("Unable to remove host");
+		
+		String jobId = this.sendMaintenanceHostCmdToCs(hostId);
+		if (jobId == null) {
+			operateObjectDto.setMessage("Send Removing Host Request to Cloudstack Error.");
+			return operateObjectDto;
+		}
+		
+		AsynJobResultDto asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "host");
+		//每隔6秒发送一次请求，查询Job状态
+		while (asyncJobResult != null && asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.PENDING.getCode()) {
+			try {
+				Thread.sleep(6000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "host");
+		}
+		
+		//Job执行成功
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.SUCCESS
+						.getCode()) {
+			try {
+				Thread.sleep(60000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			CloudStackApiRequest request = new CloudStackApiRequest(
+					ResourceApiName.RESOURCE_API_REMOVE_HOST);
+			request.addRequestParams("id", hostId);
+			CloudStackApiSignatureUtil.generateSignature(request);
+			String requestUrl = request.generateRequestURL();
+			String response = HttpRequestSender.sendGetRequest(requestUrl);
+			
+			if (response != null) {
+				JSONObject resultJsonObj = new JSONObject(response);
+				JSONObject jsonObj = resultJsonObj.getJSONObject("deletehostresponse");
+				if (jsonObj.has("success") && jsonObj.get("success").equals("true")) {
+					operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+					operateObjectDto.setMessage("Remove host success");
+				}
+			}
+			OcsHost ocsHost = ocsHostDao.findByHostId(hostId);
+			ocsHostDao.remove(ocsHost);
+		}
+		
+		return operateObjectDto;
 	}
 
 	@Override
@@ -574,6 +775,56 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 			}
 		}
 
+		return result;
+	}
+	
+	/**
+	 * 发送开启主存储维修模式的命令到CloudStack
+	 * @param primaryStorageId
+	 * @return
+	 */
+	private String sendMaintenancePrimaryStorageCmdToCs(String primaryStorageId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_MAINTENANCE_PRIMARY_STORAGE);
+		request.addRequestParams("id", primaryStorageId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("prepareprimarystorageformaintenanceresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 发送开启主机维修模式的命令到CloudStack
+	 * @param hostId
+	 * @return
+	 */
+	private String sendMaintenanceHostCmdToCs(String hostId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_MAINTENANC_HOST);
+		request.addRequestParams("id", hostId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("preparehostformaintenanceresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
 		return result;
 	}
 
