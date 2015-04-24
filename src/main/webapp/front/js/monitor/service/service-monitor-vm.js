@@ -55,7 +55,7 @@ function monitorVM(cityId, networkId, VMId, VMName) {
     },
     yAxis: {
       min: 0,
-      max: 100,
+      max: 200,
       title: {
         text: '计费请求数量(个)'
       },
@@ -69,7 +69,7 @@ function monitorVM(cityId, networkId, VMId, VMName) {
       formatter: function() {
         return '<b>' + this.series.name + '</b><br/>' +
           Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-          Highcharts.numberFormat(this.y, 2);
+          Highcharts.numberFormat(this.y, 0);
       }
     },
     legend: {
@@ -111,7 +111,7 @@ function monitorVM(cityId, networkId, VMId, VMName) {
     },
     yAxis: {
       min: 0,
-      max: 200,
+      max: 500,
       title: {
         text: '包数量(个)'
       },

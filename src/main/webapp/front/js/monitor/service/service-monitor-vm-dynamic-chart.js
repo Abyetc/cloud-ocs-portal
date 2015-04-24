@@ -238,7 +238,7 @@ $("body").on("click", "#vm-history-message-throughput-monitor-btn", function() {
 	//请求数据
 	$.ajax({
 		type: "GET",
-		url: "monitor//",
+		url: "monitor/vm/getCityVmHistoryMessageThroughput",
 		dataType: "json",
 		data: {
 			cityVmId: window.curMonitorCityVmId,
@@ -295,7 +295,7 @@ $("body").on("click", "#vm-history-message-process-time-monitor-btn", function()
 	//请求数据
 	$.ajax({
 		type: "GET",
-		url: "monitor//",
+		url: "monitor/vm/getCityVmHistoryMessageProcessTime",
 		dataType: "json",
 		data: {
 			cityVmId: window.curMonitorCityVmId,

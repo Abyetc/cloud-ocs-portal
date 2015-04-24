@@ -37,7 +37,7 @@ function startMonitoringCityRealtimeSessionNum() {
 		success: function(data) {
 			console.log("startMonitoringCityRealtimeSessionNum:" + data);
 			y = data;
-			y = Math.random() * 100;
+//			y = Math.random() * 100;
 			var shiftFlag = cityRealtimeSessionNumMonitorChart.series[cityRealtimeSessionNumMonitorChartCurrSeries - 1].data.length > 100;
 			var point = [x, y];
 
@@ -266,7 +266,7 @@ $("body").on("click", "#city-history-session-num-monitor-btn", function() {
 				      },
 				    yAxis: {
 				          min: 0,
-				          max: 500,
+				          max: 5000,
 				        },
 				    exporting: {
 				        enabled: false

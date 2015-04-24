@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -39,6 +40,7 @@ import com.cloud.ocs.portal.core.monitor.dto.RxbpsTxbpsDto;
 import com.cloud.ocs.portal.core.monitor.dto.OcsVmDetail;
 import com.cloud.ocs.portal.core.monitor.service.OcsVmMonitorService;
 import com.cloud.ocs.portal.properties.OcsVmProperties;
+import com.cloud.ocs.portal.utils.DateUtil;
 import com.cloud.ocs.portal.utils.UnitUtil;
 import com.cloud.ocs.portal.utils.cs.CloudStackApiSignatureUtil;
 import com.cloud.ocs.portal.utils.http.HttpRequestSender;
@@ -476,14 +478,75 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 	public Map<String, List<List<Object>>> getVmHistoryMessageAverageProcessTime(
 			String vmId, Date date) {
 		// TODO Auto-generated method stub
-		return null;
+		Map<String, List<List<Object>>> result = new HashMap<String, List<List<Object>>>();
+		
+		List<List<Object>> allMesg = new ArrayList<List<Object>>();
+		List<List<Object>> iMesg = new ArrayList<List<Object>>();
+		List<List<Object>> uMesg = new ArrayList<List<Object>>();
+		List<List<Object>> tMesg = new ArrayList<List<Object>>();
+		for (int i = 0; i < 24*60; i+=120) {
+			Date dt = DateUtil.transferDateInMinuteField(date, i+120);
+			MessageProcessTimeDto oneMesgProcessTime = this.getVmMessageAverageProcessTimeAtSpecificDate(vmId, dt);
+			List<Object> oneAllMesg = new ArrayList<Object>();
+			List<Object> oneIMesg = new ArrayList<Object>();
+			List<Object> oneUMesg = new ArrayList<Object>();
+			List<Object> oneTMesg = new ArrayList<Object>();
+			oneAllMesg.add(dt.getTime());
+			oneAllMesg.add(oneMesgProcessTime.getAllMessageProcessTime());
+			oneIMesg.add(dt.getTime());
+			oneIMesg.add(oneMesgProcessTime.getMessageIProcessTime());
+			oneUMesg.add(dt.getTime());
+			oneUMesg.add(oneMesgProcessTime.getMessageUProcessTime());
+			oneTMesg.add(dt.getTime());
+			oneTMesg.add(oneMesgProcessTime.getMessageTProcessTime());
+			allMesg.add(oneAllMesg);
+			iMesg.add(oneIMesg);
+			uMesg.add(oneUMesg);
+			tMesg.add(oneTMesg);
+		}
+		
+		result.put("allMsg", allMesg);
+		result.put("iMsg", iMesg);
+		result.put("uMsg", uMesg);
+		result.put("tMsg", tMesg);
+		
+		return result;
 	}
 
 	@Override
 	public Map<String, List<List<Object>>> getVmHistoryMessageThroughput(String vmId,
 			Date date) {
-		// TODO Auto-generated method stub
-		return null;
+		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
+		if (ocsVm == null) {
+			return null;
+		}
+		
+		String networkIp = ocsVm.getPublicIp();
+		String vmIp = ocsVm.getPrivateIp();
+		Date from = date;
+		Date to = DateUtil.transferDateInDayField(from, 1);
+		Map<Date, MessageThroughputDto> messageThroughputList = throughputRecordDao.getVmHistoryMessageThroughput(networkIp, vmIp, from, to);
+		
+		Map<String, List<List<Object>>> result = new HashMap<String, List<List<Object>>>();
+		if (messageThroughputList != null) {
+			List<List<Object>> received = new ArrayList<List<Object>>();
+			List<List<Object>> finished = new ArrayList<List<Object>>();
+			for (Entry<Date, MessageThroughputDto> entry : messageThroughputList.entrySet()) {
+				List<Object> oneReceived = new ArrayList<Object>();
+				List<Object> oneFinished = new ArrayList<Object>();
+				oneReceived.add(entry.getKey().getTime());
+				oneReceived.add(entry.getValue().getReceivedMessageNum());
+				oneFinished.add(entry.getKey().getTime());
+				oneFinished.add(entry.getValue().getFinishedMessageNum());
+				received.add(oneReceived);
+				finished.add(oneFinished);
+			}
+			
+			result.put("received", received);
+			result.put("finished", finished);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -621,4 +684,54 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		return res;
 	}
 
+	private MessageProcessTimeDto getVmMessageAverageProcessTimeAtSpecificDate(final String vmId, final Date date) {
+		MessageProcessTimeDto result = new MessageProcessTimeDto();
+		
+		ExecutorService executor = Executors.newCachedThreadPool();
+		CompletionService<MessageAverageProcessTimeWrapper> comp = new ExecutorCompletionService<MessageAverageProcessTimeWrapper>(executor);
+		List<MessageType> threeMessageType = MessageType.getAllMessageType();
+		OcsVm ocsVm = ocsVmService.getOcsVmByVmId(vmId);
+		final String networkIp = ocsVm.getPublicIp();
+		final String vmIp = ocsVm.getPrivateIp();
+		for (final MessageType messageType : threeMessageType) {
+			comp.submit(new Callable<MessageAverageProcessTimeWrapper>() {
+				public MessageAverageProcessTimeWrapper call() throws Exception {
+					return messageRecordService.getMessageAverageProcessTimeOfVmAtSpecificDate(networkIp, vmIp, messageType, date);
+				}
+			});
+		}
+		executor.shutdown();
+		int count = 0;
+		while (count < threeMessageType.size()) {
+			Future<MessageAverageProcessTimeWrapper> future = comp.poll();
+			if (future == null) {
+				continue;
+			}
+			else {
+				try {
+					MessageAverageProcessTimeWrapper messageProcessTimeWrapper = future.get();
+					MessageType messageType = messageProcessTimeWrapper.getMessageType();
+					if (messageType.equals(MessageType.ALL)) {
+						result.setAllMessageProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.INITIAL)) {
+						result.setMessageIProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.UPDATE)) {
+						result.setMessageUProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					if (messageType.equals(MessageType.TERMINAL)) {
+						result.setMessageTProcessTime(messageProcessTimeWrapper.getProcessTime());
+					}
+					count++;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return result;
+	}
 }

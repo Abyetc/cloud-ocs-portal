@@ -98,10 +98,18 @@ public class SessionRecordDaoImpl extends GenericDaoImpl<SessionRecord> implemen
 	}
 
 	@Override
-	public Long getNetworkHistorySessionNum(Integer networkIp, Date from,
+	public Long getNetworkHistorySessionNum(String networkIp, Date from,
 			Date to) {
-		// TODO Auto-generated method stub
-		return null;
+		Timestamp timestamp1 = DateUtil.transferDateInSecondField(from, 0);
+		Timestamp timestamp2 = DateUtil.transferDateInSecondField(to, 0);
+		
+		Query query =  em.createQuery("select count(*) from SessionRecord record where " +
+				"record.routeIp = '" + networkIp + "' and " +
+				"record.sessionState = " + 1 + " and " +
+				"record.startTime > '" + timestamp1 + "' and " + 
+				"record.startTime <= '" + timestamp2 + "'");
+		
+		return (Long)query.getSingleResult();
 	}
 
 }

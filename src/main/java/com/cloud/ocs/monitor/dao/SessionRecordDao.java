@@ -45,5 +45,5 @@ public interface SessionRecordDao extends GenericDao<SessionRecord> {
 	 * @param to
 	 * @return
 	 */
-	public Long getNetworkHistorySessionNum(Integer networkIp, Date from, Date to);
+	public Long getNetworkHistorySessionNum(String networkIp, Date from, Date to);
 }

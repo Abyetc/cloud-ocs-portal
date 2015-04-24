@@ -162,15 +162,39 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 	@Override
 	public Double getMessageAverageProcessTimeOfNetworkAtSpecificDate(
 			String networkIp, MessageType messageType, Date date) {
-		// TODO Auto-generated method stub
-		return null;
+		String messageTypeQueryCondition = this.transferMessageTypeToQueryConditionString(messageType);
+		
+		//统计在从现在开始到一分钟之前之间处理完成的包
+		Date dNow = date;
+		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600);
+		Timestamp to = DateUtil.transferDateInSecondField(date, 0);
+		
+		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
+				"record.routeIp = '" + networkIp + "' " +
+				messageTypeQueryCondition +
+				" and record.receivedTime > '" + from + "' and record.receivedTime <= '" + to + "'");
+		
+		return (Double)query.getSingleResult();
 	}
 
 	@Override
 	public Double getMessageAverageProcessTimeOfVmAtSpecificDate(
 			String networkIp, String vmIp, MessageType messageType, Date date) {
 		// TODO Auto-generated method stub
-		return null;
+		String messageTypeQueryCondition = this.transferMessageTypeToQueryConditionString(messageType);
+		
+		//统计在从现在开始到一分钟之前之间处理完成的包
+		Date dNow = date;
+		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600);
+		Timestamp to = DateUtil.transferDateInSecondField(date, 0);
+		
+		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
+				"record.routeIp = '" + networkIp + "' and " +
+				"record.vmip = '" + vmIp + "' " +
+				messageTypeQueryCondition +
+				" and record.receivedTime > '" + from + "' and record.receivedTime <= '" + to + "'");
+		
+		return (Double)query.getSingleResult();
 	}
 
 }

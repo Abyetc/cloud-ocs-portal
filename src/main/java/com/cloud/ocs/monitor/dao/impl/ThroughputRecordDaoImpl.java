@@ -166,15 +166,59 @@ public class ThroughputRecordDaoImpl extends GenericDaoImpl<ThroughputRecord> im
 	@Override
 	public Map<Date, MessageThroughputDto> getNetworkHistoryMessageThroughput(
 			String networkIp, Date from, Date to) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<Date, MessageThroughputDto> result = new TreeMap<Date, MessageThroughputDto>();
+		
+		Timestamp timestamp1 = DateUtil.transferDateInSecondField(from, 0);
+		Timestamp timestamp2 = DateUtil.transferDateInSecondField(to, 0);
+		Query query =  em.createQuery("select record.recordTime, record.receiveMsgCount, record.finishedMsgCount from ThroughputRecord record where "
+				+ "record.routeIp = '" + networkIp + "' and " +
+				"record.recordTime >= '" + timestamp1 + "' and record.recordTime <= '" + timestamp2 + "' order by record.recordTime ASC");
+		List<Object[]> queryResult = (List<Object[]>)query.getResultList();
+		if (queryResult != null) {
+			for (int j = 0; j < queryResult.size(); j++) {
+				MessageThroughputDto one = new MessageThroughputDto();
+				Date date = (Date)queryResult.get(j)[0];
+				if (queryResult.get(j)[1] != null) {
+					one.setReceivedMessageNum(new Long((Integer)queryResult.get(j)[1]));
+				}
+				if (queryResult.get(j)[2] != null) {
+					one.setFinishedMessageNum(new Long((Integer)queryResult.get(j)[2]));
+				}
+				result.put(date, one);
+			}
+		}
+		
+		return result;
 	}
 
 	@Override
 	public Map<Date, MessageThroughputDto> getVmHistoryMessageThroughput(
 			String networkIp, String vmIp, Date from, Date to) {
 		// TODO Auto-generated method stub
-		return null;
+		Map<Date, MessageThroughputDto> result = new TreeMap<Date, MessageThroughputDto>();
+		
+		Timestamp timestamp1 = DateUtil.transferDateInSecondField(from, 0);
+		Timestamp timestamp2 = DateUtil.transferDateInSecondField(to, 0);
+		Query query =  em.createQuery("select record.recordTime, record.receiveMsgCount, record.finishedMsgCount from ThroughputRecord record where "
+				+ "record.routeIp = '" + networkIp + "' and " +
+				"record.vmip = '" + vmIp + "' and " +
+				"record.recordTime >= '" + timestamp1 + "' and record.recordTime <= '" + timestamp2 + "' order by record.recordTime ASC");
+		List<Object[]> queryResult = (List<Object[]>)query.getResultList();
+		if (queryResult != null) {
+			for (int j = 0; j < queryResult.size(); j++) {
+				MessageThroughputDto one = new MessageThroughputDto();
+				Date date = (Date)queryResult.get(j)[0];
+				if (queryResult.get(j)[1] != null) {
+					one.setReceivedMessageNum(new Long((Integer)queryResult.get(j)[1]));
+				}
+				if (queryResult.get(j)[2] != null) {
+					one.setFinishedMessageNum(new Long((Integer)queryResult.get(j)[2]));
+				}
+				result.put(date, one);
+			}
+		}
+		
+		return result;
 	}
 
 }

@@ -27,7 +27,6 @@ import com.cloud.ocs.portal.core.monitor.dto.MessageProcessTimeDto;
 import com.cloud.ocs.portal.core.monitor.dto.MessageThroughputDto;
 import com.cloud.ocs.portal.core.monitor.service.CityMonitorService;
 import com.cloud.ocs.portal.utils.DateUtil;
-import com.cloud.ocs.portal.utils.RandomNumUtil;
 
 /**
  * 监控城市Service实现类
@@ -115,23 +114,73 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 	}
 
 	@Override
-	public List<List<Object>> getCityHistoryeSessionNum(Integer cityId,
-			Date date) {
+	public List<List<Object>> getCityHistoryeSessionNum(final Integer cityId,
+			final Date date) {
 		List<List<Object>> ret = new ArrayList<List<Object>>();
-		for (int i = 0; i < 24*60; i+=5) {
+		for (int i = 0; i < 24*60; i+=30) {
 			Date from = DateUtil.transferDateInMinuteField(date, i);
-			Date to = DateUtil.transferDateInMinuteField(from, 5);
+			Date to = DateUtil.transferDateInMinuteField(from, 30);
 			Long sessionNum = sessionRecordDao.getCityHistorySessionNum(cityId, from, to);
 			List<Object> onePoint = new ArrayList<Object>();
 			onePoint.add(to.getTime());
 			
 			//==============
-			sessionNum = (long)RandomNumUtil.randInt(10, 50);
-			
-			if (i >= 400 && i <= 1260) {
-				sessionNum += (long)RandomNumUtil.randInt(100, 300);
-			}
+//			sessionNum = (long)RandomNumUtil.randInt(10, 50);
+//			
+//			if (i >= 400 && i <= 1260) {
+//				sessionNum += (long)RandomNumUtil.randInt(100, 300);
+//			}
 			//==============
+					
+			onePoint.add(sessionNum);
+			ret.add(onePoint);
+		}
+		
+//		ExecutorService executor = Executors.newCachedThreadPool();
+//		CompletionService<List<List<Object>>> comp = new ExecutorCompletionService<List<List<Object>>>(executor);
+//		List<Integer> startList = new ArrayList<Integer>();
+//		for (int i = 0; i < 24*60; i += 120) {
+//			startList.add(i);
+//		}
+//		for (final Integer start : startList) {
+//			comp.submit(new Callable<List<List<Object>>>() {
+//				public List<List<Object>> call() throws Exception {
+//					return getCityHistoryeSessionNumInTwoHours(cityId, date, start);
+//				}
+//			});
+//		}
+//		executor.shutdown();
+//		int count = 0;
+//		while (count < 12) {
+//			Future<List<List<Object>>> future = comp.poll();
+//			if (future == null) {
+//				continue;
+//			}
+//			else {
+//				try {
+//					List<List<Object>> messageProcessTimeWrapper = future.get();
+//					ret.addAll(messageProcessTimeWrapper);
+//					count++;
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				} catch (ExecutionException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+		
+		return ret;
+	}
+	
+	public List<List<Object>> getCityHistoryeSessionNumInTwoHours(Integer cityId,
+			Date date, int start) {
+		List<List<Object>> ret = new ArrayList<List<Object>>();
+		for (int i = start; i < start + 2*60; i+=5) {
+			Date from = DateUtil.transferDateInMinuteField(date, i);
+			Date to = DateUtil.transferDateInMinuteField(from, 5);
+			Long sessionNum = sessionRecordDao.getCityHistorySessionNum(cityId, from, to);
+			List<Object> onePoint = new ArrayList<Object>();
+			onePoint.add(to.getTime());
 					
 			onePoint.add(sessionNum);
 			ret.add(onePoint);
@@ -162,10 +211,10 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 				finished.add(oneFinished);
 			}
 			
-			result.put("received", getCityHistoryeSessionNum(cityId, date));
-			result.put("finished", getCityHistoryeSessionNum(cityId, date));
-//			result.put("received", received);
-//			result.put("finished", finished);
+//			result.put("received", getCityHistoryeSessionNum(cityId, date));
+//			result.put("finished", getCityHistoryeSessionNum(cityId, date));
+			result.put("received", received);
+			result.put("finished", finished);
 		}
 		
 		return result;
@@ -180,8 +229,8 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 		List<List<Object>> iMesg = new ArrayList<List<Object>>();
 		List<List<Object>> uMesg = new ArrayList<List<Object>>();
 		List<List<Object>> tMesg = new ArrayList<List<Object>>();
-		for (int i = 0; i < 24*60; i+=60) {
-			Date dt = DateUtil.transferDateInMinuteField(date, i+60);
+		for (int i = 0; i < 24*60; i+=120) {
+			Date dt = DateUtil.transferDateInMinuteField(date, i+120);
 			MessageProcessTimeDto oneMesgProcessTime = this.getCityMessageAverageProcessTimeAtSpecificDate(cityId, dt);
 			List<Object> oneAllMesg = new ArrayList<Object>();
 			List<Object> oneIMesg = new ArrayList<Object>();
@@ -201,15 +250,15 @@ public class CityMonitorServiceImpl implements CityMonitorService {
 			tMesg.add(oneTMesg);
 		}
 		
-		result.put("allMsg", getCityHistoryeSessionNum(cityId, date));
-		result.put("iMsg", getCityHistoryeSessionNum(cityId, date));
-		result.put("uMsg", getCityHistoryeSessionNum(cityId, date));
-		result.put("tMsg", getCityHistoryeSessionNum(cityId, date));
+//		result.put("allMsg", getCityHistoryeSessionNum(cityId, date));
+//		result.put("iMsg", getCityHistoryeSessionNum(cityId, date));
+//		result.put("uMsg", getCityHistoryeSessionNum(cityId, date));
+//		result.put("tMsg", getCityHistoryeSessionNum(cityId, date));
 		
-//		result.put("allMsg", allMesg);
-//		result.put("iMsg", iMesg);
-//		result.put("uMsg", uMesg);
-//		result.put("tMsg", tMesg);
+		result.put("allMsg", allMesg);
+		result.put("iMsg", iMesg);
+		result.put("uMsg", uMesg);
+		result.put("tMsg", tMesg);
 		
 		return result;
 	}

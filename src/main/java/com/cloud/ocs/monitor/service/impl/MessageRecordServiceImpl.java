@@ -100,15 +100,34 @@ public class MessageRecordServiceImpl implements MessageRecordService {
 	@Override
 	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfNetworkAtSpecificDate(
 			String networkIp, MessageType messageType, Date date) {
-		// TODO Auto-generated method stub
-		return null;
+		MessageAverageProcessTimeWrapper result = new MessageAverageProcessTimeWrapper();
+		result.setMessageType(messageType);
+		double resultProcessTime = 0.0;
+		Double processTime = messageRecordDao
+				.getMessageAverageProcessTimeOfNetworkAtSpecificDate(networkIp, messageType, date);
+		if (processTime != null) {
+			resultProcessTime = processTime.doubleValue();
+		}
+		result.setProcessTime(resultProcessTime);
+		
+		return result;
 	}
 
 	@Override
 	public MessageAverageProcessTimeWrapper getMessageAverageProcessTimeOfVmAtSpecificDate(
 			String networkIp, String vmIp, MessageType messageType, Date date) {
 		// TODO Auto-generated method stub
-		return null;
+		MessageAverageProcessTimeWrapper result = new MessageAverageProcessTimeWrapper();
+		result.setMessageType(messageType);
+		double resultProcessTime = 0.0;
+		Double processTime = messageRecordDao
+				.getMessageAverageProcessTimeOfVmAtSpecificDate(networkIp, vmIp, messageType, date);
+		if (processTime != null) {
+			resultProcessTime = processTime.doubleValue();
+		}
+		result.setProcessTime(resultProcessTime);
+		
+		return result;
 	}
 
 }

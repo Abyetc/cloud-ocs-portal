@@ -237,7 +237,7 @@ $("body").on("click", "#network-history-session-num-monitor-btn", function() {
 	//请求数据
 	$.ajax({
 		type: "GET",
-		url: "monitor//",
+		url: "monitor/network/getCityNetworkHistorySessionNum",
 		dataType: "json",
 		data: {
 			cityNetworkId: window.curMonitorCityNetworkId,
@@ -264,7 +264,7 @@ $("body").on("click", "#network-history-session-num-monitor-btn", function() {
 				      },
 				    yAxis: {
 				          min: 0,
-				          max: 500,
+				          max: 5000,
 				        },
 				    exporting: {
 				        enabled: false
@@ -291,7 +291,7 @@ $("body").on("click", "#network-history-message-throughput-monitor-btn", functio
 	//请求数据
 	$.ajax({
 		type: "GET",
-		url: "monitor//",
+		url: "monitor/network/getCityNetworkHistoryMessageThroughput",
 		dataType: "json",
 		data: {
 			cityNetworkId: window.curMonitorCityNetworkId,
@@ -348,7 +348,7 @@ $("body").on("click", "#network-history-message-process-time-monitor-btn", funct
 	//请求数据
 	$.ajax({
 		type: "GET",
-		url: "monitor//",
+		url: "monitor/network/getCityNetworkHistoryMessageProcessTime",
 		dataType: "json",
 		data: {
 			cityNetworkId: window.curMonitorCityNetworkId,
