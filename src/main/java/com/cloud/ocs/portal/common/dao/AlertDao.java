@@ -8,6 +8,9 @@ public interface AlertDao extends GenericDao<Alert> {
 
 	public List<Alert> findAll();
 	
-	public Alert findById();
+	public Alert findById(Integer id);
 	
+	public List<Alert> findAllBizAlerts();
+	
+	public List<Alert> findAllInfraAlerts();
 }

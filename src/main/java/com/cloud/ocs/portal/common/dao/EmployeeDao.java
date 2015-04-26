@@ -16,4 +16,6 @@ public interface EmployeeDao extends GenericDao<Employee> {
 	public Employee findUserByAccountId(String accountId);
 	
 	public List<Employee> findAllBizEmployee();
+	
+	public List<Employee> findAllMaintenanceEmployee();
 }

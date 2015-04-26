@@ -53,7 +53,7 @@ public class MailSender {
 		try {
 			msg.setSubject(subject);
 			// 设置邮件内容
-			msg.setText(content);
+			msg.setContent(content,"text/html; charset=utf-8");
 			// 设置发件人
 			msg.setFrom(new InternetAddress(AlarmEmailProperties.getFromAddress()));
 

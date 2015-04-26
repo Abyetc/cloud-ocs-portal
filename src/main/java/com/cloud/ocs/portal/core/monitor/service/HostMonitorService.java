@@ -88,4 +88,8 @@ public interface HostMonitorService {
 	 * @return
 	 */
 	public List<List<Object>> getHostHistoryRxbpsTxbps(String hostId, String interfaceName);
+	
+	public Double getHostAverageCPUUsagePercentageInFiveMinute(String hostId, int curDay);
+	
+	public Double getHostAverageMemoryUsagePercentageInFiveMinute(String hostId, int curDay);
 }

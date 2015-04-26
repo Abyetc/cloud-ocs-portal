@@ -180,7 +180,6 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 	@Override
 	public Double getMessageAverageProcessTimeOfVmAtSpecificDate(
 			String networkIp, String vmIp, MessageType messageType, Date date) {
-		// TODO Auto-generated method stub
 		String messageTypeQueryCondition = this.transferMessageTypeToQueryConditionString(messageType);
 		
 		//统计在从现在开始到一分钟之前之间处理完成的包
@@ -193,6 +192,36 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 				"record.vmip = '" + vmIp + "' " +
 				messageTypeQueryCondition +
 				" and record.receivedTime > '" + from + "' and record.receivedTime <= '" + to + "'");
+		
+		return (Double)query.getSingleResult();
+	}
+
+	@Override
+	public Double getMessageAverageProcessTimeOfCityInFiveMinutes(
+			Integer cityId, MessageType messageType) {
+		List<String> allNetworkIps = cityNetworkService.getAllPublicIpsOfCity(cityId);
+		
+		if (allNetworkIps == null) {
+			return null;
+		}
+		
+		StringBuffer networkIpQueryCondition = new StringBuffer();
+		int i = 0;
+		for (; i < allNetworkIps.size() - 1; i++) {
+			networkIpQueryCondition.append("record.routeIp = '" + allNetworkIps.get(i) + "' or ");
+		}
+		networkIpQueryCondition.append("record.routeIp = '" + allNetworkIps.get(i) + "'");
+		
+		String messageTypeQueryCondition = this.transferMessageTypeToQueryConditionString(messageType);
+		
+		//统计在从现在开始到5分钟之前之间处理完成的包
+		Date dNow = new Date();
+		Timestamp fiveMinAgoTimestamp = DateUtil.transferDateInSecondField(dNow, -300);
+		
+		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
+				"(" + networkIpQueryCondition.toString() + ") " +
+				messageTypeQueryCondition +
+				" and record.receivedTime >= '" + fiveMinAgoTimestamp + "'");
 		
 		return (Double)query.getSingleResult();
 	}

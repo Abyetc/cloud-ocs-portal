@@ -39,4 +39,11 @@ public class EmployeeDaoImpl extends GenericDaoImpl<Employee> implements Employe
 		
 		return query.getResultList();
 	}
+
+	@Override
+	public List<Employee> findAllMaintenanceEmployee() {
+		Query query = em.createQuery("select user from Employee user where user.employeeType='" + 0 + "'");
+		
+		return query.getResultList();
+	}
 }

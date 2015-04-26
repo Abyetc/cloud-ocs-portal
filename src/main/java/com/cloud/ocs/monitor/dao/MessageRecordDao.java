@@ -77,4 +77,12 @@ public interface MessageRecordDao extends GenericDao<MessageRecord> {
 	 */
 	public Double getMessageAverageProcessTimeOfVmAtSpecificDate(String networkIp, String vmIp,
 			MessageType messageType, Date date);
+	
+	/**
+	 * 获取城市最近五分钟之内的所有包的平均处理时长
+	 * @param cityId
+	 * @param messageType
+	 * @return
+	 */
+	public Double getMessageAverageProcessTimeOfCityInFiveMinutes(Integer cityId, MessageType messageType);
 }

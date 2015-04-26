@@ -8,5 +8,5 @@ public interface InfrastructureAlertMonitorPointDao extends GenericDao<Infrastru
 
 	public List<InfrastructureAlertMonitorPoint> findAll();
 	
-	public InfrastructureAlertMonitorPoint findById();
+	public InfrastructureAlertMonitorPoint findById(Integer infraAlertMonitorPointId);
 }

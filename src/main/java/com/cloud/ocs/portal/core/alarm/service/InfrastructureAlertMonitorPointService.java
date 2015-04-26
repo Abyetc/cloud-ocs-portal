@@ -11,5 +11,7 @@ public interface InfrastructureAlertMonitorPointService {
 	
 	public List<InfrastructureAlertMonitorPoint> getAllInfrastructureAlertMonitorPoints();
 	
+	public InfrastructureAlertMonitorPoint getInfrastructureAlertMonitorPointById(Integer id); 
+	
 	public OperateObjectDto removeInfrastructureAlertMonitorPoint(Integer id);
 }

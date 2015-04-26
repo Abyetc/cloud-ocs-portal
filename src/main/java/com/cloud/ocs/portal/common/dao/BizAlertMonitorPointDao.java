@@ -8,5 +8,5 @@ public interface BizAlertMonitorPointDao extends GenericDao<BizAlertMonitorPoint
 
 	public List<BizAlertMonitorPoint> findAll();
 	
-	public BizAlertMonitorPoint findById();
+	public BizAlertMonitorPoint findById(Integer id);
 }

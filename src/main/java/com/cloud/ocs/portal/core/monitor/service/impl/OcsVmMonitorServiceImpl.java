@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -296,15 +297,25 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		if (ret != null) {
 			String arr[] = ret.split("\n");
 			res = new ArrayList<List<Object>>();
+			Map<Long, Double> sortedMap = new TreeMap<Long, Double>();
 			for (int i = 0; i < arr.length - 1; i++) {
+				if (arr[i].contains("Average")) {
+					continue;
+				}
 				if (arr[i].contains("all")) {
 					List<Object> oneRecord = processOneLineCpuUsageRecord(arr[i], dayOfMonth);
 					if (oneRecord != null) {
-						res.add(oneRecord);
+//						res.add(oneRecord);
+						sortedMap.put((Long)oneRecord.get(0), (Double)oneRecord.get(1));
 					}
 				}
 			}
-			
+			for (Entry<Long, Double> oneEntry : sortedMap.entrySet()) {
+				List<Object> oneRec = new ArrayList<Object>();
+				oneRec.add(oneEntry.getKey());
+				oneRec.add(oneEntry.getValue());
+				res.add(oneRec);
+			}
 		}
 		
 		return res;
@@ -329,14 +340,22 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		if (ret != null) {
 			String arr[] = ret.split("\n");
 			res = new ArrayList<List<Object>>();
+			Map<Long, Double> sortedMap = new TreeMap<Long, Double>();
 			for (int i = 3; i < arr.length - 1; i++) {
-				if (arr[i].isEmpty() || arr[i].contains("commit") || arr[i].contains("RESTART")) {
+				if (arr[i].isEmpty() || arr[i].contains("commit") || arr[i].contains("RESTART") || arr[i].contains("Average")) {
 					continue;
 				}
 				List<Object> oneRecord = processOneLineMemoryUsageRecord(arr[i], dayOfMonth);
 				if (oneRecord != null) {
-					res.add(oneRecord);
+//					res.add(oneRecord);
+					sortedMap.put((Long)oneRecord.get(0), (Double)oneRecord.get(1));
 				}
+			}
+			for (Entry<Long, Double> oneEntry : sortedMap.entrySet()) {
+				List<Object> oneRec = new ArrayList<Object>();
+				oneRec.add(oneEntry.getKey());
+				oneRec.add(oneEntry.getValue());
+				res.add(oneRec);
 			}
 		}
 		
@@ -364,6 +383,8 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 			res = new HashMap<String, List<List<Object>>>();
 			List<List<Object>> rxbpsList = new ArrayList<List<Object>>();
 			List<List<Object>> txbpsList = new ArrayList<List<Object>>();
+			Map<Long, Double> sortedMap1 = new TreeMap<Long, Double>();
+			Map<Long, Double> sortedMap2 = new TreeMap<Long, Double>();
 			
 			for (int i = 0; i < arr.length; i++) {
 				if (arr[i].contains("Average")) {
@@ -371,9 +392,23 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 				}
 				Map<String, List<Object>> oneRes = processOneLineNetworkUsageRecord(arr[i], dayOfMonth);
 				if (oneRes != null) {
-					rxbpsList.add(oneRes.get("rxbps"));
-					txbpsList.add(oneRes.get("txbps"));
+//					rxbpsList.add(oneRes.get("rxbps"));
+//					txbpsList.add(oneRes.get("txbps"));
+					sortedMap1.put((Long)oneRes.get("rxbps").get(0), (Double)oneRes.get("rxbps").get(1));
+					sortedMap2.put((Long)oneRes.get("txbps").get(0), (Double)oneRes.get("txbps").get(1));
 				}
+			}
+			for (Entry<Long, Double> oneEntry : sortedMap1.entrySet()) {
+				List<Object> oneRec = new ArrayList<Object>();
+				oneRec.add(oneEntry.getKey());
+				oneRec.add(oneEntry.getValue());
+				rxbpsList.add(oneRec);
+			}
+			for (Entry<Long, Double> oneEntry : sortedMap2.entrySet()) {
+				List<Object> oneRec = new ArrayList<Object>();
+				oneRec.add(oneEntry.getKey());
+				oneRec.add(oneEntry.getValue());
+				txbpsList.add(oneRec);
 			}
 			
 			res.put("rxbps", rxbpsList);

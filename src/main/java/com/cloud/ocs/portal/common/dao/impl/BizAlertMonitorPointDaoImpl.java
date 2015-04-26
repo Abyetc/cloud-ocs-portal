@@ -20,9 +20,12 @@ public class BizAlertMonitorPointDaoImpl extends GenericDaoImpl<BizAlertMonitorP
 	}
 
 	@Override
-	public BizAlertMonitorPoint findById() {
-		// TODO Auto-generated method stub
-		return null;
+	public BizAlertMonitorPoint findById(Integer id) {
+		Query query = em
+				.createQuery("select bizAlertMonitorPoint from BizAlertMonitorPoint bizAlertMonitorPoint where bizAlertMonitorPoint.id='"
+						+ id + "'");
+
+		return (BizAlertMonitorPoint) query.getSingleResult();
 	}
 
 }

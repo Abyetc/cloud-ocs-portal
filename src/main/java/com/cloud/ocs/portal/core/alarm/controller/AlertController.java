@@ -20,9 +20,13 @@ import com.cloud.ocs.portal.common.bean.BizAlertMonitorPoint;
 import com.cloud.ocs.portal.common.bean.City;
 import com.cloud.ocs.portal.common.bean.Employee;
 import com.cloud.ocs.portal.common.bean.InfrastructureAlertMonitorPoint;
+import com.cloud.ocs.portal.common.bean.OcsHost;
 import com.cloud.ocs.portal.common.dao.EmployeeDao;
+import com.cloud.ocs.portal.common.dao.OcsHostDao;
 import com.cloud.ocs.portal.common.dto.OperateObjectDto;
-import com.cloud.ocs.portal.core.alarm.Dto.BizAlertMonitorPointListDto;
+import com.cloud.ocs.portal.core.alarm.Dto.AlertListDto;
+import com.cloud.ocs.portal.core.alarm.Dto.AlertMonitorPointListDto;
+import com.cloud.ocs.portal.core.alarm.job.AlertMonitorJob;
 import com.cloud.ocs.portal.core.alarm.service.AlertService;
 import com.cloud.ocs.portal.core.alarm.service.BizAlertMonitorPointService;
 import com.cloud.ocs.portal.core.alarm.service.InfrastructureAlertMonitorPointService;
@@ -43,11 +47,17 @@ public class AlertController {
 	@Resource
 	private CityService cityService;
 	
-//	@Resource
-//	private InfrastructureAlertMonitorPointService infrastructureAlertMonitorPointService;
+	@Resource
+	private OcsHostDao hostDao;
 	
-//	@Resource
-//	private AlertService alertService;
+	@Resource
+	private InfrastructureAlertMonitorPointService infraAlertMonitorPointService;
+	
+	@Resource
+	private AlertService alertService;
+	
+	@Resource
+	private AlertMonitorJob alertMonitorJob;
 	
 	@RequestMapping(value="/getAllBizEmployee", method=RequestMethod.GET)
 	@ResponseBody
@@ -55,15 +65,21 @@ public class AlertController {
 		return employeeDao.findAllBizEmployee();
 	}
 	
+	@RequestMapping(value="/getAllMaintenanceEmployee", method=RequestMethod.GET)
+	@ResponseBody
+	public List<Employee> getAllMaintenanceEmployee() {
+		return employeeDao.findAllMaintenanceEmployee();
+	}
+	
 	@RequestMapping(value="/listAllBizAlertMonitorPoint", method=RequestMethod.GET)
 	@ResponseBody
-	public List<BizAlertMonitorPointListDto> listAllBizAlertMonitorPoint() {
-		List<BizAlertMonitorPointListDto> result = new ArrayList<BizAlertMonitorPointListDto>();
+	public List<AlertMonitorPointListDto> listAllBizAlertMonitorPoint() {
+		List<AlertMonitorPointListDto> result = new ArrayList<AlertMonitorPointListDto>();
 		
 		List<BizAlertMonitorPoint> list = bizAlertMonitorPointService.getAllBizAlertMonitorPoint();
 		
 		for (BizAlertMonitorPoint oneRecord : list) {
-			BizAlertMonitorPointListDto oneDto = new BizAlertMonitorPointListDto();
+			AlertMonitorPointListDto oneDto = new AlertMonitorPointListDto();
 			int objectTyep = oneRecord.getMonitorObjectType();
 			if (objectTyep == 0) { //城市
 				City city = cityService.getCityById(Integer.parseInt(oneRecord.getMonitorObjectId()));
@@ -72,10 +88,13 @@ public class AlertController {
 			if(objectTyep == 1) { //网络
 				
 			}
+			oneDto.setAlertMonitorPointId(oneRecord.getId());
 			oneDto.setPrincipalName(employeeDao.findUserByAccountId(oneRecord.getAlertPrincipalId()).getName());
 			Timestamp timestamp = oneRecord.getCreated();
 			Date date = new Date(timestamp.getTime());
 			oneDto.setCreated(df.format(date));
+			
+			oneDto.setMessageProcessTimeThreshold(oneRecord.getMessageProcessTimeThresholdValue());
 			
 			result.add(oneDto);
 		}
@@ -99,7 +118,7 @@ public class AlertController {
 		bizAlertMonitorPoint.setResourceLoadThresholdValue(resourceLoadThresholdValue);
 		bizAlertMonitorPoint.setAlertPrincipalId(alertPrincipalId);
 		
-		BizAlertMonitorPointListDto bizAlertMonitorPointListDto = new BizAlertMonitorPointListDto();
+		AlertMonitorPointListDto bizAlertMonitorPointListDto = new AlertMonitorPointListDto();
 		int objectTyep = bizAlertMonitorPoint.getMonitorObjectType();
 		if (objectTyep == 0) { //城市
 			City city = cityService.getCityById(Integer.parseInt(bizAlertMonitorPoint.getMonitorObjectId()));
@@ -110,44 +129,113 @@ public class AlertController {
 		}
 		bizAlertMonitorPointListDto.setPrincipalName(employeeDao.findUserByAccountId(bizAlertMonitorPoint.getAlertPrincipalId()).getName());
 		OperateObjectDto result = bizAlertMonitorPointService.addBizAlertMonitorPoint(bizAlertMonitorPoint);
+		bizAlertMonitorPointListDto.setAlertMonitorPointId(((BizAlertMonitorPoint)result.getOperatedObject()).getId());
 		Timestamp timestamp = ((BizAlertMonitorPoint)result.getOperatedObject()).getCreated();
 		Date date = new Date(timestamp.getTime());
 		bizAlertMonitorPointListDto.setCreated(df.format(date));
+		bizAlertMonitorPointListDto.setMessageProcessTimeThreshold(((BizAlertMonitorPoint)result.getOperatedObject()).getMessageProcessTimeThresholdValue());
 		
 		result.setOperatedObject(bizAlertMonitorPointListDto);
 		result.setIndex(bizAlertMonitorPointService.getAllBizAlertMonitorPoint().size());
 		return result;
 	}
 	
-	public OperateObjectDto removeBizMonitorPoint(Integer pointId) {
-		return null;
+	@RequestMapping(value="/removeBizMonitorPoint", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removeBizMonitorPoint(@RequestParam("monitorPointId") Integer monitorPointId) {
+		return bizAlertMonitorPointService.removeBizAlertMonitorPoint(monitorPointId);
 	}
 	
-	public List<InfrastructureAlertMonitorPoint> listAllInfrastructureAlertMonitorPoint() {
-		return null;
+	@RequestMapping(value="/getAllInfraAlertMonitorPoints", method=RequestMethod.GET)
+	@ResponseBody
+	public List<AlertMonitorPointListDto> listAllInfrastructureAlertMonitorPoint() {
+		List<AlertMonitorPointListDto> result = new ArrayList<AlertMonitorPointListDto>();
+		
+		List<InfrastructureAlertMonitorPoint> allInfraAlertMonitorPoints = infraAlertMonitorPointService.getAllInfrastructureAlertMonitorPoints();
+		
+		if (allInfraAlertMonitorPoints == null) {
+			return result;
+		}
+		
+		for (InfrastructureAlertMonitorPoint one : allInfraAlertMonitorPoints) {
+			OcsHost host = hostDao.findByHostId(one.getMonitorObjectId());
+			Employee principal = employeeDao.findUserByAccountId(one.getAlertPrincipalId());
+			AlertMonitorPointListDto oneRet = new AlertMonitorPointListDto();
+			oneRet.setAlertMonitorPointId(one.getId());
+			oneRet.setMonitorObjectName(host.getHostName());
+			oneRet.setPrincipalName(principal.getName());
+			Timestamp timestamp = one.getCreated();
+			Date date = new Date(timestamp.getTime());
+			oneRet.setCreated(df.format(date));
+			
+			oneRet.setMonitorObjectType((one.getMonitorObjectType() == 0 ? "CPU" : "内存"));
+			oneRet.setUsagePercentageThreshold(one.getLoadThresholdValue());
+			
+			result.add(oneRet);
+		}
+		return result;
 	}
 	
-	public OperateObjectDto addInfrastructureMonitorPoint(String a, String b, Double c, Integer d, String e) {
-		return null;
+	@RequestMapping(value="/addInfraAlertMonitorPoint", method=RequestMethod.POST)
+	@ResponseBody
+	public OperateObjectDto addInfrastructureMonitorPoint(
+			@RequestParam("monitorObjectId") String monitorObjectId,
+			@RequestParam("monitorType") Integer monitorType,
+			@RequestParam("usageThresholdValue") Double usageThresholdValue,
+			@RequestParam("alertPrincipal") String alertPrincipal) {
+		
+		InfrastructureAlertMonitorPoint monitorPoint = new InfrastructureAlertMonitorPoint();
+		monitorPoint.setMonitorObjectId(monitorObjectId);
+		monitorPoint.setMonitorObjectType(monitorType);
+		monitorPoint.setLoadThresholdValue(usageThresholdValue);
+		monitorPoint.setAlertPrincipalId(alertPrincipal);
+		OperateObjectDto operateObjDto = infraAlertMonitorPointService.addInfrastructureAlertMonitorPoint(monitorPoint);
+		
+		AlertMonitorPointListDto ret = new AlertMonitorPointListDto();
+		OcsHost host = hostDao.findByHostId(monitorObjectId);
+		Employee principal = employeeDao.findUserByAccountId(alertPrincipal);
+		ret.setAlertMonitorPointId(((InfrastructureAlertMonitorPoint)operateObjDto.getOperatedObject()).getId());
+		ret.setMonitorObjectName(host.getHostName());
+		ret.setPrincipalName(principal.getName());
+		Timestamp timestamp = ((InfrastructureAlertMonitorPoint)operateObjDto.getOperatedObject()).getCreated();
+		Date date = new Date(timestamp.getTime());
+		ret.setCreated(df.format(date));
+		ret.setMonitorObjectType(((InfrastructureAlertMonitorPoint)operateObjDto.getOperatedObject()).getMonitorObjectType() == 0 ? "CPU" : "内存");
+		ret.setUsagePercentageThreshold(((InfrastructureAlertMonitorPoint)operateObjDto.getOperatedObject()).getLoadThresholdValue());
+				
+		operateObjDto.setOperatedObject(ret);
+		operateObjDto.setIndex(infraAlertMonitorPointService.getAllInfrastructureAlertMonitorPoints().size());
+		return operateObjDto;
+		
 	}
 	
-	public OperateObjectDto removeInfrastructureMonitorPoint(Integer id) {
-		return null;
+	@RequestMapping(value="/removeInfrastructureMonitorPoint", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto removeInfrastructureMonitorPoint(@RequestParam("monitorPointId") Integer monitorPointId) {
+		return infraAlertMonitorPointService.removeInfrastructureAlertMonitorPoint(monitorPointId);
 	}
 	
-	public List<Alert> listAllBizAlerts() {
-		return null;
+	@RequestMapping(value="/checkBizAlert", method=RequestMethod.GET)
+	@ResponseBody
+	public List<Alert> checkBizAlert() {
+		return alertMonitorJob.executeBizAlertCheckingJob();
 	}
 	
-	public List<Alert> listAllInfrastructureAlerts() {
-		return null;
+	@RequestMapping(value="/getAllBizAlertList", method=RequestMethod.GET)
+	@ResponseBody
+	public List<AlertListDto> listAllBizAlerts() {
+		return alertService.getAllBizAlerts();
 	}
 	
-	public OperateObjectDto removeBizAlert() {
-		return null;
+	@RequestMapping(value="/getAllInfraAlertList", method=RequestMethod.GET)
+	@ResponseBody
+	public List<AlertListDto> listAllInfrastructureAlerts() {
+		return alertService.getAllInfrastructureAlerts();
 	}
 	
-	public OperateObjectDto removeInfrastructureAlert() {
-		return null;
+	@RequestMapping(value="/checkInfraAlert", method=RequestMethod.GET)
+	@ResponseBody
+	public List<Alert> checkInfraAlert() {
+		return alertMonitorJob.executeInfrastructureAlertCheckingJob();
 	}
 }

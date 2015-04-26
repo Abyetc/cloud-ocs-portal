@@ -406,4 +406,36 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		return null;
 	}
 
+	@Override
+	public Double getHostAverageCPUUsagePercentageInFiveMinute(String hostId,
+			int curDay) {
+		Double sum = 0.0;
+		List<List<Object>> curDayCPUUsagePercentage = this.getHostHistoryCpuUsedPercentage(hostId, curDay);
+		
+		if (curDayCPUUsagePercentage != null && curDayCPUUsagePercentage.size() > 5) {
+			int len = curDayCPUUsagePercentage.size();
+			for (int i = 0; i < 5; i++) {
+				sum += (Double)curDayCPUUsagePercentage.get(len-1-i).get(1);
+			}
+		}
+		
+		return sum/5.0;
+	}
+
+	@Override
+	public Double getHostAverageMemoryUsagePercentageInFiveMinute(
+			String hostId, int curDay) {
+		Double sum = 0.0;
+		List<List<Object>> curDayMemoryUsagePercentage = this.getHostHistoryMemoryUsedPercentage(hostId, curDay);
+		
+		if (curDayMemoryUsagePercentage != null && curDayMemoryUsagePercentage.size() > 5) {
+			int len = curDayMemoryUsagePercentage.size();
+			for (int i = 0; i < 5; i++) {
+				sum += (Double)curDayMemoryUsagePercentage.get(len-1-i).get(1);
+			}
+		}
+		
+		return sum/5.0;
+	}
+
 }

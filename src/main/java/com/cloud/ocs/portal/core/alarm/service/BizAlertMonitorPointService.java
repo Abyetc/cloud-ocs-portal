@@ -11,5 +11,7 @@ public interface BizAlertMonitorPointService {
 	
 	public List<BizAlertMonitorPoint> getAllBizAlertMonitorPoint();
 	
+	public BizAlertMonitorPoint getlBizAlertMonitorPointById(Integer id);
+	
 	public OperateObjectDto removeBizAlertMonitorPoint(Integer id);
 }

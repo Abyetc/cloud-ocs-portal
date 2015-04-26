@@ -49,10 +49,23 @@ public class BizAlertMonitorPointServiceImpl implements BizAlertMonitorPointServ
 
 	@Override
 	public OperateObjectDto removeBizAlertMonitorPoint(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		OperateObjectDto result = new OperateObjectDto();
+		result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
+		result.setMessage("Remove alert monitor point failed.");
+		
+		BizAlertMonitorPoint point = bizAlertMonitorPointDao.findById(id);
+		if (point != null) {
+			bizAlertMonitorPointDao.remove(point);
+			result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+			result.setMessage("Remove alert monitor point success.");
+		}
+		
+		return result;
+	}
+
+	@Override
+	public BizAlertMonitorPoint getlBizAlertMonitorPointById(Integer id) {
+		return bizAlertMonitorPointDao.findById(id);
 	}
 	
-	
-
 }
