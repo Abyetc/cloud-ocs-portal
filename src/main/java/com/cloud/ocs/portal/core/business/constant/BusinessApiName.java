@@ -14,6 +14,7 @@ public class BusinessApiName {
 	public static final String BUSINESS_API_REMOVE_NETWORK				 =	  "deleteNetwork";
 	
 	public static final String BUSINESS_API_LIST_OCS_VM   				 = 	  "listVirtualMachines";
+	public static final String BUSINESS_API_LIST_OCS_VM_IN_LB   		 = 	  "listLoadBalancerRuleInstances";
 	public static final String BUSINESS_API_DEPLOY_OCS_VM 				 =	  "deployVirtualMachine";
 	public static final String BUSINESS_API_REMOVE_OCS_VM 				 =	  "destroyVirtualMachine";
 	public static final String BUSINESS_API_STOP_OCS_VM					 =	  "stopVirtualMachine";

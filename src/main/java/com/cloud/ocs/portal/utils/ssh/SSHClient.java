@@ -26,9 +26,10 @@ public class SSHClient {
 	 * @param password
 	 * @param cmd
 	 * @return
+	 * @throws IOException 
 	 */
 	public static String sendCmd(String host, int port, String userName, String password,
-			String cmd) {
+			String cmd) throws IOException {
 		String result = null;
 		Connection connection = null;
 		Session session = null;
@@ -47,8 +48,6 @@ public class SSHClient {
 			}
 			result = strBuffer.toString();
 			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} finally {
 			if (session != null) {
 				session.close();

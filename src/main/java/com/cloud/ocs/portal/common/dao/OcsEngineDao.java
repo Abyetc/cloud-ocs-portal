@@ -19,4 +19,6 @@ public interface OcsEngineDao extends GenericDao<OcsEngine> {
 	 * @return
 	 */
 	public List<OcsEngine> findAllOcsEngines();
+	
+	public int deleteByVmId(String vmId);
 }

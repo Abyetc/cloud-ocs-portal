@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.bean.OcsHost;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
@@ -42,6 +43,7 @@ import com.cloud.ocs.portal.utils.http.HttpRequestSender;
  * @date 2014-12-11 下午2:36:59
  * 
  */
+@Transactional(value="portal_em")
 @Service
 public class InfrastructureServiceImpl implements InfrastructureService {
 
@@ -617,7 +619,7 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.SUCCESS
 						.getCode()) {
 			try {
-				Thread.sleep(60000);
+				Thread.sleep(70000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

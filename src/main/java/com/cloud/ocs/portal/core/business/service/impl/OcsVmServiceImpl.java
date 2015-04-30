@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cloud.ocs.ha.service.WarmStandbyVmPool;
 import com.cloud.ocs.portal.common.bean.CityNetwork;
 import com.cloud.ocs.portal.common.bean.OcsEngine;
 import com.cloud.ocs.portal.common.bean.OcsVm;
@@ -23,7 +24,9 @@ import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
 import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
 import com.cloud.ocs.portal.common.cs.asyncjob.service.QueryAsyncJobResultService;
+import com.cloud.ocs.portal.common.dao.OcsEngineDao;
 import com.cloud.ocs.portal.common.dao.OcsVmDao;
+import com.cloud.ocs.portal.common.dao.OcsVmForwardingPortDao;
 import com.cloud.ocs.portal.common.dto.OperateObjectDto;
 import com.cloud.ocs.portal.core.business.constant.BusinessApiName;
 import com.cloud.ocs.portal.core.business.constant.OcsEngineState;
@@ -63,6 +66,12 @@ public class OcsVmServiceImpl implements OcsVmService {
 	private OcsVmDao ocsVmDao;
 	
 	@Resource
+	private OcsEngineDao ocsEngineDao;
+	
+	@Resource
+	private OcsVmForwardingPortDao ocsVmForwardingPortDao;
+	
+	@Resource
 	private PublicIpService publicIpService;
 	
 	@Resource
@@ -83,6 +92,9 @@ public class OcsVmServiceImpl implements OcsVmService {
 	@Autowired
 	private OcsVmForwardingPortCache vmForwardingPortCache;
 	
+	@Resource
+	private WarmStandbyVmPool warmStandbyVmPool;
+	
 	@Override
 	public OcsVm getOcsVmByVmId(String vmId) {
 		return ocsVmDao.findByVmId(vmId);
@@ -101,6 +113,44 @@ public class OcsVmServiceImpl implements OcsVmService {
 		if (response != null) {
 			JSONObject responseJsonObj = new JSONObject(response);
 			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listvirtualmachinesresponse");
+			if (vmsListJsonObj.has("count")) {
+				result = vmsListJsonObj.getInt("count");
+			}
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public Integer getOcsVmsNumInInLBRule(String networkId) {
+		// TODO Auto-generated method stub
+		CityNetwork cityNetwork = cityNetworkSerivce.getCityNetworkByNetworkId(networkId);
+		String publicIpId = cityNetwork.getPublicIpId();
+		if (publicIpId == null) {
+			return null;
+		}
+		List<LoadBalancerRuleDto> loadBalancerRules = publicIpService.getLoadBalancerRulesList(publicIpId);
+		if (loadBalancerRules.size() == 0) {
+			return 0;
+		}
+		//默认取第一条
+		String loadBalancerRuleId = loadBalancerRules.get(0).getLoadBalancerRuleId();
+		if (loadBalancerRuleId == null) {
+			return null;
+		}
+		
+		int result = 0;
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_LIST_OCS_VM_IN_LB);
+		request.addRequestParams("id", loadBalancerRuleId);
+		request.addRequestParams("listall", "true");
+		request.addRequestParams("lbvmips", "true");
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listloadbalancerruleinstancesresponse");
 			if (vmsListJsonObj.has("count")) {
 				result = vmsListJsonObj.getInt("count");
 			}
@@ -158,6 +208,71 @@ public class OcsVmServiceImpl implements OcsVmService {
 	}
 	
 	@Override
+	public List<OcsVmDto> getOcsVmsListInLBRuleByNetworkId(String networkId) {
+		// TODO Auto-generated method stub
+		CityNetwork cityNetwork = cityNetworkSerivce.getCityNetworkByNetworkId(networkId);
+		String publicIpId = cityNetwork.getPublicIpId();
+		if (publicIpId == null) {
+			return null;
+		}
+		List<LoadBalancerRuleDto> loadBalancerRules = publicIpService.getLoadBalancerRulesList(publicIpId);
+		if (loadBalancerRules.size() == 0) {
+			return null;
+		}
+		//默认取第一条
+		String loadBalancerRuleId = loadBalancerRules.get(0).getLoadBalancerRuleId();
+		if (loadBalancerRuleId == null) {
+			return null;
+		}
+		
+		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_LIST_OCS_VM_IN_LB);
+		request.addRequestParams("id", loadBalancerRuleId);
+		request.addRequestParams("listall", "true");
+		request.addRequestParams("lbvmips", "true");
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		List<OcsVmDto> result = new ArrayList<OcsVmDto>();
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject vmsListJsonObj = responseJsonObj.getJSONObject("listloadbalancerruleinstancesresponse");
+			if (vmsListJsonObj.has("lbrulevmidip")) {
+				JSONArray vmsJsonArrayObj = vmsListJsonObj.getJSONArray("lbrulevmidip");
+				if (vmsJsonArrayObj != null) {
+					for (int i = 0; i < vmsJsonArrayObj.length(); i++) {
+						JSONObject jsonObj = ((JSONObject)vmsJsonArrayObj.get(i)).getJSONObject("loadbalancerruleinstance");
+						OcsVmDto ocsVmDto = new OcsVmDto();
+						ocsVmDto.setVmId(jsonObj.getString("id"));
+						ocsVmDto.setVmName(jsonObj.getString("name"));
+						ocsVmDto.setZoneId(jsonObj.getString("zoneid"));
+						ocsVmDto.setZoneName(jsonObj.getString("zonename"));
+						if (jsonObj.has("hostid")) {
+							ocsVmDto.setHostId(jsonObj.getString("hostid"));
+						}
+						if (jsonObj.has("hostname")) {
+							ocsVmDto.setHostName(jsonObj.getString("hostname"));
+						}
+						ocsVmDto.setNetworkId(networkId);
+						ocsVmDto.setServiceOfferingId(jsonObj.getString("serviceofferingid"));
+						ocsVmDto.setTemplateId(jsonObj.getString("templateid"));
+						ocsVmDto.setCpuNum(jsonObj.getInt("cpunumber"));
+						ocsVmDto.setCpuSpeed(UnitUtil.formatSizeFromHzToGHz(jsonObj.getLong("cpuspeed")));
+						ocsVmDto.setMemory(UnitUtil.formatSizeUnit(jsonObj.getLong("memory")*1024*1024));
+						ocsVmDto.setVmState(OcsVmState.getCode(jsonObj.getString("state")));
+						String created = jsonObj.getString("created").replace('T', ' ');
+						ocsVmDto.setCreated(created.substring(0, created.indexOf('+')));
+						result.add(ocsVmDto);
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	@Override
 	public Map<String, List<OcsVmDto>> getOcsVmsListByCityId(Integer cityId) {
 		Map<String, List<OcsVmDto>> result = new HashMap<String, List<OcsVmDto>>();
 		
@@ -165,7 +280,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 		
 		if (cityNetworks != null) {
 			for (CityNetworkListDto cityNetwork : cityNetworks) {
-				result.put(cityNetwork.getNetworkName(), this.getOcsVmsListByNetworkId(cityNetwork.getNetworkId()));
+				result.put(cityNetwork.getNetworkName(), this.getOcsVmsListInLBRuleByNetworkId(cityNetwork.getNetworkId()));
 			}
 		}
 		
@@ -180,7 +295,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 		
 		if (cityNetworks != null) {
 			for (CityNetworkListDto cityNetwork : cityNetworks) {
-				result.addAll(this.getOcsVmsListByNetworkId(cityNetwork.getNetworkId()));
+				result.addAll(this.getOcsVmsListInLBRuleByNetworkId(cityNetwork.getNetworkId()));
 			}
 		}
 		
@@ -239,7 +354,11 @@ public class OcsVmServiceImpl implements OcsVmService {
 				String created = jsonObj.getString("created").replace('T', ' ');
 				ocsVmDto.setCreated(created.substring(0, created.indexOf('+')));
 				result.setOcsVmDto(ocsVmDto);
-				result.setIndex(this.getOcsVmsNum(networkId));
+				Integer vmNum = this.getOcsVmsNumInInLBRule(networkId);
+				if (vmNum == null) {
+					vmNum = 0;
+				}
+				result.setIndex(vmNum + 1);
 				
 				//执行一次更新本地数据库中的城市、网络状态(包括public ip等等字段)
 				//同步网络状态
@@ -278,6 +397,11 @@ public class OcsVmServiceImpl implements OcsVmService {
 				
 				//使用SSH远程启动vm上的ocs引擎程序，并将记录入库
 				this.startOcsEngineOnOcsVm(ocsVmDto.getVmId());
+				
+				//第一次创建在网络内创建Vm则执行一次填满温备虚拟机池的操作
+				if (vmNum == 0) {
+					warmStandbyVmPool.fillWarmStandbyVmPoolJob();
+				}
 			}
 		}
 		
@@ -326,6 +450,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 			
 			//将记录从数据库中删除
 			ocsVmDao.deleteByVmId(vmId);
+			ocsEngineDao.deleteByVmId(vmId);
+			ocsVmForwardingPortDao.deleteByVmId(vmId);
 			
 			//执行一次更新本地数据库中的城市、网络状态(包括public ip等等字段)
 			//同步网络状态
@@ -482,6 +608,9 @@ public class OcsVmServiceImpl implements OcsVmService {
 		request.addRequestParams("serviceofferingid", serviceOfferingId);
 		request.addRequestParams("templateid", templateId);
 		request.addRequestParams("iptonetworklist[0].networkid", networkId);
+		
+//		request.addRequestParams("hostid", "ebbaffde-5c35-4a0f-a273-34e927bd6e38");
+		
 		CloudStackApiSignatureUtil.generateSignature(request);
 		String requestUrl = request.generateRequestURL();
 		String response = HttpRequestSender.sendGetRequest(requestUrl);
@@ -687,5 +816,5 @@ public class OcsVmServiceImpl implements OcsVmService {
 		
 		return result;
 	}
-
+	
 }

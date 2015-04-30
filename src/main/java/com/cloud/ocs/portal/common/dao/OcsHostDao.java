@@ -24,4 +24,6 @@ public interface OcsHostDao extends GenericDao<OcsHost> {
 	 * @return
 	 */
 	public List<String> findAllHostIds();
+	
+	public List<OcsHost> findAllHost();
 }

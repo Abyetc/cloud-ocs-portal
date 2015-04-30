@@ -7,9 +7,12 @@ import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.bean.OcsEngine;
+import com.cloud.ocs.portal.common.cache.FailureVmCache;
 import com.cloud.ocs.portal.core.business.constant.OcsEngineState;
 import com.cloud.ocs.portal.core.business.constant.OcsVmState;
 import com.cloud.ocs.portal.core.business.service.OcsEngineService;
@@ -25,6 +28,7 @@ import com.cloud.ocs.portal.core.monitor.service.OcsEngineMonitorService;
  *
  */
 @Transactional(value="portal_em")
+@Service
 public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 	
 	private final static Logger LOGGER = Logger.getLogger(OcsEngineMonitorServiceImpl.class.getName());
@@ -34,6 +38,9 @@ public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 	
 	@Resource
 	private OcsVmService ocsVmService;
+	
+	@Autowired
+	private FailureVmCache failureVmCache;
 
 	@Override
 	public void checkAndUpdateOcsEngineStateOnAllVms() {
@@ -45,6 +52,10 @@ public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 		}
 		
 		for (OcsEngine ocsEngine : allOcsEngines) {
+			if (failureVmCache.getFailureVmIds().contains(ocsEngine.getVmId())) {
+				continue;
+			}
+			
 			if (ocsVmService.getOcsVmstate(ocsEngine.getVmId()) != OcsVmState.RUNNING.getCode()) {
 				continue;
 			}

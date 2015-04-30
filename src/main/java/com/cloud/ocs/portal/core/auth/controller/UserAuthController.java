@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.ha.service.WarmStandbyVmPool;
 import com.cloud.ocs.portal.common.bean.Employee;
 import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
 import com.cloud.ocs.portal.core.auth.constant.LoginUserConstant;
 import com.cloud.ocs.portal.core.auth.service.UserAuthService;
+import com.cloud.ocs.portal.core.monitor.service.OcsEngineMonitorService;
+import com.cloud.ocs.schedule.vm.VmDistributionSchedulingJob;
 
 /**
  * 系统用户行为Controller入口
@@ -27,6 +30,15 @@ public class UserAuthController {
 	
 	@Resource
 	private UserAuthService userService;
+	
+	@Resource
+	private VmDistributionSchedulingJob vmDistributionSchedulingJob;
+	
+	@Resource
+	private WarmStandbyVmPool warmStandbyVmPool;
+	
+	@Resource
+	private OcsEngineMonitorService ocsEngineMonitorServiceImpl;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public String base(HttpSession session) {
@@ -67,6 +79,9 @@ public class UserAuthController {
 	
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String userIndex() {
+//		vmDistributionSchedulingJob.executeJob();
+//		warmStandbyVmPool.fillWarmStandbyVmPoolJob();
+		ocsEngineMonitorServiceImpl.checkAndUpdateOcsEngineStateOnAllVms();
 		return "index";
 	}
 	

@@ -162,6 +162,12 @@
 	<bean id="vmForwardingPortCache" class="com.cloud.ocs.portal.common.cache.OcsVmForwardingPortCache">
 	</bean>
 	
+	<bean id="failureVmCache" class="com.cloud.ocs.portal.common.cache.FailureVmCache">
+	</bean>
+	
+	<bean id="failureHostCache" class="com.cloud.ocs.portal.common.cache.FailureHostCache">
+	</bean>
+	
 	
 	<!-- 配置执行同步city和network状态的定时Job -->
 	<bean id="syncCityNetworkStateJob" class="com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob"></bean>
@@ -199,7 +205,7 @@
 		<property name="triggers">
  			<list> 
    				<ref bean="syncCityNetworkStateJobTrigger" />
-   				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" />
+<!--    				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" /> -->
  			</list>
 		</property>
 	</bean>

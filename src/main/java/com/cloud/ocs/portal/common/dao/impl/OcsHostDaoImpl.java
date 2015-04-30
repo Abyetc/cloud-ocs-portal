@@ -38,4 +38,11 @@ public class OcsHostDaoImpl extends GenericDaoImpl<OcsHost> implements OcsHostDa
 		return query.getResultList();
 	}
 
+	@Override
+	public List<OcsHost> findAllHost() {
+		Query query = em.createQuery("select model from OcsHost model");
+		
+		return query.getResultList();
+	}
+
 }

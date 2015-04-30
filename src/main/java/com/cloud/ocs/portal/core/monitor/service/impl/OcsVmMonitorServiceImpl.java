@@ -1,5 +1,6 @@
 package com.cloud.ocs.portal.core.monitor.service.impl;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -292,7 +293,13 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		String publicIp = ocsVmForwardingPort.getPublicIp();
 		String rootPwd = OcsVmProperties.getOcsVmPassword();
 		String cmd = (dayOfMonth < 10 ? OcsVmProperties.getOcsVmHistoryCpuUsagePercentageCmd() + "0" : OcsVmProperties.getOcsVmHistoryCpuUsagePercentageCmd()) + dayOfMonth;
-		String ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		String ret = null;
+		try {
+			ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (ret != null) {
 			String arr[] = ret.split("\n");
@@ -335,7 +342,13 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		String publicIp = ocsVmForwardingPort.getPublicIp();
 		String rootPwd = OcsVmProperties.getOcsVmPassword();
 		String cmd = (dayOfMonth < 10 ? OcsVmProperties.getOcsVmHistoryMemoryUsagePercentageCmd() + "0" : OcsVmProperties.getOcsVmHistoryMemoryUsagePercentageCmd()) + dayOfMonth;
-		String ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		String ret = null;
+		try {
+			ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (ret != null) {
 			String arr[] = ret.split("\n");
@@ -376,7 +389,13 @@ public class OcsVmMonitorServiceImpl implements OcsVmMonitorService {
 		String publicIp = ocsVmForwardingPort.getPublicIp();
 		String rootPwd = OcsVmProperties.getOcsVmPassword();
 		String cmd = (dayOfMonth < 10 ? OcsVmProperties.getOcsVmHistoryNetworkUsagePercentageCmd1() + "0" : OcsVmProperties.getOcsVmHistoryNetworkUsagePercentageCmd1()) + dayOfMonth + OcsVmProperties.getOcsVmHistoryNetworkUsagePercentageCmd2();
-		String ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		String ret = null;
+		try {
+			ret = SSHClient.sendCmd(publicIp, sshPort, "root", rootPwd, cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (ret != null) {
 			String arr[] = ret.split("\n");

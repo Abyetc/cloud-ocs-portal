@@ -1,5 +1,6 @@
 package com.cloud.ocs.portal.core.monitor.service.impl;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -192,11 +193,19 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		String hostIp = ocsHost.getIpAddress();
 		String rootPwd = OcsHostProperties.getOcsHostPassword();
 		String cmd = OcsHostProperties.getCurCpuUsagePercentageCmd();
-		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
-		String resLine = ret.split("\n")[3];
-		String resStr = resLine.substring(resLine.lastIndexOf(" "), resLine.length());
-		if (resStr != null) {
-			res = 100.0 - Double.parseDouble(resStr);
+		String ret = null;
+		try {
+			ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (ret != null) {
+			String resLine = ret.split("\n")[3];
+			String resStr = resLine.substring(resLine.lastIndexOf(" "), resLine.length());
+			if (resStr != null) {
+				res = 100.0 - Double.parseDouble(resStr);
+			}
 		}
 		
 		return res;
@@ -214,7 +223,13 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		String hostIp = ocsHost.getIpAddress();
 		String rootPwd = OcsHostProperties.getOcsHostPassword();
 		String cmd = OcsHostProperties.getCurMemoryUsagePercentageCmd();
-		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		String ret = null;
+		try {
+			ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String resLine = ret.split("\n")[3];
 		int indexOfFirstDot = resLine.indexOf('.');
 		int beg = indexOfFirstDot - 1;
@@ -253,7 +268,13 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		String hostIp = ocsHost.getIpAddress();
 		String rootPwd = OcsHostProperties.getOcsHostPassword();
 		String cmd = (dayOfMonth < 10 ? OcsHostProperties.getHistoryCpuUsagePercentageCmd() + "0" : OcsHostProperties.getHistoryCpuUsagePercentageCmd()) + dayOfMonth;
-		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		String ret = null;
+		try {
+			ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (ret != null) {
 			String arr[] = ret.split("\n");
@@ -287,7 +308,13 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 		String hostIp = ocsHost.getIpAddress();
 		String rootPwd = OcsHostProperties.getOcsHostPassword();
 		String cmd = (dayOfMonth < 10 ? OcsHostProperties.getHistoryMemoryUsagePercentageCmd() + "0" : OcsHostProperties.getHistoryMemoryUsagePercentageCmd()) + dayOfMonth;
-		String ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		String ret = null;
+		try {
+			ret = SSHClient.sendCmd(hostIp, sshPort, "root", rootPwd, cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (ret != null) {
 			String arr[] = ret.split("\n");

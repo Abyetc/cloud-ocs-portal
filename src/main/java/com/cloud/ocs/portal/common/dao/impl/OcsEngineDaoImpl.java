@@ -28,4 +28,11 @@ public class OcsEngineDaoImpl extends GenericDaoImpl<OcsEngine> implements OcsEn
 		return query.getResultList();
 	}
 
+	@Override
+	public int deleteByVmId(String vmId) {
+		Query query = em.createQuery("delete from OcsEngine model where model.vmId='" + vmId + "'");
+		
+		return query.executeUpdate();
+	}
+
 }

@@ -11,4 +11,6 @@ public interface WarmStandbyOcsVmDao extends GenericDao<WarmStandbyOcsVm>{
 	
 	public WarmStandbyOcsVm findById();
 	
+	public long findWarmStandbyOcsVmNumInNetwork(String networkId);
+	
 }

@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Service;
+
 import com.cloud.ocs.schedule.vm.ga.Individual;
 
 /**
@@ -16,6 +18,7 @@ import com.cloud.ocs.schedule.vm.ga.Individual;
  * @date 2015-3-7 下午2:05:47
  *
  */
+@Service
 public class VmDistributionSchedulingJob {
 	
 	@Resource

@@ -54,4 +54,6 @@ public interface OcsVmForwardingPortDao extends GenericDao<OcsVmForwardingPort> 
 	 * @return
 	 */
 	public List<OcsVmForwardingPort> findByNetworkId(String networkId);
+	
+	public int deleteByVmId(String vmId);
 }

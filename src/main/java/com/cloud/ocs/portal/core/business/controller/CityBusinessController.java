@@ -1,5 +1,6 @@
 package com.cloud.ocs.portal.core.business.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +99,11 @@ public class CityBusinessController {
 	@RequestMapping(value="/listOcsVmsByNetwork", method=RequestMethod.GET)
 	@ResponseBody
 	public List<OcsVmDto> listOcsVmsByNetwork(@RequestParam("networkId") String networkId) {
-		return ocsVmService.getOcsVmsListByNetworkId(networkId);
+		List<OcsVmDto> result = ocsVmService.getOcsVmsListInLBRuleByNetworkId(networkId);
+		if (result == null) {
+			result = new ArrayList<OcsVmDto>();
+		}
+		return result;
 	}
 	
 	@RequestMapping(value="/listOcsVmsByCity", method=RequestMethod.GET)

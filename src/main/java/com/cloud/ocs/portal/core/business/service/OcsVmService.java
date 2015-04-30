@@ -31,6 +31,13 @@ public interface OcsVmService {
 	 * @return
 	 */
 	public Integer getOcsVmsNum(String networkId);
+	
+	/**
+	 * 获得计费网络内在负载均衡规则中的ocs虚拟机数量
+	 * @param networkId
+	 * @return
+	 */
+	public Integer getOcsVmsNumInInLBRule(String networkId);
 
 	/**
 	 * 获得属于该network下的所有ocs虚拟机列表
@@ -38,6 +45,13 @@ public interface OcsVmService {
 	 * @return
 	 */
 	public List<OcsVmDto> getOcsVmsListByNetworkId(String networkId);
+	
+	/**
+	 * 获得计费网络内在负载均衡规则中的ocs虚拟机列表
+	 * @param networkId
+	 * @return
+	 */
+	public List<OcsVmDto> getOcsVmsListInLBRuleByNetworkId(String networkId);
 	
 	/**
 	 * 得到以network name为key，该network中的Vm List为value的map

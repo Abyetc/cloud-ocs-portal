@@ -8,7 +8,9 @@ public interface WarmStandbyOcsVmService {
 
 	public List<WarmStandbyOcsVm> getAllWarmStandbyOcsVm();
 	
-	public void addWarmStandbyOcsVm(WarmStandbyOcsVm one);
+	public void addWarmStandbyOcsVm(String networkId);
 	
 	public WarmStandbyOcsVm getWarmStandbyOcsVmById(String vmId);
+	
+	public long getWarmStandbyOcsVmNumInNetwork(String networkId);
 }

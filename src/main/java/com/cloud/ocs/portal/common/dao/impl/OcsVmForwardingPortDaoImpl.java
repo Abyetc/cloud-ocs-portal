@@ -80,4 +80,11 @@ public class OcsVmForwardingPortDaoImpl extends GenericDaoImpl<OcsVmForwardingPo
 		return query.getResultList();
 	}
 
+	@Override
+	public int deleteByVmId(String vmId) {
+		Query query = em.createQuery("delete from OcsVmForwardingPort model where model.vmId='" + vmId + "'");
+		
+		return query.executeUpdate();
+	}
+
 }

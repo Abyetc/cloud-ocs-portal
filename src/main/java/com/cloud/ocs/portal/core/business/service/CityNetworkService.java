@@ -26,6 +26,12 @@ public interface CityNetworkService {
 	public CityNetwork getCityNetworkByNetworkId(String networkId);
 	
 	/**
+	 * 获取所有cityNetwork
+	 * @return
+	 */
+	public List<CityNetwork> getAllCityNetwork();
+	
+	/**
 	 * 根据city id找到cityNetwork列表
 	 * @param cityId
 	 * @return

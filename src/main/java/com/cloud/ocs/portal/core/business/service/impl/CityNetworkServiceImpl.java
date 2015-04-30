@@ -70,12 +70,21 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 				cityNetworkListDto.setPublicIp(network.getPublicIp());
 				cityNetworkListDto.setRealmName(network.getRealmName());
 				cityNetworkListDto.setCreated(network.getCreated());
-				cityNetworkListDto.setVmNum(networkVmService.getOcsVmsNum(network.getNetworkId()));
+				Integer vmNum = networkVmService.getOcsVmsNumInInLBRule(network.getNetworkId());
+				if (vmNum == null) {
+					vmNum = 0;
+				}
+				cityNetworkListDto.setVmNum(vmNum);
 				result.add(cityNetworkListDto);
 			}
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public List<CityNetwork> getAllCityNetwork() {
+		return cityNetworkDao.findAll();
 	}
 	
 	@Override
@@ -103,8 +112,12 @@ public class CityNetworkServiceImpl implements CityNetworkService {
 			cityNetworkDao.persist(cityNetwork);
 			if (cityNetwork.getId() != null) {  //持久化到自己的数据库成功
 				result.setCityNetwork(cityNetwork);
-				result.setVmNum(networkVmService.getOcsVmsNum(cityNetwork.getNetworkId()));
-				result.setIndex(cityNetworkDao.findCityNetworksByCityId(cityNetwork.getCityId()).size());
+				Integer vmNum = networkVmService.getOcsVmsNumInInLBRule(cityNetwork.getNetworkId());
+				if (vmNum == null) {
+					vmNum = 0;
+				}
+				result.setVmNum(vmNum);
+				result.setIndex(cityNetworkDao.findCityNetworksByCityId(cityNetwork.getCityId()).size() + 1);
 			}
 			
 			//添加该新增网络的出口规则(异步)
