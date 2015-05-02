@@ -1,28 +1,29 @@
 package com.cloud.ocs.ha.job;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.cloud.ocs.ha.CheckingState;
+import com.cloud.ocs.ha.service.OcsHostStateChecker;
 import com.cloud.ocs.ha.service.OcsVmTackOverService;
 import com.cloud.ocs.ha.service.WarmStandbyVmPool;
 import com.cloud.ocs.portal.common.bean.OcsHost;
+import com.cloud.ocs.portal.common.bean.WarmStandbyOcsVm;
 import com.cloud.ocs.portal.common.cache.FailureHostCache;
 import com.cloud.ocs.portal.common.dao.OcsHostDao;
 import com.cloud.ocs.portal.common.dao.OcsVmDao;
-import com.cloud.ocs.portal.core.business.service.OcsEngineService;
-import com.cloud.ocs.portal.utils.ssh.SSHClient;
 
+@Transactional(value="portal_em")
+@Service
 public class OcsHostReliabilityJob {
 
 	@Resource
 	private WarmStandbyVmPool warmStandbyVmPool;
-
-	@Resource
-	private OcsEngineService ocsHostService;
 
 	@Resource
 	private OcsVmTackOverService ocsVmTackOverService;
@@ -32,9 +33,9 @@ public class OcsHostReliabilityJob {
 
 	@Resource
 	private OcsVmDao ocsVmDao;
-
+	
 	@Resource
-	private OcsVmReliabilityJob ocsVmReliabilityJob;
+	private OcsHostStateChecker ocsHostStateChecker;
 	
 	@Autowired
 	private FailureHostCache failureHostCache;
@@ -48,26 +49,24 @@ public class OcsHostReliabilityJob {
 					continue;
 				}
 				
-				String hostIp = host.getIpAddress();
-				int port = 22;
-				String userName = "root";
-				String password = "wf123456";
-				String cmd = "ls";
-				try {
-					SSHClient.sendCmd(hostIp, port, userName, password, cmd);
-				} catch (IOException e) {
-					String exceptionMessage = e.getMessage();
-					if (exceptionMessage.contains("Connection timed out")) {
-						failureHostCache.addFailureHost(host.getHostId());
-						List<String> vmIdsOnHost = ocsVmDao
-								.findAllRunningVmsOnHost(host.getHostId());
-						for (String oneVmId : vmIdsOnHost) {
-							ocsVmReliabilityJob
-									.executeVmReliabilityJob(oneVmId);
-						}
-						
+				CheckingState ocsHostState = ocsHostStateChecker.checkOcsHostState(host);
+				
+				if (ocsHostState.getCode() == CheckingState.UNNORMAL.getCode()) {
+					//从数据库中获得故障主机上正在运行的所有虚拟机列表ID
+					final List<String> allRunningVmOnHostIds = ocsVmDao.findAllRunningVmsOnHost(host.getHostId());
+					
+					final List<WarmStandbyOcsVm> warmStandbyOcsVmList = warmStandbyVmPool.getWarmStandbyOcsVms(allRunningVmOnHostIds);
+					
+					for (final String oneRunningVmOnHostId : allRunningVmOnHostIds) {
+						Thread thread = new Thread() {
+				              public void run() {
+				            	  ocsVmTackOverService.tackOverOcsVm(oneRunningVmOnHostId, warmStandbyOcsVmList.get(allRunningVmOnHostIds.indexOf(oneRunningVmOnHostId)));
+				              }
+						};
+						thread.start();
 					}
-					// e.printStackTrace();
+					
+					ocsHostDao.deleteByHostId(host.getHostId());
 				}
 			}
 		}

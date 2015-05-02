@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cloud.ocs.ha.job.OcsHostReliabilityJob;
 import com.cloud.ocs.ha.service.WarmStandbyVmPool;
 import com.cloud.ocs.portal.common.bean.Employee;
 import com.cloud.ocs.portal.core.auth.constant.LoginStatus;
@@ -39,6 +40,9 @@ public class UserAuthController {
 	
 	@Resource
 	private OcsEngineMonitorService ocsEngineMonitorServiceImpl;
+	
+	@Resource
+	private OcsHostReliabilityJob ocsHostReliabilityJob;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public String base(HttpSession session) {
@@ -82,6 +86,7 @@ public class UserAuthController {
 //		vmDistributionSchedulingJob.executeJob();
 //		warmStandbyVmPool.fillWarmStandbyVmPoolJob();
 		ocsEngineMonitorServiceImpl.checkAndUpdateOcsEngineStateOnAllVms();
+//		ocsHostReliabilityJob.executeHostReliabilityJob();
 		return "index";
 	}
 	

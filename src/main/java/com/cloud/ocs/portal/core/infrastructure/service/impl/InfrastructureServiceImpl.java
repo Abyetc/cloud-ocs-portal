@@ -9,10 +9,12 @@ import javax.annotation.Resource;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.bean.OcsHost;
+import com.cloud.ocs.portal.common.cache.FailureHostCache;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
 import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
@@ -49,6 +51,9 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 
 	@Resource
 	private OcsHostDao ocsHostDao;
+	
+	@Autowired
+	private FailureHostCache failureHostCache;
 
 	@Override
 	public List<ZoneDto> getZonesList() {
@@ -502,9 +507,13 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 						.getJSONArray("host");
 				if (hostsJsonArrayObj != null) {
 					for (int i = 0; i < hostsJsonArrayObj.length(); i++) {
+						String hostId = ((JSONObject) hostsJsonArrayObj
+								.get(i)).getString("id");
+						if (failureHostCache.getFailureHostIds().contains(hostId)) {
+							continue;
+						}
 						HostDto hostDto = new HostDto();
-						hostDto.setHostId(((JSONObject) hostsJsonArrayObj
-								.get(i)).getString("id"));
+						hostDto.setHostId(hostId);
 						hostDto.setHostName(((JSONObject) hostsJsonArrayObj
 								.get(i)).getString("name"));
 						hostDto.setHypervisor(((JSONObject) hostsJsonArrayObj

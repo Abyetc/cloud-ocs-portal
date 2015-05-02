@@ -77,7 +77,7 @@ public interface OcsVmService {
 	 * @return
 	 */
 	public AddOcsVmDto addOcsVm(String vmName, String networkId, String zoneId,
-			String serviceOfferingId, String templateId);
+			String serviceOfferingId, String templateId, String hostId);
 	
 	/**
 	 * 删除ocs虚拟机
@@ -112,5 +112,7 @@ public interface OcsVmService {
 	 * @return
 	 */
 	public Integer getOcsVmstate(String vmId);
+	
+	public void checkAndAddVmToLoadBalancerRule(String publicIpId, String vmId, String networkId, String networkName);
 	
 }

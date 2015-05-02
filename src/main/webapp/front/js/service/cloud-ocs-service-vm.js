@@ -42,6 +42,13 @@ function listNetworkVms(event) {
                      +            "</div>"
                      +          "</div>"
                      +          "<div class='form-group'>"
+                     +            "<label for='city-vm-host' class='col-lg-4 control-label'>主机：</label>"
+                     +            "<div class='col-lg-8'>"
+                     +              "<select class='form-control' id='city-vm-host'>"
+                     +              "</select>"
+                     +            "</div>"
+                     +          "</div>"
+                     +          "<div class='form-group'>"
                      +            "<label for='city-vm-serviceoffering' class='col-lg-4 control-label'>计算方案：</label>"
                      +            "<div class='col-lg-8'>"
                      +              "<select class='form-control' id='city-vm-serviceoffering'>"
@@ -192,6 +199,7 @@ $("body").on("click", '#add-city-vm-btn', function() {
 		keyboard: true
 	});
 	var zoneSelectOption = "";
+	var hostSelectOption = "";
 	var serviceOfferingSelectOption = "";
 	var templateSelectOption = "";
 	$("#city-vm-zone").empty();
@@ -206,6 +214,24 @@ $("body").on("click", '#add-city-vm-btn', function() {
 				zoneSelectOption += "<option value=\"" + data[i].zoneId + "\">" + data[i].zoneName + "</option>";
 			}
 			$("#city-vm-zone").append(zoneSelectOption);
+		},
+		error: function(xhr, status) {}
+	});
+	//获取host列表
+	$("#city-vm-host").empty();
+	$.ajax({
+		type: "GET",
+		url: "resource/infrastructure/listHosts",
+		dataType: "json",
+		data: {
+			clusterId: "e6470d5a-d30f-4c80-b384-4a256686f69c"
+		},
+		success: function(data) {
+			hostSelectOption += "<option value=''></option>";
+			for (var i = 0; i < data.length; i++) {
+				hostSelectOption += "<option value=\"" + data[i].hostId + "\">" + data[i].hostName + "</option>";
+			}
+			$("#city-vm-host").append(hostSelectOption);
 		},
 		error: function(xhr, status) {}
 	});
@@ -245,6 +271,7 @@ $("body").on("click", '#add-city-vm-btn', function() {
 function addOcsVm(networkId) {
 	var vmName = $("#city-vm-name").val();
 	var zoneId = $("#city-vm-zone").val();
+	var hostId = $("#city-vm-host").val();
 	var serviceOfferingId = $("#city-vm-serviceoffering").val();
 	var templateId = $("#city-vm-template").val();
 
@@ -269,7 +296,8 @@ function addOcsVm(networkId) {
 			vmName: vmName.trim(),
 			serviceOfferingId: serviceOfferingId,
 			zoneId: zoneId,
-			templateId: templateId
+			templateId: templateId,
+			hostId: hostId
 		},
 		success: function(data) {
 			$("#add-city-vm-modal div.loader").shCircleLoader('destroy');

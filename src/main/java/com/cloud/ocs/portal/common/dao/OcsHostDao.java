@@ -26,4 +26,6 @@ public interface OcsHostDao extends GenericDao<OcsHost> {
 	public List<String> findAllHostIds();
 	
 	public List<OcsHost> findAllHost();
+	
+	public int deleteByHostId(String hostId);
 }

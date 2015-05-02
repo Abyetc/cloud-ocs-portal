@@ -168,6 +168,9 @@
 	<bean id="failureHostCache" class="com.cloud.ocs.portal.common.cache.FailureHostCache">
 	</bean>
 	
+	<bean id="stoppingAndDeletingVmCache" class="com.cloud.ocs.portal.common.cache.StoppingAndDeletingVmCache">
+	</bean>
+	
 	
 	<!-- 配置执行同步city和network状态的定时Job -->
 	<bean id="syncCityNetworkStateJob" class="com.cloud.ocs.portal.core.sync.job.SyncCityNetworkStateJob"></bean>

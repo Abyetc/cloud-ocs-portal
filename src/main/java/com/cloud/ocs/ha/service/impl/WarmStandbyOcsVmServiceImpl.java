@@ -56,8 +56,8 @@ public class WarmStandbyOcsVmServiceImpl implements WarmStandbyOcsVmService {
 	private OcsEngineService ocsEngineService;
 	
 	
-	public List<WarmStandbyOcsVm> getAllWarmStandbyOcsVm() {
-		return null;
+	public List<WarmStandbyOcsVm> getAllSuitableWarmStandbyOcsVmList() {
+		return warmStandbyOcsVmDao.findAllAvailableWarmStandbyOcsVm();
 	}
 
 	@Override

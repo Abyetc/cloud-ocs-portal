@@ -49,4 +49,10 @@ public interface OcsVmDao extends GenericDao<OcsVm> {
 	 */
 	public List<String> findAllRunningVmsOnHost(String hostId);
 	
+	/**
+	 * 获得所有正在运行的计费虚拟机
+	 * @return
+	 */
+	public List<OcsVm> findAllRunningOcsVms();
+	
 }

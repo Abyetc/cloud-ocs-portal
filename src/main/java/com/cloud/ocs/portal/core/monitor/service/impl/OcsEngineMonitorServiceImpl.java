@@ -56,18 +56,23 @@ public class OcsEngineMonitorServiceImpl implements OcsEngineMonitorService {
 				continue;
 			}
 			
-			if (ocsVmService.getOcsVmstate(ocsEngine.getVmId()) != OcsVmState.RUNNING.getCode()) {
+			Integer ocsVmState = ocsVmService.getOcsVmstate(ocsEngine.getVmId());
+			
+			if (ocsVmState == null) { //说明该记录在温备虚拟机表中
+				continue;
+			}
+			
+			if (ocsVmState != OcsVmState.RUNNING.getCode()) { //不在运行的虚拟机跳过检测
 				continue;
 			}
 			
 			OcsEngineState ocsEngineState = ocsEngineService.checkOcsEngineServiceRunningState(ocsEngine.getVmId());
-			if (ocsEngineState == null) {
+			if (ocsEngineState == null) { //无法连接到虚拟机
 				continue;
 			}
 			if (ocsEngine.getOcsEngineState().equals(ocsEngineState.getCode())) {
 				if (ocsEngineState.equals(OcsEngineState.STOPPED)) {
 					ocsEngineService.startOcsEngineService(ocsEngine.getVmId());
-					continue;
 				}
 			}
 			else {

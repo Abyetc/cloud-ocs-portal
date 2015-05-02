@@ -32,4 +32,19 @@ public class WarmStandbyOcsVmDaoImpl extends GenericDaoImpl<WarmStandbyOcsVm> im
 		return (Long)query.getSingleResult();
 	}
 
+	@Override
+	public List<WarmStandbyOcsVm> findAllAvailableWarmStandbyOcsVm() {
+		Query query = em
+				.createQuery("select model from WarmStandbyOcsVm model where model.state=1");
+		
+		return query.getResultList();
+	}
+
+	@Override
+	public int removeByVmId(String vmId) {
+		Query query = em.createQuery("delete from WarmStandbyOcsVm model where model.vmId='" + vmId + "'");
+		
+		return query.executeUpdate();
+	}
+
 }

@@ -118,9 +118,10 @@ public class CityBusinessController {
 			@RequestParam("networkId") String networkId,
 			@RequestParam("zoneId") String zoneId,
 			@RequestParam("serviceOfferingId") String serviceOfferingId,
-			@RequestParam("templateId") String templateId) {
+			@RequestParam("templateId") String templateId,
+			@RequestParam("hostId") String hostId) {
 		return ocsVmService.addOcsVm(vmName, networkId, zoneId,
-				serviceOfferingId, templateId);
+				serviceOfferingId, templateId, hostId);
 	}
 	
 	@RequestMapping(value="/removeOcsVm", method=RequestMethod.GET)

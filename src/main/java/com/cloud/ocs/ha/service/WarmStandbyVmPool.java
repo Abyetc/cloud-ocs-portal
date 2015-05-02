@@ -1,6 +1,9 @@
 package com.cloud.ocs.ha.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -9,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cloud.ocs.portal.common.bean.CityNetwork;
 import com.cloud.ocs.portal.common.bean.WarmStandbyOcsVm;
-import com.cloud.ocs.portal.core.business.constant.NetworkState;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
+import com.cloud.ocs.portal.core.business.service.OcsVmService;
 
 @Transactional(value="portal_em")
 @Service
@@ -25,9 +28,44 @@ public class WarmStandbyVmPool {
 
 	@Resource
 	private CityNetworkService cityNetworkService;
+	
+	@Resource
+	private OcsVmService ocsVmService;
 
-	public List<WarmStandbyOcsVm> getAllWarmStandbyOcsVms() {
-		return null;
+	/**
+	 * 根据出传入的主机上虚拟机Id列表，选取合适的温备虚拟机
+	 * @param vmIdsOnFailureHost
+	 * @return
+	 */
+	public List<WarmStandbyOcsVm> getWarmStandbyOcsVms(List<String> vmIdsOnFailureHost) {
+		List<WarmStandbyOcsVm> allAvailableWarmStandbyOcsVms = warmStandbyOcsVmService.getAllSuitableWarmStandbyOcsVmList();
+		
+		if (allAvailableWarmStandbyOcsVms == null) {
+			return null;
+		}
+		
+		Map<String, List<WarmStandbyOcsVm>> warmStandbyOcsVmMap = new HashMap<String, List<WarmStandbyOcsVm>>();
+		for (WarmStandbyOcsVm oneWarmStandbyOcsVm : allAvailableWarmStandbyOcsVms) {
+			String networkId = oneWarmStandbyOcsVm.getNetworkId();
+			if (warmStandbyOcsVmMap.containsKey(networkId)) {
+				warmStandbyOcsVmMap.get(networkId).add(oneWarmStandbyOcsVm);
+			}
+			else {
+				List<WarmStandbyOcsVm> newList = new ArrayList<WarmStandbyOcsVm>();
+				newList.add(oneWarmStandbyOcsVm);
+				warmStandbyOcsVmMap.put(networkId, newList);
+			}
+		}
+		
+		List<WarmStandbyOcsVm> result = new ArrayList<WarmStandbyOcsVm>();
+		for (String vmIdOnFailureHost : vmIdsOnFailureHost) {
+			String vmNetworkIdOnFailureHost = ocsVmService.getOcsVmByVmId(vmIdOnFailureHost).getNetworkId();
+			WarmStandbyOcsVm selected = warmStandbyOcsVmMap.get(vmNetworkIdOnFailureHost).get(0);
+			result.add(selected);
+			warmStandbyOcsVmMap.get(vmNetworkIdOnFailureHost).remove(selected);
+		}
+		
+		return result;
 	}
 
 	public List<WarmStandbyOcsVm> getFixedNumWarmStandbyOcsVms(int num) {

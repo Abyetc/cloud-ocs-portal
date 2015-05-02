@@ -13,9 +13,11 @@ import javax.annotation.Resource;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cloud.ocs.portal.common.bean.OcsHost;
+import com.cloud.ocs.portal.common.cache.FailureHostCache;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.dao.OcsHostDao;
 import com.cloud.ocs.portal.core.monitor.constant.MonitorApiName;
@@ -47,6 +49,9 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 	@Resource
 	private OcsVmMonitorService vmMonitorService;
 	
+	@Autowired
+	private FailureHostCache failureHostCache;
+	
 	private DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-");
 	private DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
 	private DateFormat dateFormat3 = new SimpleDateFormat("dd");
@@ -70,15 +75,19 @@ public class HostMonitorServiceImpl implements HostMonitorService {
 				JSONArray hostsJsonArrayObj = hostsListJsonObj.getJSONArray("host");
 				if (hostsJsonArrayObj != null) {
 					for (int i = 0; i < hostsJsonArrayObj.length(); i++) {
-						HostDetail hostDetail = new HostDetail();
 						JSONObject jsonObject = (JSONObject)hostsJsonArrayObj.get(i);
+						String hostId = jsonObject.getString("id");
+						if (failureHostCache.getFailureHostIds().contains(hostId)) {
+							continue;
+						}
+						HostDetail hostDetail = new HostDetail();
 						hostDetail.setZoneId(jsonObject.getString("zoneid"));
 						hostDetail.setZoneName(jsonObject.getString("zonename"));
 						hostDetail.setPodId(jsonObject.getString("podid"));
 						hostDetail.setPodName(jsonObject.getString("podname"));
 						hostDetail.setClusterId(jsonObject.getString("clusterid"));
 						hostDetail.setClusterName(jsonObject.getString("clustername"));
-						hostDetail.setHostId(jsonObject.getString("id"));
+						hostDetail.setHostId(hostId);
 						hostDetail.setHostName(jsonObject.getString("name"));
 						hostDetail.setHypervisor(jsonObject.getString("hypervisor"));
 						hostDetail.setIpAddress(jsonObject.getString("ipaddress"));

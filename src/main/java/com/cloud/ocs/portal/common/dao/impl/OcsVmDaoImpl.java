@@ -65,4 +65,11 @@ public class OcsVmDaoImpl extends GenericDaoImpl<OcsVm> implements OcsVmDao {
 		return query.getResultList();
 	}
 
+	@Override
+	public List<OcsVm> findAllRunningOcsVms() {
+		Query query = em.createQuery("select model from OcsVm model where model.state=1");
+		
+		return query.getResultList();
+	}
+
 }

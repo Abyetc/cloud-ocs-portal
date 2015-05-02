@@ -20,6 +20,7 @@ import com.cloud.ocs.portal.common.bean.CityNetwork;
 import com.cloud.ocs.portal.common.bean.OcsEngine;
 import com.cloud.ocs.portal.common.bean.OcsVm;
 import com.cloud.ocs.portal.common.cache.OcsVmForwardingPortCache;
+import com.cloud.ocs.portal.common.cache.StoppingAndDeletingVmCache;
 import com.cloud.ocs.portal.common.cs.CloudStackApiRequest;
 import com.cloud.ocs.portal.common.cs.asyncjob.constant.AsyncJobStatus;
 import com.cloud.ocs.portal.common.cs.asyncjob.dto.AsynJobResultDto;
@@ -94,6 +95,9 @@ public class OcsVmServiceImpl implements OcsVmService {
 	
 	@Resource
 	private WarmStandbyVmPool warmStandbyVmPool;
+	
+	@Autowired
+	private StoppingAndDeletingVmCache stoppingAndDeletingVmCache;
 	
 	@Override
 	public OcsVm getOcsVmByVmId(String vmId) {
@@ -304,11 +308,11 @@ public class OcsVmServiceImpl implements OcsVmService {
 
 	@Override
 	public AddOcsVmDto addOcsVm(String vmName, String networkId, String zoneId,
-			String serviceOfferingId, String templateId) {
+			String serviceOfferingId, String templateId, String hostId) {
 		AddOcsVmDto result = new AddOcsVmDto();
 		result.setCode(AddOcsVmDto.ADD_OCS_VM_CODE_ERROR); //初始默认为不成功
 		
-		String jobId = this.sendDeployVmRequestToCs(vmName, networkId, zoneId, serviceOfferingId, templateId);
+		String jobId = this.sendDeployVmRequestToCs(vmName, networkId, zoneId, serviceOfferingId, templateId, hostId);
 		
 		if (jobId == null) {
 			result.setMessage("Send Adding Vm Request to Cloudstack Error.");
@@ -410,6 +414,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 	
 	@Override
 	public OperateObjectDto removeOcsVm(String vmId) {
+		stoppingAndDeletingVmCache.getStoppingAndDeletingVmIds().add(vmId);
+		
 		OperateObjectDto result = new OperateObjectDto();
 		result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR); //初始化为默认不成功
 		
@@ -468,6 +474,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 	
 	@Override
 	public OperateObjectDto stopOcsVm(String vmId) {
+		stoppingAndDeletingVmCache.getStoppingAndDeletingVmIds().add(vmId);
+		
 		OperateObjectDto result = new OperateObjectDto();
 		result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR); //初始化为默认不成功
 		
@@ -565,6 +573,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 			ocsVm.setHostName(jsonObj.getString("hostname"));
 			ocsVm.setState(OcsVmState.getCode(jsonObj.getString("state")));
 			ocsVmDao.update(ocsVm);
+			
+			stoppingAndDeletingVmCache.getStoppingAndDeletingVmIds().remove(vmId);
 		}
 		
 		return result;
@@ -600,7 +610,7 @@ public class OcsVmServiceImpl implements OcsVmService {
 	 * @return job id
 	 */
 	private String sendDeployVmRequestToCs(String vmName, String networkId, String zoneId,
-			String serviceOfferingId, String templateId) {
+			String serviceOfferingId, String templateId, String hostId) {
 		CloudStackApiRequest request = new CloudStackApiRequest(BusinessApiName.BUSINESS_API_DEPLOY_OCS_VM);
 		request.addRequestParams("name", vmName);
 		request.addRequestParams("displayname", vmName);
@@ -608,6 +618,10 @@ public class OcsVmServiceImpl implements OcsVmService {
 		request.addRequestParams("serviceofferingid", serviceOfferingId);
 		request.addRequestParams("templateid", templateId);
 		request.addRequestParams("iptonetworklist[0].networkid", networkId);
+		
+		if (!hostId.isEmpty()) {
+			request.addRequestParams("hostid", hostId);
+		}
 		
 //		request.addRequestParams("hostid", "ebbaffde-5c35-4a0f-a273-34e927bd6e38");
 		
@@ -728,7 +742,8 @@ public class OcsVmServiceImpl implements OcsVmService {
 	 * @param publicIpId
 	 * @return 
 	 */
-	private void checkAndAddVmToLoadBalancerRule(String publicIpId, String vmId, String networkId, String networkName) {
+	@Override
+	public void checkAndAddVmToLoadBalancerRule(String publicIpId, String vmId, String networkId, String networkName) {
 		if (publicIpId == null) {
 			return;
 		}

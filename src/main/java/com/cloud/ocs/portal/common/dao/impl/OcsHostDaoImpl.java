@@ -45,4 +45,11 @@ public class OcsHostDaoImpl extends GenericDaoImpl<OcsHost> implements OcsHostDa
 		return query.getResultList();
 	}
 
+	@Override
+	public int deleteByHostId(String hostId) {
+		Query query = em.createQuery("delete from OcsHost model where model.hostId='" + hostId + "'");
+		
+		return query.executeUpdate();
+	}
+
 }
