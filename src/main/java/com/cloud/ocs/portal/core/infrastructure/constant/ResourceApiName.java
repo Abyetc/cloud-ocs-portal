@@ -36,4 +36,7 @@ public class ResourceApiName {
 	public final static String RESOURCE_API_LIST_NETWORK_OFFERINGS =	"listNetworkOfferings";
 	public final static String RESOURCE_API_LIST_TEMPLATES		   =	"listTemplates";
 	public final static String RESOURCE_API_LIST_SERVICE_OFFERINGS =	"listServiceOfferings";
+	
+	public final static String RESOURCE_API_FIND_HOST_FOR_MIGRATION=	"findHostsForMigration";
+	public final static String RESOURCE_API_MIGRATE_VM			   =	"migrateVirtualMachine";
 }

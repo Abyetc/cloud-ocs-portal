@@ -601,7 +601,6 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 	
 	@Override
 	public OperateObjectDto removeHost(String hostId) {
-		// TODO Auto-generated method stub
 		OperateObjectDto operateObjectDto = new OperateObjectDto();
 		operateObjectDto.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR);
 		operateObjectDto.setMessage("Unable to remove host");
@@ -831,6 +830,115 @@ public class InfrastructureServiceImpl implements InfrastructureService {
 		if (response != null) {
 			JSONObject responseJsonObj = new JSONObject(response);
 			JSONObject resultJsonObj = responseJsonObj.getJSONObject("preparehostformaintenanceresponse");
+			if (resultJsonObj.has("jobid")) {
+				result = resultJsonObj.getString("jobid");
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<HostDto> getHostsForVmMigration(String vmId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_FIND_HOST_FOR_MIGRATION);
+		request.addRequestParams("virtualmachineid", vmId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		List<HostDto> result = new ArrayList<HostDto>();
+
+		if (result != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject hostsListJsonObj = responseJsonObj
+					.getJSONObject("findhostsformigrationresponse");
+			if (hostsListJsonObj.has("host")) {
+				JSONArray hostsJsonArrayObj = hostsListJsonObj
+						.getJSONArray("host");
+				if (hostsJsonArrayObj != null) {
+					for (int i = 0; i < hostsJsonArrayObj.length(); i++) {
+						String hostId = ((JSONObject) hostsJsonArrayObj
+								.get(i)).getString("id");
+						if (failureHostCache.getFailureHostIds().contains(hostId)) {
+							continue;
+						}
+						HostDto hostDto = new HostDto();
+						hostDto.setHostId(hostId);
+						hostDto.setHostName(((JSONObject) hostsJsonArrayObj
+								.get(i)).getString("name"));
+						result.add(hostDto);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public OperateObjectDto dynamicMigrateVm(String vmId, String destHostId) {
+		OperateObjectDto result = new OperateObjectDto();
+		result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_ERROR); //初始化为默认不成功
+		
+		String jobId = this.sendMigrateVmRequestToCs(vmId, destHostId);
+		
+		if (jobId == null) {
+			result.setMessage("Send Migrating Vm Request to Cloudstack Error.");
+			return result;
+		}
+		
+		AsynJobResultDto asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "virtualmachine");
+		//每隔3秒发送一次请求，查询Job状态
+		while (asyncJobResult != null && asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.PENDING.getCode()) {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			asyncJobResult = QueryAsyncJobResultService.queryAsyncJobResult(jobId, "virtualmachine");
+		}
+		
+		//Job执行失败
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.FAILED
+						.getCode()) {
+//			if (asyncJobResult.getJobResultType().equals("errortext")) {
+//				result.setMessage((String) asyncJobResult.getJobResult());
+//			}
+			result.setMessage("Migrating Vm failed.");
+			return result;
+		}
+		
+		//Job执行成功
+		if (asyncJobResult != null
+				&& asyncJobResult.getJobStatus().getCode() == AsyncJobStatus.SUCCESS
+						.getCode()) {
+			result.setCode(OperateObjectDto.OPERATE_OBJECT_CODE_SUCCESS);
+			result.setMessage("Migrating Vm Success.");
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 发送迁移虚拟机的异步请求到CloudStack
+	 * @param vmId
+	 * @param destHostId
+	 * @return
+	 */
+	private String sendMigrateVmRequestToCs(String vmId, String destHostId) {
+		CloudStackApiRequest request = new CloudStackApiRequest(ResourceApiName.RESOURCE_API_MIGRATE_VM);
+		request.addRequestParams("hostid", destHostId);
+		request.addRequestParams("virtualmachineid", vmId);
+		CloudStackApiSignatureUtil.generateSignature(request);
+		String requestUrl = request.generateRequestURL();
+		String response = HttpRequestSender.sendGetRequest(requestUrl);
+		
+		String result = null;
+		
+		if (response != null) {
+			JSONObject responseJsonObj = new JSONObject(response);
+			JSONObject resultJsonObj = responseJsonObj.getJSONObject("migratevirtualmachineresponse");
 			if (resultJsonObj.has("jobid")) {
 				result = resultJsonObj.getString("jobid");
 			}

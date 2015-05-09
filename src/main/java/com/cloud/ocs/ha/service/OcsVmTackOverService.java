@@ -10,6 +10,7 @@ import com.cloud.ocs.portal.common.bean.WarmStandbyOcsVm;
 import com.cloud.ocs.portal.common.dao.OcsVmDao;
 import com.cloud.ocs.portal.common.dao.WarmStandbyOcsVmDao;
 import com.cloud.ocs.portal.core.business.service.CityNetworkService;
+import com.cloud.ocs.portal.core.business.service.OcsEngineService;
 import com.cloud.ocs.portal.core.business.service.OcsVmService;
 
 @Transactional(value="portal_em")
@@ -24,6 +25,9 @@ public class OcsVmTackOverService {
 	
 	@Resource
 	private OcsVmService ocsVmService;
+	
+	@Resource
+	private OcsEngineService ocsEngineService;
 	
 	@Resource
 	private CityNetworkService cityNetworkService;
@@ -43,6 +47,8 @@ public class OcsVmTackOverService {
 		String vmId = warmStandbyOcsVm.getVmId();
 		String networkName = cityNetworkService.getCityNetworkByNetworkId(networkId).getNetworkName();
 		ocsVmService.checkAndAddVmToLoadBalancerRule(publicIpId, vmId, networkId, networkName);
+		//执行一次开启温备虚拟机上计费引擎的命令
+		ocsEngineService.startOcsEngineService(vmId);
 		
 		//删除Host上的故障虚拟机
 		ocsVmService.removeOcsVm(vmIdOnFailureHost);

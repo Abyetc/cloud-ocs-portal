@@ -250,10 +250,6 @@ function addInfraMonitorPoint() {
 	var monitorType = $("#monitor-type").val();
 	var usageThresholdValue = $("#usage-threshold-value").val();
 	var alertPrincipal = $("#alert_principal").val();
-	console.log(monitorObjectId);
-	console.log(monitorType);
-	console.log(usageThresholdValue);
-	console.log(alertPrincipal);
 	
 	//添加转菊花
 	$("#add-infra-alert-monitor-point-modal div.modal-body").append("<div class='loader'></div>");

@@ -18,7 +18,7 @@ function listVMsOnHost(zoneId, hostId, hostName, hostIpAddress) {
 	var monitorVmsOnHostListTable = $("<table class='table table-bordered text-center'>" 
 		+ "<caption><strong>主机" + hostName + " 正在运行的VM列表</strong></caption>" 
 		+ "<thead><tr><th>序号</th><th>名称</th><th>内部名称</th>" 
-		+ "<th>状态</th><th>详细信息</th></tr></thead>" 
+		+ "<th>状态</th><th>详细信息</th><th>动态迁移</th></tr></thead>" 
 		+ "<tbody></tbody>" 
 		+ "</table>");
 	$("#content-area").append(monitorVmsOnHostListTable);
@@ -45,6 +45,7 @@ function listVMsOnHost(zoneId, hostId, hostName, hostIpAddress) {
 					+ "<td>" + data[i].instanceName + "</td>"
 					+ (data[i].state == "Running" ? "<td><span class='label label-success'>Running</span></td>" : "<td><span class='label label-danger'>" + data[i].state + "</span></td>")
 					+ "<td><button type='button' class='btn btn-xs btn-primary vm-detail-btn-" + i + "'>点击查看</button></td>"
+					+ "<td><button type='button' class='btn btn-xs btn-primary' onclick='dynamicMigrateVm(\"" + data[i].vmId + "\")'>迁移</button></td>"
 					+ "</tr>"
 				);
 				$(".table tbody button.btn.btn-xs.btn-primary.vm-detail-btn-" + i).on("click", {vmDetail: data[i]}, monitorVmDetail);
@@ -54,6 +55,31 @@ function listVMsOnHost(zoneId, hostId, hostName, hostIpAddress) {
 			alert(status);
 		}
 	});
+	
+	//动态迁移虚拟机的模态框
+	$("#content-area").after("<div class='modal fade' id='dynamic-migrate-vm-modal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+			+  "<div class='modal-dialog modal-dialog-center'>"
+            +    "<div class='modal-content'>"
+            +      "<div class='modal-header'>"
+            +        "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+            +        "<h4 class='modal-title'>将计费虚拟机动态迁移到其他计费主机</h4>"
+            +      "</div>"
+            +      "<div class='modal-body'>"
+            +            "<div class='form-horizontal' role='form'>"
+            +          "<div class='form-group'>"
+            +            "<label for='' class='col-lg-4 control-label'>合适的目标计费主机：</label>"
+            +            "<div class='col-lg-8'>"
+            +              "<select class='form-control' id='dest-host-list'>"
+            +              "</select>"
+            +            "</div>"
+            +          "</div>"
+            +        "</div>"
+            +      "</div>"
+            +      "<div class='modal-footer'>"
+            +      "</div>"
+            +    "</div>"
+            +  "</div>"
+            + "</div>");
 }
 
 //用于VM监控图表的全局变量
@@ -320,4 +346,73 @@ function monitorVmDetail(event) {
 			    +   "</div>"
 			    +   "<div id='vm-history-network-usage-monitor-chart'></div>"
 			    + "</div>");
+}
+
+//弹出模态框
+function dynamicMigrateVm(vmId) {
+	$('#dynamic-migrate-vm-modal').modal({
+		keyboard: true
+	});
+	
+	var hostListSelectOption = '';
+	$("#dest-host-list").empty();
+	//获取城市列表
+	$.ajax({
+		type: "GET",
+		url: "resource/infrastructure/getHostListForVmMigration",
+		dataType: "json",
+		data: {
+			vmId: vmId
+		},
+		success: function(data) {
+			for (var i = 0; i < data.length; i++) {
+				hostListSelectOption += "<option value=\"" + data[i].hostId + "\">" + data[i].hostName + "</option>";
+			}
+			$("#dest-host-list").append(hostListSelectOption);
+		},
+		error: function(xhr, status) {}
+	});
+	
+	$("#dynamic-migrate-vm-modal div.modal-footer").empty();
+	$("#dynamic-migrate-vm-modal div.modal-footer").append("<button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>");
+	$("#dynamic-migrate-vm-modal div.modal-footer").append("<button type='button' class='btn btn-primary' onclick=\"dynamicMigrateVmSubmit('" + vmId + "')\">" + "确认</button>");
+}
+
+function dynamicMigrateVmSubmit(vmId) {
+	var hostId = $("#dest-host-list").val();
+	
+	//添加转菊花
+	$("#dynamic-migrate-vm-modal div.modal-body").append("<div class='loader'></div>");
+	$("#dynamic-migrate-vm-modal div.modal-body").append("<span class='text-primary pull-right'>正在迁移，过程稍长，请耐心等待...</span>");
+	$("div.loader").shCircleLoader({
+		duration: 0.75
+	});
+	
+	$.ajax({
+		type: "GET",
+		url: "resource/infrastructure/dynamicMigrateVm",
+		dataType: "json",
+		data: {
+			hostId: hostId,
+			vmId: vmId
+		},
+		success: function(data) {
+			$("#dynamic-migrate-vm-modal div.loader").shCircleLoader('destroy');
+			$("#dynamic-migrate-vm-modal div.loader").remove();
+			$("#dynamic-migrate-vm-modal span.text-primary.pull-right").remove();
+			if (data.code == 20000000) { //添加成功
+				alert("计费虚拟机迁移成功！");
+				$('#dynamic-migrate-vm-modal').modal('hide');
+			}
+			else {
+				alert("添加失败！Msg:" + data.message);
+			}
+		},
+		error: function(xhr, status) {
+			$("#dynamic-migrate-vm-modal div.loader").shCircleLoader('destroy');
+			$("#dynamic-migrate-vm-modal div.loader").remove();
+			$("#dynamic-migrate-vm-modal span.text-primary.pull-right").remove();
+			alert(status);
+		}
+	});
 }

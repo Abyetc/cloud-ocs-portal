@@ -203,12 +203,46 @@
 		<!-- 每30秒运行一次 -->
 		<property name="cronExpression" value="0/30 * * * * ?" />
 	</bean>
+	
+	<!-- 配置检查计费虚拟机状态的定时Job -->
+	<bean id="ocsVmReliabilityJob" class="com.cloud.ocs.ha.job.OcsVmReliabilityJob"></bean>
+	<bean id="ocsVmReliabilityJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 指定任务类 -->
+		<property name="targetObject" ref="ocsVmReliabilityJob" />
+		<!-- 指定任务执行的方法 -->
+		<property name="targetMethod" value="executeVmReliabilityJob" />
+	</bean>
+	<bean id="ocsVmReliabilityJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="ocsVmReliabilityJobDetail" />
+		<!-- 每30秒运行一次 -->
+		<property name="cronExpression" value="0/30 * * * * ?" />
+	</bean>
+	
+	<!-- 配置检查计费主机状态的定时Job -->
+	<bean id="ocsHostReliabilityJob" class="com.cloud.ocs.ha.job.OcsHostReliabilityJob"></bean>
+	<bean id="ocsHostReliabilityJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 指定任务类 -->
+		<property name="targetObject" ref="ocsHostReliabilityJob" />
+		<!-- 指定任务执行的方法 -->
+		<property name="targetMethod" value="executeHostReliabilityJob" />
+	</bean>
+	<bean id="ocsHostReliabilityJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="ocsHostReliabilityJobDetail" />
+		<!-- 每30秒运行一次 -->
+		<property name="cronExpression" value="0/30 * * * * ?" />
+	</bean>
 
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
  			<list> 
    				<ref bean="syncCityNetworkStateJobTrigger" />
-<!--    				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" /> -->
+   				<ref bean="checkAndUpdateOcsEngineStateOnAllVmsJobTrigger" />
+   				<ref bean="ocsVmReliabilityJobTrigger" />
+   				<ref bean="ocsHostReliabilityJobTrigger" />
  			</list>
 		</property>
 	</bean>

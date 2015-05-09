@@ -121,7 +121,7 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		
 		//统计在从现在开始到一分钟之前之间处理完成的包
 		Date dNow = date;
-		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600);
+		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600*2);
 		Timestamp to = DateUtil.transferDateInSecondField(date, 0);
 		
 		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
@@ -166,7 +166,7 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		
 		//统计在从现在开始到一分钟之前之间处理完成的包
 		Date dNow = date;
-		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600);
+		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600*2);
 		Timestamp to = DateUtil.transferDateInSecondField(date, 0);
 		
 		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +
@@ -184,7 +184,7 @@ public class MessageRecordDaoImpl extends GenericDaoImpl<MessageRecord> implemen
 		
 		//统计在从现在开始到一分钟之前之间处理完成的包
 		Date dNow = date;
-		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600);
+		Timestamp from = DateUtil.transferDateInSecondField(dNow, -3600*2);
 		Timestamp to = DateUtil.transferDateInSecondField(date, 0);
 		
 		Query query =  em.createQuery("select avg(record.totalProcessTime) from MessageRecord record where " +

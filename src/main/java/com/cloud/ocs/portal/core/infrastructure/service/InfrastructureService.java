@@ -148,4 +148,19 @@ public interface InfrastructureService {
 	 * @return
 	 */
 	public List<ServiceOfferingDto> getNonSystemServiceOfferingList();
+	
+	/**
+	 * 找到合适虚拟机进行迁移的目标主机列表
+	 * @param vmId
+	 * @return
+	 */
+	public List<HostDto> getHostsForVmMigration(String vmId);
+	
+	/**
+	 * 动态迁移虚拟机
+	 * @param vmId
+	 * @param hostId
+	 * @return
+	 */
+	public OperateObjectDto dynamicMigrateVm(String vmId, String destHostId);
 }

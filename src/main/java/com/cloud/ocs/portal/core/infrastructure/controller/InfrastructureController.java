@@ -149,4 +149,16 @@ public class InfrastructureController {
 	public OperateObjectDto removeSecondaryStorage(@RequestParam("secondaryStorageId") String secondaryStorageId) {
 		return infrastructureService.removeSecondaryStorage(secondaryStorageId);
 	}
+	
+	@RequestMapping(value="/getHostListForVmMigration", method=RequestMethod.GET)
+	@ResponseBody
+	public List<HostDto> getHostListForVmMigration(@RequestParam("vmId") String vmId) {
+		return infrastructureService.getHostsForVmMigration(vmId);
+	}
+	
+	@RequestMapping(value="/dynamicMigrateVm", method=RequestMethod.GET)
+	@ResponseBody
+	public OperateObjectDto dynamicMigrateVm(@RequestParam("hostId") String hostId, @RequestParam("vmId") String vmId) {
+		return infrastructureService.dynamicMigrateVm(vmId, hostId);
+	}
 }

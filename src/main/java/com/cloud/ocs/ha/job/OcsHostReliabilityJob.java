@@ -44,30 +44,36 @@ public class OcsHostReliabilityJob {
 		List<OcsHost> allHosts = ocsHostDao.findAllHost();
 
 		if (allHosts != null) {
-			for (OcsHost host : allHosts) {
-				if (failureHostCache.getFailureHostIds().contains(host.getHostId())) {
-					continue;
-				}
-				
-				CheckingState ocsHostState = ocsHostStateChecker.checkOcsHostState(host);
-				
-				if (ocsHostState.getCode() == CheckingState.UNNORMAL.getCode()) {
-					//从数据库中获得故障主机上正在运行的所有虚拟机列表ID
-					final List<String> allRunningVmOnHostIds = ocsVmDao.findAllRunningVmsOnHost(host.getHostId());
-					
-					final List<WarmStandbyOcsVm> warmStandbyOcsVmList = warmStandbyVmPool.getWarmStandbyOcsVms(allRunningVmOnHostIds);
-					
-					for (final String oneRunningVmOnHostId : allRunningVmOnHostIds) {
-						Thread thread = new Thread() {
-				              public void run() {
-				            	  ocsVmTackOverService.tackOverOcsVm(oneRunningVmOnHostId, warmStandbyOcsVmList.get(allRunningVmOnHostIds.indexOf(oneRunningVmOnHostId)));
-				              }
-						};
-						thread.start();
+			for (final OcsHost host : allHosts) {
+				//一台主机用一条线程检测
+				Thread thread = new Thread() {
+					public void run() {
+						if (failureHostCache.getFailureHostIds().contains(host.getHostId())) {
+							return;
+						}
+						
+						CheckingState ocsHostState = ocsHostStateChecker.checkOcsHostState(host);
+						
+						if (ocsHostState.getCode() == CheckingState.UNNORMAL.getCode()) {
+							//从数据库中获得故障主机上正在运行的所有虚拟机列表ID
+							final List<String> allRunningVmOnHostIds = ocsVmDao.findAllRunningVmsOnHost(host.getHostId());
+							
+							final List<WarmStandbyOcsVm> warmStandbyOcsVmList = warmStandbyVmPool.getWarmStandbyOcsVms(allRunningVmOnHostIds);
+							
+							for (final String oneRunningVmOnHostId : allRunningVmOnHostIds) {
+								Thread tackOverThread = new Thread() {
+						              public void run() {
+						            	  ocsVmTackOverService.tackOverOcsVm(oneRunningVmOnHostId, warmStandbyOcsVmList.get(allRunningVmOnHostIds.indexOf(oneRunningVmOnHostId)));
+						              }
+								};
+								tackOverThread.start();
+							}
+							
+//							ocsHostDao.deleteByHostId(host.getHostId());
+						}
 					}
-					
-					ocsHostDao.deleteByHostId(host.getHostId());
-				}
+				};
+				thread.start();
 			}
 		}
 	}

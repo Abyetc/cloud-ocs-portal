@@ -92,4 +92,5 @@ public interface HostMonitorService {
 	public Double getHostAverageCPUUsagePercentageInFiveMinute(String hostId, int curDay);
 	
 	public Double getHostAverageMemoryUsagePercentageInFiveMinute(String hostId, int curDay);
+	
 }

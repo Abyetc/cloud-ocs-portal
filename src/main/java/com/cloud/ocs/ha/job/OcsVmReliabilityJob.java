@@ -50,35 +50,45 @@ public class OcsVmReliabilityJob {
 			return;
 		}
 		
-		for (OcsVm oneOcsVm : allRunningOcsVms) {
-			String vmId = oneOcsVm.getVmId();
-			
-			if (failureVmCache.getFailureVmIds().contains(vmId)) { //已经在故障列表中，不处理，避免重复处理
-				continue;
-			}
-			
-			//正在进行暂停或删除的虚拟机，不检测！！！
-			if (stoppingAndDeletingVmCache.getStoppingAndDeletingVmIds().contains(vmId)) {
-				continue;
-			}
-			
-			CheckingState ocsVmState = ocsVmStateChecker.checkOcsVmState(oneOcsVm);
-			
-			if (ocsVmState.getCode() == CheckingState.NORMAL.getCode()) { //状态正常
-				continue;
-			}
-			
-			//若状态不正常
-			//首先检测所在主机的状态
-			String hostId = oneOcsVm.getHsotId();
-			OcsHost ocsHost = ocsHostDao.findByHostId(hostId);
-			CheckingState ocsHostState = ocsHostStateChecker.checkOcsHostState(ocsHost);
-			
-			if (ocsHostState.getCode() == CheckingState.UNNORMAL.getCode()) { //主机故障优先
-				continue;
-			}
-			
-			startNewVm(vmId);
+		for (final OcsVm oneOcsVm : allRunningOcsVms) {
+			//一个虚拟机开一个线程来检测，加快检测速度
+			Thread thread = new Thread() {
+				public void run() {
+					String vmId = oneOcsVm.getVmId();
+
+					if (failureVmCache.getFailureVmIds().contains(vmId)) { // 已经在故障列表中，不处理，避免重复处理
+						return;
+					}
+
+					// 正在进行暂停或删除的虚拟机，不检测！！！
+					if (stoppingAndDeletingVmCache
+							.getStoppingAndDeletingVmIds().contains(vmId)) {
+						return;
+					}
+
+					CheckingState ocsVmState = ocsVmStateChecker
+							.checkOcsVmState(oneOcsVm);
+
+					if (ocsVmState.getCode() == CheckingState.NORMAL.getCode()) { // 状态正常
+						return;
+					}
+
+					// 若状态不正常
+					// 首先检测所在主机的状态
+					String hostId = oneOcsVm.getHsotId();
+					OcsHost ocsHost = ocsHostDao.findByHostId(hostId);
+					CheckingState ocsHostState = ocsHostStateChecker
+							.checkOcsHostState(ocsHost);
+
+					if (ocsHostState.getCode() == CheckingState.UNNORMAL
+							.getCode()) { // 主机故障优先
+						return;
+					}
+
+					startNewVm(vmId);
+				}
+			};
+			thread.start();
 		}
 	}
 

@@ -5,14 +5,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cloud.ocs.ha.job.OcsVmReliabilityJob;
 import com.cloud.ocs.portal.common.bean.OcsEngine;
 import com.cloud.ocs.portal.common.bean.OcsVmForwardingPort;
-import com.cloud.ocs.portal.common.cache.FailureVmCache;
 import com.cloud.ocs.portal.common.dao.OcsEngineDao;
 import com.cloud.ocs.portal.core.business.constant.OcsEngineState;
 import com.cloud.ocs.portal.core.business.service.OcsEngineService;
@@ -37,12 +34,6 @@ public class OcsEngineServiceImpl implements OcsEngineService {
 	
 	@Resource
 	private OcsVmForwardingPortService ocsVmForwardingPortService;
-	
-	@Resource
-	private OcsVmReliabilityJob ocsVmReliabilityJob;
-	
-	@Autowired
-	private FailureVmCache failureVmCache;
 	
 	@Override
 	public void save(OcsEngine ocsEngine) {
@@ -102,12 +93,6 @@ public class OcsEngineServiceImpl implements OcsEngineService {
 					ocsVmForwardingPort.getSshPublicPort(), OcsVmProperties.getOcsVmUsername(), 
 					OcsVmProperties.getOcsVmPassword(), OcsVmProperties.getOcsVmEngineCheckStateCmd());
 		} catch (IOException e) {
-			String exceptionMessage = e.getMessage();
-			if (exceptionMessage.contains("Connection timed out")) {
-//				failureVmCache.addFailureVm(vmId);
-//				ocsVmReliabilityJob.executeVmReliabilityJob(vmId);
-			}
-//			e.printStackTrace();
 			return null;
 		}
 		if (checkEngineStateResult != null) {
